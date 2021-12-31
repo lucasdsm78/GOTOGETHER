@@ -1,0 +1,13 @@
+display : "full" # full/basic
+
+db :
+  user : "root"
+  password : ""
+  db_name : "goTogether"
+  host : "localhost"
+
+
+
+
+
+
