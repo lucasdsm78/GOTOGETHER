@@ -106,9 +106,7 @@ function apiDelUser(id){ //set/setCommentDemandeLeaser
     }));
 }
 
-/*
 
-*/
 bodyActivity = JSON.stringify({
 	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
 	idHostUser:2, dateStart:"2021-12-30 10:30", dateEnd:"2021-12-30 11:30", participantsNumber:22, 
@@ -116,6 +114,20 @@ bodyActivity = JSON.stringify({
 })
 function apiAddActivity(body){ //set/setCommentDemandeLeaser
     return fetchJsonify(fetch( URL_BASE + 'add/activity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body
+    }));
+}
+
+
+bodyJoinActivity = JSON.stringify({
+	idUser:1, idActivity:1, isJoining:1
+})
+function apiJoinActivity(isJoining, body){ //set/setCommentDemandeLeaser
+    return fetchJsonify(fetch( URL_BASE + 'joining/activity' , {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

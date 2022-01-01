@@ -14,6 +14,7 @@ get_routes = {
 
 	"get_activities": {"path":"/get/activities", "label":"provide db activities", "example_args":"?sport=football&location=3&begin=2021-12-22_10:30&end=2021-12-22_12:30&description=foot,friends,itescia"},
 	"get_activity_id": {"path":"/get/activity/<int:id>", "label":"provide db activity by its id", "example_args":""},
+	"get_participants_id": {"path":"/get/participants/<int:idActivity>", "label":"provide db activity's participants by its id", "example_args":""},
 }
 
 
@@ -65,7 +66,6 @@ def get_activity_by_id(id):
 	#@todo : permettre de faire un where en fonction de donné fournie en param dans l'url (ex plus haut)
 	return connection_select(get_activity_req_base() + """ WHERE A.id =%s;""", id)
 
-#@todo : create a unique function (request to get id if location already exist for adress, country and city, else add location and get last insert id)
 @app.route('/add/activity', methods=['POST'])
 def add_activity():
 	try:
@@ -93,7 +93,45 @@ def add_activity():
 		conn.close()
 
 #todo : update req (if a location exist with the given data, use it's id, else insert it and get locationID),
-# cancel_activities, participate_activities, quit_activities
+# cancel_activities, 
+
+@app.route('/joining/activity', methods=['POST'])
+def joining_activity():
+	"""
+	isJoining should be 0 if false (quit activity), else 1 if true (join activity)
+	"""
+	try:
+		_args = handle_req_args(["idUser", "idActivity"])
+		isJoining = request.json["isJoining"]
+		if _args["isAllExist"] and request.method == 'POST':
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			if (isJoining):
+				sql_query = insert_request(TABLE_ACTIVITIES_USERS, _args["args"]) 
+			else:
+				sql_query = delete_request(TABLE_ACTIVITIES_USERS, " idUser = %s AND idActivity = %s ") 
+
+			cursor.execute(sql_query, _args["tuple"])
+			conn.commit()
+			respone = jsonify(response( ("Joining" if isJoining  else "Quit") + " activity successfully"))
+			respone.status_code = 200
+			return respone
+		else:
+			return not_found()
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close() 
+		conn.close()
+
+
+@app.route(get_routes["get_participants_id"]["path"], methods=['GET'])
+def get_activity_participant_by_id(idActivity):
+	return connection_select(f"""SELECT U.*
+		FROM activitiesUsers as AU
+		LEFT JOIN users as U ON U.id = AU.idUsers
+		WHERE AU.idActivity = {idActivity}
+		""")
 
 #endregion
 

@@ -49,7 +49,7 @@ def handle_req_args(wanted):
 				_required += 1
 		elif(el["field"] in _json or el["value"]):
 			val = str(_json.get(el["field"], el.get("value")))
-			_args.append({"key":el["field"], "value":val})
+			_args.append({"key":el.get("column", el["field"]), "value":val})
 			_tuple.append(val)
 			_dict[el["field"]] = val
 
