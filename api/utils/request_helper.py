@@ -3,6 +3,9 @@ use it for not to complex request (without join for now, and subquery)
 """
 
 TABLE_USER = "users"
+TABLE_LOCATIONS = "locations"
+TABLE_ACTIVITIES = "activities"
+TABLE_ACTIVITIES_USERS = "activitiesUsers"
 
 
 def insert_request(table, columns):
