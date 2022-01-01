@@ -48,9 +48,10 @@ def get_req_args3(wanted):
 	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "required":_required}
 
 def handle_req_args(wanted):
-	_json = {"hey":"heyVal", "mail":"gwen@gmail.com"}
+	_json = {"hey":"heyVal", "hi":"hiVal","mail":"gwen@gmail.com"}
 	_args = []
 	_tuple = []
+	_dict = {}
 	_required = 0
 	for el in wanted:
 		if (isinstance(el, str)):
@@ -58,20 +59,24 @@ def handle_req_args(wanted):
 				val = str(_json[el])
 				_args.append({"key":el, "value":val})
 				_tuple.append(val)
+				_dict[el] = val
 				_required += 1
 		elif(el["field"] in _json or el["value"]):
-			val = str(el.get("value", _json.get(el["field"])))
+			val = str(_json.get(el["field"], el.get("value")))
 			_args.append({"key":el["field"], "value":val})
 			_tuple.append(val)
+			_dict[el["field"]] = val
 
 			if(el.get("required", True)):
 				_required +=1
-	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "required":_required}
+
+	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
 
 
 t = handle_req_args(["hey", "mail", {"field":"hi", "required":False, "value":"testVak"}])
 print("args req = ", t)
 print("zefezfzef", {"a":121})
+print(("r", "fzef"))
 
 #t = get_req_args(["hey"], z="dezd")
 #print(t)

@@ -37,6 +37,7 @@ def handle_req_args(wanted):
 	_json = request.json
 	_args = []
 	_tuple = []
+	_dict = {}
 	_required = 0
 	for el in wanted:
 		if (isinstance(el, str)):
@@ -44,18 +45,49 @@ def handle_req_args(wanted):
 				val = str(_json[el])
 				_args.append({"key":el, "value":val})
 				_tuple.append(val)
+				_dict[el] = val
 				_required += 1
 		elif(el["field"] in _json or el["value"]):
 			val = str(_json.get(el["field"], el.get("value")))
 			_args.append({"key":el["field"], "value":val})
 			_tuple.append(val)
+			_dict[el["field"]] = val
 
 			if(el.get("required", True)):
 				_required +=1
 
-	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "required":_required}
+	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
 
 
+def location_req():
+	try:
+		_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
+		if _args_location["isAllExist"] and request.method == 'POST':
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			sql_query_get_location = f"""SELECT id from {TABLE_LOCATIONS} 
+			WHERE city=%s
+			AND country=%s
+			AND address=%s
+			"""
+			cursor.execute(sql_query_get_location, (_args_location["dict"]["city"], _args_location["dict"]["country"], _args_location["dict"]["address"]))
+			row = cursor.fetchone()
+			if row and row[0]:
+				_location_id = row[0]
+			else:
+				sql_query_location = insert_request(TABLE_LOCATIONS, _args_location["args"]) 
+				cursor.execute(sql_query_location, _args_location["tuple"])
+				_location_id = conn.insert_id()
+			conn.commit()
+			return _location_id
+		else:
+			return None
+	except Exception as e:
+		print(e)
+		return None
+	finally:
+		cursor.close() 
+		conn.close()
 
 def connection_select(request, id=None):
 	try:

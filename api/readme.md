@@ -14,6 +14,7 @@ besoin d'une API KEY
 
 pour obtenir le nom de ville, pays ...
 exemple : http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
+address="" //will be nb of street + route name
 res.results[0]["address_components"].forEach({el=>
 	if(el.types.includes("locality")){
 		city = el.long_name
@@ -24,5 +25,11 @@ res.results[0]["address_components"].forEach({el=>
 	if(el.types.includes("postal_code")){
 		postalCode = el.long_name
 	}
-
+	if(el.types.includes("street_number")){
+		address += el.long_name
+	}
+	if(el.types.includes("route")){
+		address = el.long_name + address
+	}
+	
 })

@@ -69,13 +69,14 @@ def get_activity_by_id(id):
 @app.route('/add/activity', methods=['POST'])
 def add_activity():
 	try:
-		_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
-		if _args_location["isAllExist"] and request.method == 'POST':
-			sql_query_location = insert_request(TABLE_LOCATIONS, _args_location["args"]) 
+		_location_id = location_req()
+		#_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
+		if _location_id and request.method == 'POST':
+			#sql_query_location = insert_request(TABLE_LOCATIONS, _args_location["args"]) 
 			conn = mysql.connect()
 			cursor = conn.cursor()
-			cursor.execute(sql_query_location, _args_location["tuple"])
-			_location_id = conn.insert_id()
+			#cursor.execute(sql_query_location, _args_location["tuple"])
+			#_location_id = conn.insert_id()
 			_args = handle_req_args(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "description", {"field":"idLocation", "required":False, "value":_location_id}])
 			sql_query = insert_request(TABLE_ACTIVITIES, _args["args"]) 
 			cursor.execute(sql_query, _args["tuple"])
