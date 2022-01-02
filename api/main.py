@@ -17,7 +17,7 @@ get_routes = {
 	"get_participants_id": {"path":"/get/participants/<int:idActivity>", "label":"provide db activity's participants by its id", "example_args":""},
 }
 
-
+#@todo : rename connection_select/insert/.... into bdd_select/insert/....
 #region user routes
 @app.route(get_routes["get_users"]["path"], methods=["GET"])
 def get_users():
@@ -34,12 +34,12 @@ def add_user():
 
 
 @app.route('/update/user/<int:id>', methods=['PUT'])
-def update_get_emp(id):
+def update_user(id):
 	return connection_update([{"field":"username", "required":False}, {"field":"mail", "required":False}, {"field":"password", "required":False}], id=id)
 
 
 @app.route('/delete/user/<int:id>', methods=['DELETE'])
-def delete_get_emp(id):
+def delete_user(id):
 	return connection_delete(id)
 #endregion
 
@@ -63,26 +63,22 @@ def get_activities():
 
 @app.route(get_routes["get_activity_id"]["path"], methods=["GET"])
 def get_activity_by_id(id):
-	#@todo : permettre de faire un where en fonction de donné fournie en param dans l'url (ex plus haut)
 	return connection_select(get_activity_req_base() + """ WHERE A.id =%s;""", id)
 
 @app.route('/add/activity', methods=['POST'])
 def add_activity():
 	try:
 		_location_id = location_req()
-		#_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
 		if _location_id and request.method == 'POST':
-			#sql_query_location = insert_request(TABLE_LOCATIONS, _args_location["args"]) 
 			conn = mysql.connect()
 			cursor = conn.cursor()
-			#cursor.execute(sql_query_location, _args_location["tuple"])
-			#_location_id = conn.insert_id()
 			_args = handle_req_args(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "description", {"field":"idLocation", "required":False, "value":_location_id}])
 			sql_query = insert_request(TABLE_ACTIVITIES, _args["args"]) 
 			cursor.execute(sql_query, _args["tuple"])
+			_activity_id = conn.insert_id()
 			conn.commit()
-			respone = jsonify(response("Activity added successfully"))
-			respone.status_code = 200
+			respone = jsonify(response({"message":"Activity added successfully", "idActivity":_activity_id}))
+			respone.status_code = 201
 			return respone
 		else:
 			return not_found()
@@ -92,14 +88,35 @@ def add_activity():
 		cursor.close() 
 		conn.close()
 
-#todo : update req (if a location exist with the given data, use it's id, else insert it and get locationID),
-# cancel_activities, 
+
+@app.route('/update/activity/<int:id>', methods=['PUT'])
+def update_activity(id):
+	_location_id = location_req()
+	wanted = [{"field":"idHostUser", "required":False}, {"field":"dateStart", "required":False}, {"field":"dateEnd", "required":False}, 
+		{"field":"participantsNumber", "required":False}, {"field":"idLevel", "required":False}, {"field":"description", "required":False}]
+	if _location_id:
+		wanted.append({"field":"idLocation", "required":False, "value":_location_id})
+	return connection_update(wanted, TABLE_ACTIVITIES, id=id)
+
+@app.route('/cancel/activity/<int:idActivity>', methods=['PATCH'])
+def cancel_activity(idActivity):
+	try:
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		sql_query = update_request(TABLE_ACTIVITIES, ["isCanceled"], " id=%s") 
+		cursor.execute(sql_query, ("1", str(idActivity)))
+		conn.commit()
+		respone = jsonify(response("Activity added successfully"))
+		respone.status_code = 200
+		return respone
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close() 
+		conn.close()
 
 @app.route('/joining/activity', methods=['POST'])
 def joining_activity():
-	"""
-	isJoining should be 0 if false (quit activity), else 1 if true (join activity)
-	"""
 	try:
 		_args = handle_req_args(["idUser", "idActivity"])
 		isJoining = request.json["isJoining"]
@@ -127,9 +144,9 @@ def joining_activity():
 
 @app.route(get_routes["get_participants_id"]["path"], methods=['GET'])
 def get_activity_participant_by_id(idActivity):
-	return connection_select(f"""SELECT U.*
+	return connection_select(f"""SELECT U.mail, U.username, U.id
 		FROM activitiesUsers as AU
-		LEFT JOIN users as U ON U.id = AU.idUsers
+		LEFT JOIN users as U ON U.id = AU.idUser
 		WHERE AU.idActivity = {idActivity}
 		""")
 
@@ -145,6 +162,16 @@ def not_found(error=None):
 	respone = jsonify(message)
 	respone.status_code = 404
 	return respone
+
+def bad_request(error=None):
+	message = {
+		'status': 400,
+		'message': 'Bad request : ' + request.url,
+	}
+	respone = jsonify(message)
+	respone.status_code = 400
+	return respone
+
 
 if __name__ == "__main__":
 	app.run(host=HOST)

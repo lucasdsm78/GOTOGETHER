@@ -76,7 +76,7 @@ function handleUrlParams(isFirstParam, params={}, ignored=[]){
 
 URL_BASE = "http://51.255.51.106:5000/"
 
-function apiInsertUser(body){ //set/setCommentDemandeLeaser
+function apiInsertUser(body){
 	//body is JSON.stringify()
     return fetchJsonify(fetch( URL_BASE + 'add/user', {
         method: 'POST',
@@ -87,7 +87,7 @@ function apiInsertUser(body){ //set/setCommentDemandeLeaser
     }));
 }
 
-function apiUpUser(id, body){ //set/setCommentDemandeLeaser
+function apiUpUser(id, body){ 
     return fetchJsonify(fetch( URL_BASE + 'update/user/' + id, {
         method: 'PUT',
         headers: {
@@ -97,7 +97,7 @@ function apiUpUser(id, body){ //set/setCommentDemandeLeaser
     }));
 }
 
-function apiDelUser(id){ //set/setCommentDemandeLeaser
+function apiDelUser(id){ 
     return fetchJsonify(fetch( URL_BASE + 'delete/' + id, {
         method: 'DELETE',
         headers: {
@@ -112,7 +112,7 @@ bodyActivity = JSON.stringify({
 	idHostUser:2, dateStart:"2021-12-30 10:30", dateEnd:"2021-12-30 11:30", participantsNumber:22, 
 	idLevel:3, description:"match de foot entre amis et amateur"
 })
-function apiAddActivity(body){ //set/setCommentDemandeLeaser
+function apiAddActivity(body){ 
     return fetchJsonify(fetch( URL_BASE + 'add/activity', {
         method: 'POST',
         headers: {
@@ -122,11 +122,39 @@ function apiAddActivity(body){ //set/setCommentDemandeLeaser
     }));
 }
 
+bodyActivityUpdate = JSON.stringify({
+	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
+	idHostUser:2, dateStart:"2021-12-30 10:45", dateEnd:"2021-12-30 11:30", participantsNumber:22, 
+	idLevel:3, description:"match de foot entre amis et amateur"
+})
+bodyActivityUpdateUncomplete = JSON.stringify({
+	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
+	participantsNumber:44,
+})
+function apiUpdateActivity(idActivity, body){ 
+    return fetchJsonify(fetch( URL_BASE + 'update/activity/' + idActivity, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body
+    }));
+}
+
+function apiCancelActivity(idActivity){ 
+    return fetchJsonify(fetch( URL_BASE + 'cancel/activity/' + idActivity, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }));
+}
+
 
 bodyJoinActivity = JSON.stringify({
 	idUser:1, idActivity:1, isJoining:1
 })
-function apiJoinActivity(isJoining, body){ //set/setCommentDemandeLeaser
+function apiJoinActivity(body){ 
     return fetchJsonify(fetch( URL_BASE + 'joining/activity' , {
         method: 'POST',
         headers: {
@@ -135,3 +163,8 @@ function apiJoinActivity(isJoining, body){ //set/setCommentDemandeLeaser
         body
     }));
 }
+
+function apiGetParticipants(idActivity){ 
+    return fetchJsonify(fetch( URL_BASE + 'get/participants/' + idActivity))
+}
+

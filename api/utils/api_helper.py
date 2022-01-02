@@ -33,36 +33,38 @@ def handle_req_args_old(wanted):
 
 
 #[String, {"field":String, "required":Boolean}, ...]
+#maybe if method POST, PATCH, PUT, DELETE, use request.json; else if methode= GET use request.params
 def handle_req_args(wanted):
-	_json = request.json
 	_args = []
 	_tuple = []
 	_dict = {}
 	_required = 0
-	for el in wanted:
-		if (isinstance(el, str)):
-			if (el in _json):
-				val = str(_json[el])
-				_args.append({"key":el, "value":val})
+	try :
+		_json = request.json
+		for el in wanted:
+			if (isinstance(el, str)):
+				if (el in _json):
+					val = str(_json[el])
+					_args.append({"key":el, "value":val})
+					_tuple.append(val)
+					_dict[el] = val
+					_required += 1
+			elif(el["field"] in _json or el.get("value")):
+				val = str(_json.get(el["field"], el.get("value")))
+				_args.append({"key":el.get("column", el["field"]), "value":val})
 				_tuple.append(val)
-				_dict[el] = val
-				_required += 1
-		elif(el["field"] in _json or el["value"]):
-			val = str(_json.get(el["field"], el.get("value")))
-			_args.append({"key":el.get("column", el["field"]), "value":val})
-			_tuple.append(val)
-			_dict[el["field"]] = val
-
-			if(el.get("required", True)):
-				_required +=1
-
-	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
-
+				_dict[el["field"]] = val
+				if(el.get("required", True)):
+					_required +=1
+		return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
+	except Exception as e:
+		print("here the error msg : ", e)
 
 def location_req():
 	try:
 		_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
-		if _args_location["isAllExist"] and request.method == 'POST':
+		print(_args_location)
+		if _args_location["isAllExist"] and (request.method == 'POST' or request.method == 'PUT'):
 			conn = mysql.connect()
 			cursor = conn.cursor()
 			sql_query_get_location = f"""SELECT id from {TABLE_LOCATIONS} 
@@ -79,15 +81,16 @@ def location_req():
 				cursor.execute(sql_query_location, _args_location["tuple"])
 				_location_id = conn.insert_id()
 			conn.commit()
+
+			cursor.close() 
+			conn.close()
 			return _location_id
 		else:
 			return None
 	except Exception as e:
-		print(e)
+		print("msg error = ", e)
 		return None
-	finally:
-		cursor.close() 
-		conn.close()
+			
 
 def connection_select(request, id=None):
 	try:
@@ -119,7 +122,7 @@ def connection_insert(wanted,table=TABLE_USER, message="added successfully!"):
 			cursor.execute(sql_query, _args["tuple"])
 			conn.commit()
 			respone = jsonify(response(message))
-			respone.status_code = 200
+			respone.status_code = 201
 			return respone
 		else:
 			return not_found()
