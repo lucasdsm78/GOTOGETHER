@@ -75,8 +75,12 @@ def handle_req_args(wanted):
 
 t = handle_req_args(["hey", "mail", {"field":"hi", "required":False, "value":"testVak"}])
 print("args req = ", t)
-print("zefezfzef", {"a":121})
-print(("r", "fzef"))
+"""
+exemple de retour =
+args req =  {'isAllExist': True, 'isAllRequiredExist': True, 'tuple': ('heyVal', 'gwen@gmail.com', 'hiVal'), 'args': [{'key': 'hey', 'value': 'heyVal'}, {'key': 'mail', 'value': 'gwen@gmail.com'}, {'key': 'hi', 'value': 'hiVal'}], 'dict': {'hey': 'heyVal', 'mail': 'gwen@gmail.com', 'hi': 'hiVal'}, 'required': 2}
+zefezfzef {'a': 121}
+('r', 'fzef')
+"""
 
 #t = get_req_args(["hey"], z="dezd")
 #print(t)

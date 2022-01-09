@@ -17,7 +17,9 @@ get_routes = {
 	"get_participants_id": {"path":"/get/participants/<int:idActivity>", "label":"provide db activity's participants by its id", "example_args":""},
 }
 
+#@todo : add a secret key required to use api ()
 #@todo : rename connection_select/insert/.... into bdd_select/insert/....
+#@todo : DB users table should have more fields,  insert/update user request too
 #region user routes
 @app.route(get_routes["get_users"]["path"], methods=["GET"])
 def get_users():
@@ -153,6 +155,7 @@ def get_activity_participant_by_id(idActivity):
 #endregion
 
 
+#region errors
 @app.errorhandler(404)
 def not_found(error=None):
 	message = {
@@ -172,6 +175,7 @@ def bad_request(error=None):
 	respone.status_code = 400
 	return respone
 
+#endregion
 
 if __name__ == "__main__":
 	app.run(host=HOST)

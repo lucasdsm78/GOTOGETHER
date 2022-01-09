@@ -128,7 +128,6 @@ bodyActivityUpdate = JSON.stringify({
 	idLevel:3, description:"match de foot entre amis et amateur"
 })
 bodyActivityUpdateUncomplete = JSON.stringify({
-	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
 	participantsNumber:44,
 })
 function apiUpdateActivity(idActivity, body){ 
