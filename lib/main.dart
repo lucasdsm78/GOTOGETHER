@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/random_word.dart';
 import 'package:go_together/widgets/user.dart';
 import 'package:go_together/widgets/activity.dart';
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
     //home:RandomWord(),
       //home:UserProfile(),
       //home:ActivityPage(),
-      home:UserList(),
+      //home:UserList(),
+      home:ActivityList(),
     );
   }
 }

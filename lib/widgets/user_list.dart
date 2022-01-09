@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 import 'package:go_together/api/objects/user.dart';
 import 'package:go_together/api/requests.dart';
 
@@ -13,29 +12,16 @@ class UserList extends StatefulWidget {
 class _UserListState extends State<UserList> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <User>{};
-  late Future<List<User>> futureUser;
+  late Future<List<User>> futureUsers;
 
   @override
   void initState() {
     super.initState();
-    futureUser = fetchUsers();
+    futureUsers = fetchUsers();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    /*return FutureBuilder<List<User>>(
-      future: futureUser,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<User> data = snapshot.data!;
-          return _buildUsers(data);
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
-        }
-        return CircularProgressIndicator();
-      },
-    );*/
     return Scaffold(
         appBar: AppBar(
           title: const Text('User list'),
@@ -48,7 +34,7 @@ class _UserListState extends State<UserList> {
           ],
         ),
         body: FutureBuilder<List<User>>(
-          future: futureUser,
+          future: futureUsers,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<User> data = snapshot.data!;
@@ -108,7 +94,7 @@ class _UserListState extends State<UserList> {
     /*
     Center(
           child: FutureBuilder<User>(
-            future: futureUser,
+            future: futureUsers,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Text(snapshot.data!.username);

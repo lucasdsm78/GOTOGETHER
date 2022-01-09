@@ -8,7 +8,6 @@ import 'dart:convert';
 const apiUrl = "http://51.255.51.106:5000/";
 
 Future<List<User>> fetchUsers() async {
-  //@todo : savoir générer un tableau et le remplir, ceci a partir du tableau d'user
   final response = await http.get(Uri.parse(apiUrl + 'get/users'));
 
   if (response.statusCode == 200) {
@@ -29,6 +28,17 @@ Future<User> fetchUserById(id) async {
   }
 }
 
+
+Future<List<Activity>> fetchActivities() async {
+  final response = await http.get(Uri.parse(apiUrl + 'get/activities'));
+
+  if (response.statusCode == 200) {
+    List jsonResponse = jsonDecode(response.body)["success"];
+    return jsonResponse.map((activity) => Activity.fromJson(activity)).toList();
+  } else {
+    throw Exception('Failed to load activities');
+  }
+}
 
 Future<Activity> fetchActivityById(id) async {
   final response = await http
