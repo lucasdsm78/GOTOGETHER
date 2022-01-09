@@ -12,6 +12,7 @@ class Activity {
   final int hostId;
   final String hostMail;
   final String hostName;
+  final String sport;
 
   final DateTime dateEnd;
   final DateTime dateStart;
@@ -19,6 +20,7 @@ class Activity {
   final int isCanceled;
   final String level;
   final int participantsNumber;
+  final List<int> currentParticipants;
   final DateTime updatedAt;
 
   Activity({
@@ -33,12 +35,15 @@ class Activity {
     required this.hostId,
     required this.hostMail,
     required this.hostName,
+    required this.sport,
+
     required this.dateEnd,
     required this.dateStart,
     required this.description,
     required this.isCanceled,
     required this.level,
     required this.participantsNumber,
+    required this.currentParticipants,
     required this.updatedAt,
   });
 
@@ -55,12 +60,15 @@ class Activity {
       hostId: json['hostId'],
       hostMail: json['hostMail'],
       hostName: json['hostName'],
+      sport: json['sport'],
+
       dateEnd: HttpDate.parse(json['dateEnd']),
       dateStart: HttpDate.parse(json['dateStart']),
       description: json['description'],
       isCanceled: json['isCanceled'],
       level: json['level'],
       participantsNumber: json['participantsNumber'],
+      currentParticipants: json['participants'].split(',').map(int.parse).toList(),
       updatedAt: HttpDate.parse(json['updatedAt']),
     );
   }

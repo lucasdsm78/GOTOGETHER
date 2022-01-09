@@ -7,6 +7,8 @@ il faut lancer la commande aprés connection sur centos, et on pourra faire des 
 http://51.255.51.106:5000/get/users
 
 
+s'il faut kill le process : 
+fuser -k 5000/tcp 
 
 
 ##pour l'api google maps
