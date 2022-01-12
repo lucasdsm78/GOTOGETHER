@@ -2,7 +2,9 @@ import pymysql
 from utils.config import mysql
 from utils.request_helper import *
 from flask import jsonify, request, session, redirect, url_for
+import utils.requests_string as request_str
 
+#region helpers
 def is_set_and_not_empty(arg):
 	"""
 	Check if an argument exist in the request args and if it's not empty
@@ -18,19 +20,6 @@ def response(result, isSuccess=True):
 		return {"success":result}
 	else:
 		return {"error":result}
-
-
-def handle_req_args_old(wanted):
-	_json = request.json
-	_args = []
-	for el in wanted:
-		if (isinstance(el, str)):
-			if (el in _json):
-				_args.append(_json[el])
-		elif(el["field"] in _json):
-			_args.append(_json[el["field"]])
-	return {"isAllExist":len(wanted)==len(_args),"tuple":tuple(_args)}
-
 
 #[String, {"field":String, "required":Boolean}, ...]
 #maybe if method POST, PATCH, PUT, DELETE, use request.json; else if methode= GET use request.params
@@ -59,6 +48,7 @@ def handle_req_args(wanted):
 		return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
 	except Exception as e:
 		print("here the error msg : ", e)
+#endregion
 
 def location_req():
 	try:
@@ -68,10 +58,7 @@ def location_req():
 			conn = mysql.connect()
 			cursor = conn.cursor()
 			sql_query_get_location = f"""SELECT id from {TABLE_LOCATIONS} 
-			WHERE city=%s
-			AND country=%s
-			AND address=%s
-			"""
+			WHERE city=%s AND country=%s AND address=%s """
 			cursor.execute(sql_query_get_location, (_args_location["dict"]["city"], _args_location["dict"]["country"], _args_location["dict"]["address"]))
 			row = cursor.fetchone()
 			if row and row[0]:
@@ -90,21 +77,96 @@ def location_req():
 	except Exception as e:
 		print("msg error = ", e)
 		return None
-			
 
-def connection_select(request, id=None):
+#region activity
+def add_activity_req():
+	try:
+		_location_id = location_req()
+		if _location_id and request.method == 'POST':
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			_args = handle_req_args(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "idSport", "description", {"field":"idLocation", "required":False, "value":_location_id}])
+			sql_query = insert_request(TABLE_ACTIVITIES, _args["args"])
+			cursor.execute(sql_query, _args["tuple"])
+			_activity_id = conn.insert_id()
+			conn.commit()
+
+			cursor.execute(request_str.get_activity_req_base() + " WHERE A.id =%s;", _activity_id)
+			empRows = cursor.fetchone()
+			_res = jsonify(response({"message":"Activity added successfully", "id":_activity_id, "last_insert":empRows}))
+			_res.status_code = 201
+			return _res
+		else:
+			return not_found()
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close()
+		conn.close()
+
+def update_activity_req(id):
+	_location_id = location_req()
+	wanted = [{"field":"idHostUser", "required":False}, {"field":"dateStart", "required":False}, {"field":"dateEnd", "required":False},
+		{"field":"participantsNumber", "required":False}, {"field":"idLevel", "required":False}, {"field":"description", "required":False}]
+	if _location_id:
+		wanted.append({"field":"idLocation", "required":False, "value":_location_id})
+	return api_update(wanted, TABLE_ACTIVITIES, id=id)
+
+def cancel_activity_req(idActivity):
+	try:
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		sql_query = update_request(TABLE_ACTIVITIES, ["isCanceled"], " id=%s")
+		cursor.execute(sql_query, ("1", str(idActivity)))
+		conn.commit()
+		_res = jsonify(response("Activity added successfully"))
+		_res.status_code = 200
+		return _res
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close()
+		conn.close()
+
+def joining_activity_req():
+	try:
+		_args = handle_req_args(["idUser", "idActivity"])
+		isJoining = request.json["isJoining"]
+		if _args["isAllExist"] and request.method == 'POST':
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			if (isJoining):
+				sql_query = insert_request(TABLE_ACTIVITIES_USERS, _args["args"])
+			else:
+				sql_query = delete_request(TABLE_ACTIVITIES_USERS, " idUser = %s AND idActivity = %s ")
+			cursor.execute(sql_query, _args["tuple"])
+			conn.commit()
+			_res = jsonify(response( ("Joining" if isJoining  else "Quit") + " activity successfully"))
+			_res.status_code = 200
+			return _res
+		else:
+			return not_found()
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close()
+		conn.close()
+#endregion
+
+#region common bdd
+def api_select(get_request, id=None):
 	try:
 		conn = mysql.connect()
 		cursor = conn.cursor(pymysql.cursors.DictCursor)
 		if id:
-			cursor.execute(request, id)
+			cursor.execute(get_request, id)
 			empRows = cursor.fetchone()
 		else:
-			cursor.execute(request)
+			cursor.execute(get_request)
 			empRows = cursor.fetchall()
-		respone = jsonify(response(empRows))
-		respone.status_code = 200
-		return respone
+		_res = jsonify(response(empRows))
+		_res.status_code = 200
+		return _res
 	except Exception as e:
 		print(e)
 		return None
@@ -112,7 +174,7 @@ def connection_select(request, id=None):
 		cursor.close() 
 		conn.close()
 
-def connection_insert(wanted,table=TABLE_USER, message="added successfully!"):
+def api_insert(wanted,table=TABLE_USER, message="added successfully!", get_request=None):
 	try:
 		_args = handle_req_args(wanted)
 		if _args["isAllExist"] and request.method == 'POST':
@@ -120,10 +182,18 @@ def connection_insert(wanted,table=TABLE_USER, message="added successfully!"):
 			conn = mysql.connect()
 			cursor = conn.cursor()
 			cursor.execute(sql_query, _args["tuple"])
+			_id = conn.insert_id()
 			conn.commit()
-			respone = jsonify(response(message))
-			respone.status_code = 201
-			return respone
+			if(get_request is None):
+				_res = jsonify(response(message))
+			else:
+				print("REQUEST : ", get_request, str(_id))
+				cursor.execute(get_request, str(_id))
+				empRows = cursor.fetchone()
+				_res = jsonify(response({"message":"Activity added successfully", "id":_id, "last_insert":empRows}))
+
+			_res.status_code = 201
+			return _res
 		else:
 			return not_found()
 	except Exception as e:
@@ -132,7 +202,7 @@ def connection_insert(wanted,table=TABLE_USER, message="added successfully!"):
 		cursor.close() 
 		conn.close()
 
-def connection_update(wanted, table=TABLE_USER, message="updated successfully!", id=None):
+def api_update(wanted, table=TABLE_USER, message="updated successfully!", id=None):
 	try:
 		_args = handle_req_args(wanted)
 		if _args["isAllRequiredExist"] and  len(_args["tuple"])>0 and id is not None and request.method == 'PUT':
@@ -141,9 +211,9 @@ def connection_update(wanted, table=TABLE_USER, message="updated successfully!",
 			cursor = conn.cursor()
 			cursor.execute(sql_query, _args["tuple"] + (id, ))
 			conn.commit()
-			respone = jsonify(response(message))
-			respone.status_code = 200
-			return respone
+			_res = jsonify(response(message))
+			_res.status_code = 200
+			return _res
 		else:
 			return not_found()
 	except Exception as e:
@@ -152,7 +222,7 @@ def connection_update(wanted, table=TABLE_USER, message="updated successfully!",
 		cursor.close() 
 		conn.close()
 
-def connection_delete(id, table=TABLE_USER, message="deleted successfully!"):
+def api_delete(id, table=TABLE_USER, message="deleted successfully!"):
 	try:
 		if id is not None and request.method == 'DELETE':
 			sql_query = delete_request(table, " id=%s") 
@@ -160,9 +230,9 @@ def connection_delete(id, table=TABLE_USER, message="deleted successfully!"):
 			cursor = conn.cursor()
 			cursor.execute(sql_query, (id, ))
 			conn.commit()
-			respone = jsonify(response(message))
-			respone.status_code = 200
-			return respone
+			_res = jsonify(response(message))
+			_res.status_code = 200
+			return _res
 		else:
 			return not_found()
 	except Exception as e:
@@ -172,3 +242,4 @@ def connection_delete(id, table=TABLE_USER, message="deleted successfully!"):
 		conn.close()
 
 
+#endregion

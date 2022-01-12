@@ -1,3 +1,6 @@
+#import utils.requests_string as request
+#print(request.get_all_users())
+
 defa = ["hey"]
 def get_req_args(wanted, a="tss", z=""):
 	_json = {"hey":1, "hi":2 ,"mail":"gwen@"}

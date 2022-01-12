@@ -22,12 +22,12 @@ def get_users():
 	:return: a json
 	"""
 	#return jsonify(db.get_user_query())
-	return connection_select("SELECT id, username, mail, role FROM users")
+	return api_select("SELECT id, username, mail, role FROM users")
 
 
 @app.route(get_routes["get_user_id"]["path"])
 def get_user_by_id(id):
-	connection_select("SELECT id, name, email, phone, address FROM rest_emp WHERE id =%s", id)
+	api_select("SELECT id, name, email, phone, address FROM rest_emp WHERE id =%s", id)
 
 def get_req_args(wanted):
 	wanted = list(dict.fromkeys(wanted))
@@ -56,9 +56,9 @@ def add_user():
 			cursor = conn.cursor()
 			cursor.execute(sqlQuery, bindData)
 			conn.commit()
-			respone = jsonify('User added successfully!')
-			respone.status_code = 200
-			return respone
+			_res = jsonify('User added successfully!')
+			_res.status_code = 200
+			return _res
 		else:
 			return not_found()
 	except Exception as e:
@@ -84,9 +84,9 @@ def update_get_emp():
 			cursor = conn.cursor()
 			cursor.execute(sqlQuery, bindData)
 			conn.commit()
-			respone = jsonify('Employee updated successfully!')
-			respone.status_code = 200
-			return respone
+			_res = jsonify('Employee updated successfully!')
+			_res.status_code = 200
+			return _res
 		else:
 			return not_found()
 	except Exception as e:
@@ -102,9 +102,9 @@ def delete_get_emp(id):
 		cursor = conn.cursor()
 		cursor.execute("DELETE FROM rest_emp WHERE id =%s", (id,))
 		conn.commit()
-		respone = jsonify('Employee deleted successfully!')
-		respone.status_code = 200
-		return respone
+		_res = jsonify('Employee deleted successfully!')
+		_res.status_code = 200
+		return _res
 	except Exception as e:
 		print(e)
 	finally:
@@ -117,9 +117,9 @@ def not_found(error=None):
 		'status': 404,
 		'message': 'Record not found: ' + request.url,
 	}
-	respone = jsonify(message)
-	respone.status_code = 404
-	return respone
+	_res = jsonify(message)
+	_res.status_code = 404
+	return _res
 
 if __name__ == "__main__":
 	app.run(host=HOST)
