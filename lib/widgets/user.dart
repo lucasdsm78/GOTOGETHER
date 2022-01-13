@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/api/objects/user.dart';
+import 'package:go_together/models/user.dart';
 import 'package:go_together/api/requests.dart';
 
 class UserProfile extends StatefulWidget {

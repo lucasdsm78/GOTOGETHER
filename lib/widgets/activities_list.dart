@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/api/objects/activity.dart';
+import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
 
 class ActivityList extends StatefulWidget {

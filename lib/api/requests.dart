@@ -1,12 +1,12 @@
 import 'dart:developer';
-import 'package:go_together/api/objects/activity.dart';
+import 'package:go_together/models/activity.dart';
 import 'package:http/http.dart' as http;
-import 'package:go_together/api/objects/user.dart';
+import 'package:go_together/models/user.dart';
 import 'dart:async';
 import 'dart:convert';
 
 const apiUrl = "http://51.255.51.106:5000/";
-
+//region Users
 Future<List<User>> fetchUsers() async {
   final response = await http.get(Uri.parse(apiUrl + 'get/users'));
 
@@ -28,6 +28,24 @@ Future<User> fetchUserById(id) async {
   }
 }
 
+Future<User> createUser(UserRequest user) async {
+  //ex : createUser(UserRequest(username: "flutterUser2", mail: "flutterUser2@gmail.com", password: "flutterPass"));
+
+  final response = await http.post(
+    Uri.parse(apiUrl + 'add/user'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: user.asJson(),
+  );
+
+  if (response.statusCode == 201) {
+    return User.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
+  } else {
+    throw Exception('Failed to create album.');
+  }
+}
+//endregion
 
 Future<List<Activity>> fetchActivities() async {
   final response = await http.get(Uri.parse(apiUrl + 'get/activities'));
