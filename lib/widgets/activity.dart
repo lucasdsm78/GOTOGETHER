@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
 
-class ActivityPage extends StatefulWidget {
-  const ActivityPage({Key? key}) : super(key: key);
+class ActivityDetailsScreen extends StatefulWidget {
+  const ActivityDetailsScreen({Key? key, required this.activityId}) : super(key: key);
+
+  final int activityId;
 
   @override
-  _ActivityPageState createState() => _ActivityPageState();
+  _ActivityDetailsScreenState createState() => _ActivityDetailsScreenState();
 }
 
-class _ActivityPageState extends State<ActivityPage> {
+class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   late Future<Activity> futureActivity;
 
   @override
   void initState() {
     super.initState();
-    futureActivity = fetchActivityById(1);
+    futureActivity = fetchActivityById(widget.activityId);
   }
 
   @override
@@ -34,13 +36,25 @@ class _ActivityPageState extends State<ActivityPage> {
             future: futureActivity,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data!.description);
+                //return Text(snapshot.data!.description);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                        snapshot.data!.description,
+                        style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0)
+                    ),
+                    Text(snapshot.data!.nbCurrentParticipants.toString() + "/" + snapshot.data!.participantsNumber.toString() + " participants" ),
+                  ],
+                );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
+              return const Center(
+                  child: CircularProgressIndicator()
+              );
             },
           ),
         ),

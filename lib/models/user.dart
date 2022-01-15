@@ -15,34 +15,34 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      username: json['username'],
-      mail: json['mail'],
-      role: json['role'],
+      id: json['id'] as int,
+      username: json['username'] as String,
+      mail: json['mail'] as String,
+      role: json['role'] as String,
     );
   }
 }
 
-class UserRequest {
+class UserCreate {
   final String username;
   final String mail;
   final String password;
 
-  UserRequest({
+  UserCreate({
     required this.username,
     required this.mail,
     required this.password,
   });
 
-  factory UserRequest.fromJson(Map<String, dynamic> json) {
-    return UserRequest(
-      username: json['username'],
-      mail: json['mail'],
-      password: json['password'],
+  factory UserCreate.fromJson(Map<String, dynamic> json) {
+    return UserCreate(
+      username: json['username'] as String,
+      mail: json['mail'] as String,
+      password: json['password'] as String,
     );
   }
-  factory UserRequest.fromString(String username, String mail, String password) {
-    return UserRequest(
+  factory UserCreate.fromString(String username, String mail, String password) {
+    return UserCreate(
       username: username,
       mail: mail,
       password: password,

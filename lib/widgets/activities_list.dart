@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
+import 'package:go_together/widgets/activity.dart';
+import 'package:http/http.dart' as http;
 
 class ActivityList extends StatefulWidget {
   const ActivityList({Key? key}) : super(key: key);
@@ -17,7 +19,7 @@ class _ActivityListState extends State<ActivityList> {
   @override
   void initState() {
     super.initState();
-    futureActivities = fetchActivities();
+    futureActivities = fetchActivities(http.Client());
   }
 
   @override
@@ -42,7 +44,9 @@ class _ActivityListState extends State<ActivityList> {
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
-          return CircularProgressIndicator();
+          return const Center(
+              child: CircularProgressIndicator()
+          );
         },
       ),
     );
@@ -91,23 +95,6 @@ class _ActivityListState extends State<ActivityList> {
           final index = i ~/ 2; /*3*/
           return _buildRow(data[index]);
         });
-    /*
-    Center(
-          child: FutureBuilder<Activity>(
-            future: futureActivities,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.Activityname);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
-    * */
   }
 
   Widget _buildRow(Activity activity) {
@@ -125,11 +112,17 @@ class _ActivityListState extends State<ActivityList> {
       ),                // ... to here.
       onTap: () {
         setState(() {
-          if (alreadySaved) {
+          /*if (alreadySaved) {
             _saved.remove(activity);
           } else {
             _saved.add(activity);
-          }
+          }*/
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ActivityDetailsScreen(activityId:activity.id),
+            ),
+          );
         });
       },
     );

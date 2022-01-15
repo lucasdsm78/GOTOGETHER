@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/api/requests.dart';
+import 'package:http/http.dart' as http;
 
 class UserList extends StatefulWidget {
   const UserList({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _UserListState extends State<UserList> {
   @override
   void initState() {
     super.initState();
-    futureUsers = fetchUsers();
+    futureUsers = fetchUsers(http.Client());
   }
 
   @override
@@ -42,7 +43,9 @@ class _UserListState extends State<UserList> {
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
-            return CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator()
+            );
           },
         ),
       );
@@ -91,23 +94,6 @@ class _UserListState extends State<UserList> {
           final index = i ~/ 2; /*3*/
           return _buildRow(data[index]);
         });
-    /*
-    Center(
-          child: FutureBuilder<User>(
-            future: futureUsers,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.username);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
-    * */
   }
 
   Widget _buildRow(User user) {

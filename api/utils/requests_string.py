@@ -9,7 +9,8 @@ def get_activity_req_base():
 		A.isCanceled, A.updatedAt,
 		S.name as sport, S.id as sportId, 
 		L.name as level, LOC.id as locationId, LOC.lat , LOC.lon, LOC.address, LOC.country, LOC.city,
-		(SELECT GROUP_CONCAT(AU.idUser) from activitiesUsers as AU WHERE AU.idActivity = A.id GROUP BY A.id ) as participantsIdConcat
+		(SELECT GROUP_CONCAT(AU.idUser) from activitiesUsers as AU WHERE AU.idActivity = A.id GROUP BY A.id ) as participantsIdConcat,
+		(SELECT COUNT(AU.idUser) from activitiesUsers as AU WHERE AU.idActivity = A.id GROUP BY A.id ) as nbCurrentParticipants
 
 		FROM activities as A 
 		LEFT JOIN users as U on U.id = A.idHostUser 

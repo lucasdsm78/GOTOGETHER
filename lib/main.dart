@@ -25,9 +25,9 @@ class MyApp extends StatelessWidget {
            ),
     //home:RandomWord(),
       //home:UserProfile(),
-      //home:ActivityPage(),
-      home:UserList(),
-      //home:ActivityList(),
+      //home:ActivityDetailsScreen(activityId: 1),
+      //home:UserList(),
+      home:ActivityList(),
     );
   }
 }
