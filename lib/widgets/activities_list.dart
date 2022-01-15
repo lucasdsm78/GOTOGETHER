@@ -15,6 +15,7 @@ class _ActivityListState extends State<ActivityList> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
+  int userId = 1;
 
   @override
   void initState() {
@@ -27,13 +28,13 @@ class _ActivityListState extends State<ActivityList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activity list'),
-        actions: [
+        /*actions: [
           IconButton(
             icon: const Icon(Icons.list),
             onPressed: _pushSaved,
             tooltip: 'See more',
           ),
-        ],
+        ],*/
       ),
       body: FutureBuilder<List<Activity>>(
         future: futureActivities,
@@ -52,6 +53,7 @@ class _ActivityListState extends State<ActivityList> {
     );
   }
 
+  /*
   void _pushSaved() {
     Navigator.of(context).push(
       // Add lines from here...
@@ -84,6 +86,35 @@ class _ActivityListState extends State<ActivityList> {
       ), // ...to here.
     );
   }
+  */
+  void _pushDetails(int activityId) {
+    Navigator.of(context).push(
+      // Add lines from here...
+      MaterialPageRoute<void>(
+        builder: (context) {
+          final tiles = _saved.map(
+                (activity) {
+              return ListTile(
+                title: Text(
+                  activity.description,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          final divided = tiles.isNotEmpty
+              ? ListTile.divideTiles(
+            context: context,
+            tiles: tiles,
+          ).toList()
+              : <Widget>[];
+          //return ActivityDetailsScreen(activityId: activityId);
+          return  ActivityDetailsScreen(activityId: activityId);//ListView(children: divided)
+
+        },
+      ), // ...to here.
+    );
+  }
 
   Widget _buildActivities(data) {
     return ListView.builder(
@@ -99,6 +130,7 @@ class _ActivityListState extends State<ActivityList> {
 
   Widget _buildRow(Activity activity) {
     final alreadySaved = _saved.contains(activity);
+    final hasJoin = activity.currentParticipants.contains(userId.toString());
     return ListTile(
       title: Text(
         activity.description + " - " + activity.hostName,
@@ -106,9 +138,9 @@ class _ActivityListState extends State<ActivityList> {
       ),
       subtitle: Text(activity.address),
       trailing: Icon(   // NEW from here...
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-        semanticLabel: alreadySaved ? 'Remove friend' : 'Add friend',
+        hasJoin ? Icons.favorite : Icons.favorite_border,
+        color: hasJoin ? Colors.red : null,
+        semanticLabel: hasJoin ? 'i have join' : 'i have not join',
       ),                // ... to here.
       onTap: () {
         setState(() {
@@ -117,12 +149,8 @@ class _ActivityListState extends State<ActivityList> {
           } else {
             _saved.add(activity);
           }*/
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ActivityDetailsScreen(activityId:activity.id),
-            ),
-          );
+          // !snapshot.data!.currentParticipants.contains(userId.toString())
+          _pushDetails(activity.id);
         });
       },
     );

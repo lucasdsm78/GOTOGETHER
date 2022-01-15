@@ -142,6 +142,7 @@ def joining_activity_req():
 		_args = handle_req_args(["idUser", "idActivity"])
 		isJoining = request.json["isJoining"]
 		if _args["isAllExist"] and request.method == 'POST':
+			_activity_id = _args["dict"]["idActivity"]
 			connection_db()
 			if (isJoining):
 				sql_query = insert_request(TABLE_ACTIVITIES_USERS, _args["args"])
@@ -149,7 +150,10 @@ def joining_activity_req():
 				sql_query = delete_request(TABLE_ACTIVITIES_USERS, " idUser = %s AND idActivity = %s ")
 			cursor.execute(sql_query, _args["tuple"])
 			conn.commit()
-			_res = jsonify(response( ("Joining" if isJoining  else "Quit") + " activity successfully"))
+			
+			cursor.execute(request_str.get_activity_req_base() + " WHERE A.id =%s;", _activity_id)
+			empRows = cursor.fetchone()
+			_res = jsonify(response({"message":("Joining" if isJoining  else "Quit") + " activity successfully", "id":_activity_id, "last_insert":empRows}))
 			_res.status_code = 200
 			return _res
 		else:

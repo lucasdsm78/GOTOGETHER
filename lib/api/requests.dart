@@ -114,4 +114,22 @@ Future<Activity> createActivity(ActivityCreate activity) async {
     throw Exception('Failed to create album.');
   }
 }
+
+Future<Activity> joinActivity(Activity activity, int userId, bool hasJoin) async {
+  final response = await http.post(
+    Uri.parse(apiUrl + 'joining/activity'),
+    headers:mainHeader,
+    body:  jsonEncode(<String, int>{
+      "idUser": userId,
+      "idActivity": activity.id,
+      "isJoining": hasJoin ? 0 : 1
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return Activity.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
+  } else {
+    throw Exception('Failed to create album.');
+  }
+}
 //endregion
