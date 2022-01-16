@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
@@ -16,19 +19,75 @@ class _ActivityListState extends State<ActivityList> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
-  int userId = getSessionValue("userId");
+  late int userId;
+  String keywords = "";
+
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('Activities List');
+
+  Map <String, dynamic> criterionMap(){
+    return {"sportId":null, "keywords":keywords};
+  }
 
   @override
   void initState() {
     super.initState();
-    futureActivities = fetchActivities(http.Client());
+    futureActivities = fetchActivities(http.Client(), criterionMap());
+    //userId = FlutterSession().get("userId");//getSessionValue("userId") as int;
+    getSessionValue("userId").then((res){
+      setState(() {
+        userId = res as int;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity list'),
+        title: customSearchBar,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                if (customIcon.icon == Icons.search) {
+                  customIcon = const Icon(Icons.cancel);
+                  customSearchBar = ListTile(
+                    leading: Icon(
+                      Icons.search,
+                      color: Colors.black,
+                      size: 28,
+                    ),
+                    title: TextField(
+                      onChanged: (text) {
+                        setState(() {
+                          keywords=text;
+                          futureActivities = fetchActivities(http.Client(), criterionMap());
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'description, city, adresse...',
+                        hintStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                } else {
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('Activities List');
+                }
+              });
+            },
+            icon: const Icon(Icons.search),
+          )
+        ],
         /*actions: [
           IconButton(
             icon: const Icon(Icons.list),

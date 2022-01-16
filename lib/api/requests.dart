@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/sports.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_together/models/user.dart';
 import 'dart:async';
@@ -13,13 +15,6 @@ const mainHeader = {
 };
 
 //region Users
-
-List<User> parseUsers(String responseBody) {
-  final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-
-  return parsed.map<User>((json) => User.fromJson(json)).toList();
-}
-
 Future<List<User>> fetchUsers(http.Client client) async {
   final response = await client
       .get(Uri.parse(apiUrl + 'get/users'));
@@ -59,34 +54,15 @@ Future<User> createUser(UserCreate user) async {
 //endregion
 
 //region Activity
-
-List<Activity> parseActivities(String responseBody) {
-  final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-
-  return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
-}
-
-Future<List<Activity>> fetchActivities(http.Client client) async {
+Future<List<Activity>> fetchActivities(http.Client client, Map<String, dynamic> map) async {
   final response = await client
-      .get(Uri.parse(apiUrl + 'get/activities'));
+      .get(Uri.parse(apiUrl + 'get/activities' + handleUrlParams(true, map, [])));
   if (response.statusCode == 200) {
     return compute(parseActivities, response.body);
   } else {
     throw Exception('Failed to load activities');
   }
-
 }
-/*
-Future<List<Activity>> fetchActivities() async {
-  final response = await http.get(Uri.parse(apiUrl + 'get/activities'));
-
-  if (response.statusCode == 200) {
-    List jsonResponse = jsonDecode(response.body)["success"];
-    return jsonResponse.map((activity) => Activity.fromJson(activity)).toList();
-  } else {
-    throw Exception('Failed to load activities');
-  }
-}*/
 
 Future<Activity> fetchActivityById(id) async {
   final response = await http
@@ -98,10 +74,8 @@ Future<Activity> fetchActivityById(id) async {
   }
 }
 
-
 Future<Activity> createActivity(ActivityCreate activity) async {
   //ex : createActivity(ActivityCreate(hostId:1, sportId:3, ...));
-
   final response = await http.post(
     Uri.parse(apiUrl + 'add/activity'),
     headers:mainHeader,
@@ -133,3 +107,15 @@ Future<Activity> joinActivity(Activity activity, int userId, bool hasJoin) async
   }
 }
 //endregion
+
+//region others (like sports)
+Future<List<Sport>> fetchSports(http.Client client) async {
+  final response = await client.get(Uri.parse(apiUrl + 'get/sports'));
+  if (response.statusCode == 200) {
+    return compute(parseSports, response.body);
+  } else {
+    throw Exception('Failed to load sports');
+  }
+}
+//endregion
+

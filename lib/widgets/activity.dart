@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
 
@@ -15,12 +16,17 @@ class ActivityDetailsScreen extends StatefulWidget {
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   late Future<Activity> futureActivity;
-  int userId = getSessionValue("userId");
+  late int userId;
 
   @override
   void initState() {
     super.initState();
     futureActivity = fetchActivityById(widget.activityId);
+    getSessionValue("userId").then((res){
+      setState(() {
+        userId = res as int;
+      });
+    });
   }
 
   @override
