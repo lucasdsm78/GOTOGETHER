@@ -53,8 +53,12 @@ def delete_user(id):
 #region activity
 @app.route(get_routes["get_activities"]["path"], methods=["GET"])
 def get_activities():
-	_args = handle_req_args([{"field":"sportId", "required":False, "column":"S.id"},
-	{"field":"keywords", "required":False, "column":["A.description", "S.name", "LOC.city", "LOC.country", "U.mail", "U.username"], "type":"keywords", "exact":False, "comparison":"LIKE"}])
+	_args = handle_req_args([
+	{"field":"sportId", "required":False, "column":"S.id"},
+	{"field":"keywords", "required":False, "column":["A.description", "S.name", "LOC.city", "LOC.country", "U.mail", "U.username"], "type":"keywords", "exact":False, "comparison":"LIKE"},
+	{"field":"dateStart", "required":False, "column":"A.dateStart", "type":"date", "comparison":">="},
+	{"field":"dateEnd", "required":False, "column":"A.dateEnd", "type":"date", "comparison":"<="},
+	])
 	_where = where_clause(_args.get("args"))
 	print(request_str.get_activity_req_base(), _where, _args.get("tuple"))
 	return api_select(request_str.get_activity_req_base(), where=_where, rep_tuple=_args.get("tuple"))
