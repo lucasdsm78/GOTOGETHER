@@ -74,16 +74,28 @@ def where_clause(wanted):
 			if (isinstance(el["key"], str)):
 				where_clause += el["key"] + " " + el.get("comparison") + " " + "%s" + (" AND " if i < total_len-1 else " " )
 			else :
-				where_clause += " ( "
+				where_clause_multi = " ( "
 				col_count=0
 				col_total_len = len(el["key"])
 				for col in el["key"]:
 					#where_clause += col + "=%s" + (" OR " if col_count < col_total_len-1 else " ) " )
-					where_clause += col + " " + el.get("comparison") + " " + "%s" + (" OR " if col_count < col_total_len-1 else " ) " )
+					where_clause_multi += col + " " + el.get("comparison") + " " + "%s" + (" OR " if col_count < col_total_len-1 else " ) " )
 					col_count += 1
-				where_clause += (" AND " if i < total_len-1 else " " )
+
+				if(el.get("type")=="keywords"):
+					nb_keywords = len(el["value"].split(","))
+					where_clause_multi = rchop(nb_keywords * (where_clause_multi + " AND "), " AND ")
+
+				where_clause += where_clause_multi + (" AND " if i < total_len-1 else " " )
 		i +=1
 	return where_clause
+
+def rchop(s, suffix):
+    if suffix and s.endswith(suffix):
+        print("i should chop")
+        return s[:-len(suffix)]
+    return s
+
 
 def test_requests():
 	print(insert_request(TABLE_USER, ["username", "role", "mail"]))

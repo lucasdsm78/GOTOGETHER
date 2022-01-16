@@ -108,3 +108,26 @@ def where_clause(wanted):
 	return where_clause
 
 print("where clause= ", where_clause(t.get("args")))
+
+def test_app():
+	te = []
+	appe(te)
+	appe(te)
+	print(te)
+    
+def appe(te):
+	te.append("test")
+test_app()
+
+
+
+
+def rchop(s, suffix):
+    if suffix and s.endswith(suffix):
+        print("i should chop")
+        return s[:-len(suffix)]
+    return s
+
+somestring = 'this is some string'
+somestring = rchop(3 * (somestring + " OR "), ' OR ')  # returns 'this is some string'
+print(somestring)

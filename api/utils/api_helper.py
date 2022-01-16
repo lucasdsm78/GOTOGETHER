@@ -61,15 +61,15 @@ def treat_req_params(wanted, _json):
 					_required += 1
 			elif(el["field"] in _json or el.get("value")):
 				_exact = el.get("exact", True)
+				_type = el.get("type", None)
 				_raw_val = str(_json.get(el["field"], el.get("value")))
-				val = ("" if _exact else "%") + _raw_val + ("" if _exact else "%")
+				val = get_exact_val(_exact, _raw_val)
 				_key = el.get("column", el["field"])
-				_args.append({"key":_key, "value":val, "type":el.get("type", None), "exact":_exact, "comparison":el.get("comparison", "=")})
+				_args.append({"key":_key, "value":val, "type":_type, "exact":_exact, "comparison":el.get("comparison", "=")})
 				if (isinstance(_key, str)):
-					_tuple.append(val)
+					append_req_tuple(_tuple, _type, _raw_val, _exact)
 				else :
-					for col in _key:
-						_tuple.append(val)
+					append_req_tuple(_tuple, _type, _raw_val, _exact, len(_key))
 
 				_dict[el["field"]] = val
 				if(el.get("required", True)):
@@ -77,6 +77,20 @@ def treat_req_params(wanted, _json):
 		return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
 	except Exception as e:
 		print("here the error msg : ", e)
+
+def append_req_tuple(_tuple, _type, _val, _exact, nb_repeat=1):
+	if(_type=="keywords"):
+		_all_val = _val.split(",")
+		for _keyword in _all_val:
+			i=0
+			while i<nb_repeat:
+				_tuple.append(get_exact_val(_exact, _keyword.strip()))
+				i+=1
+	else:
+		_tuple.append(get_exact_val(_exact, _val))
+
+def get_exact_val(_exact, _val):
+	return ("" if _exact else "%") + _val + ("" if _exact else "%")
 #endregion
 
 def location_req():
