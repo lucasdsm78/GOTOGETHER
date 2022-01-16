@@ -50,7 +50,7 @@ def get_req_args3(wanted):
 				_required +=1
 	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "required":_required}
 
-def handle_req_args(wanted):
+def handle_req_body(wanted):
 	_json = {"hey":"heyVal", "hi":"hiVal","mail":"gwen@gmail.com"}
 	_args = []
 	_tuple = []
@@ -76,7 +76,7 @@ def handle_req_args(wanted):
 	return {"isAllExist":len(wanted)==len(_args), "isAllRequiredExist":len(_args)>=_required,"tuple":tuple(_tuple),"args":_args, "dict":_dict, "required":_required}
 
 
-t = handle_req_args(["hey", "mail", {"field":"hi", "required":False, "value":"testVak"}])
+t = handle_req_body(["hey", "mail", {"field":"hi", "required":False, "value":"testVak"}])
 print("args req = ", t)
 """
 exemple de retour =
@@ -87,3 +87,24 @@ zefezfzef {'a': 121}
 
 #t = get_req_args(["hey"], z="dezd")
 #print(t)
+
+
+
+
+t= {'isAllExist': True, 'isAllRequiredExist': True, 'tuple': ('1',), 'args': [{'key': 'id', 'value': '1'}], 'dict': {'id': '1'}, 'required': 1}
+print(len(t.get("args")))
+def where_clause(wanted):
+	if (len(wanted)==0):
+		return ""
+	where_clause = " WHERE "
+	total_len = len(wanted)
+	i=0
+	for el in wanted:
+		if (isinstance(el, str)):
+			where_clause += el + "=%s" + (" AND " if i < total_len-1 else " " )
+		else:
+			where_clause += el["key"] + "=%s" + (" AND " if i < total_len-1 else " " )
+		i +=1
+	return where_clause
+
+print("where clause= ", where_clause(t.get("args")))

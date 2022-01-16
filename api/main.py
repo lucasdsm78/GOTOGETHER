@@ -20,20 +20,20 @@ get_routes = {
 }
 
 #@todo : add a secret key required to use api ()
-#@todo : rename api_select/insert/.... into bdd_select/insert/....
 #@todo : DB users table should have more fields,  insert/update user request too
 #@todo : all string request in constant, into a new file request.py 
-#@todo : permettre de faire un where en fonction de donné fournie en param dans l'url (ex plus haut dans get_routes)
 
 #region user routes
 @app.route(get_routes["get_users"]["path"], methods=["GET"])
 def get_users():
-	return api_select(request_str.get_all_users())
-
+	_args = handle_req_args([{"field":"id", "required":False, "column":"users.id"}, {"field":"mail", "required":False, "column":"users.mail"}])
+	_where = where_clause(_args.get("args"))
+	#print(request_str.get_all_users(), _where, _args.get("tuple"))
+	return api_select(request_str.get_all_users(), where=_where, rep_tuple=_args.get("tuple"))
 
 @app.route(get_routes["get_user_id"]["path"])
 def get_user_by_id(id):
-	return api_select(request_str.get_user_by_id(), id)
+	return api_select(request_str.get_user_by_id(), rep_tuple=(id,))
 
 @app.route('/add/user', methods=['POST'])
 def add_user():
@@ -53,11 +53,15 @@ def delete_user(id):
 #region activity
 @app.route(get_routes["get_activities"]["path"], methods=["GET"])
 def get_activities():
-	return api_select(request_str.get_activity_req_base())
+	_args = handle_req_args([{"field":"sportId", "required":False, "column":"S.id"},
+	{"field":"keywords", "required":False, "column":["A.description", "S.name", "LOC.city", "LOC.country", "U.mail", "U.username"], "type":"keywords", "exact":False, "comparison":"LIKE"}])
+	_where = where_clause(_args.get("args"))
+	print(request_str.get_activity_req_base(), _where, _args.get("tuple"))
+	return api_select(request_str.get_activity_req_base(), where=_where, rep_tuple=_args.get("tuple"))
 
 @app.route(get_routes["get_activity_id"]["path"], methods=["GET"])
 def get_activity_by_id(id):
-	return api_select(request_str.get_activity_req_base() + " WHERE A.id =%s;", id)
+	return api_select(request_str.get_activity_req_base() + " WHERE A.id =%s;", rep_tuple=(id,))
 
 @app.route('/add/activity', methods=['POST'])
 def add_activity():

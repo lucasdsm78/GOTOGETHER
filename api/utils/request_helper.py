@@ -60,6 +60,30 @@ def delete_request(table, where):
 	sql_request = "DELETE FROM " + table
 	return sql_request + ( " WHERE " + where if where else "")
 
+#use args from my function in api_helper
+def where_clause(wanted):
+	if (len(wanted)==0):
+		return ""
+	where_clause = " WHERE "
+	total_len = len(wanted)
+	i=0
+	for el in wanted:
+		if (isinstance(el, str)):
+			where_clause += el + "=%s" + (" AND " if i < total_len-1 else " " )
+		else:
+			if (isinstance(el["key"], str)):
+				where_clause += el["key"] + " " + el.get("comparison") + " " + "%s" + (" AND " if i < total_len-1 else " " )
+			else :
+				where_clause += " ( "
+				col_count=0
+				col_total_len = len(el["key"])
+				for col in el["key"]:
+					#where_clause += col + "=%s" + (" OR " if col_count < col_total_len-1 else " ) " )
+					where_clause += col + " " + el.get("comparison") + " " + "%s" + (" OR " if col_count < col_total_len-1 else " ) " )
+					col_count += 1
+				where_clause += (" AND " if i < total_len-1 else " " )
+		i +=1
+	return where_clause
 
 def test_requests():
 	print(insert_request(TABLE_USER, ["username", "role", "mail"]))

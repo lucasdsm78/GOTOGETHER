@@ -39,25 +39,38 @@ def close_db():
 
 #[String, {"field":String, "required":Boolean}, ...]
 #maybe if method POST, PATCH, PUT, DELETE, use request.json; else if methode= GET use request.params
+def handle_req_body(wanted):
+	return treat_req_params(wanted, request.json)
+
 def handle_req_args(wanted):
+	return treat_req_params(wanted, request.args)
+
+def treat_req_params(wanted, _json):
 	_args = []
 	_tuple = []
 	_dict = {}
 	_required = 0
 	try :
-		_json = request.json
 		for el in wanted:
 			if (isinstance(el, str)):
 				if (el in _json):
 					val = str(_json[el])
-					_args.append({"key":el, "value":val})
+					_args.append({"key":el, "value":val, "type":None})
 					_tuple.append(val)
 					_dict[el] = val
 					_required += 1
 			elif(el["field"] in _json or el.get("value")):
-				val = str(_json.get(el["field"], el.get("value")))
-				_args.append({"key":el.get("column", el["field"]), "value":val})
-				_tuple.append(val)
+				_exact = el.get("exact", True)
+				_raw_val = str(_json.get(el["field"], el.get("value")))
+				val = ("" if _exact else "%") + _raw_val + ("" if _exact else "%")
+				_key = el.get("column", el["field"])
+				_args.append({"key":_key, "value":val, "type":el.get("type", None), "exact":_exact, "comparison":el.get("comparison", "=")})
+				if (isinstance(_key, str)):
+					_tuple.append(val)
+				else :
+					for col in _key:
+						_tuple.append(val)
+
 				_dict[el["field"]] = val
 				if(el.get("required", True)):
 					_required +=1
@@ -68,7 +81,7 @@ def handle_req_args(wanted):
 
 def location_req():
 	try:
-		_args_location = handle_req_args(["lat", "lon", "address", "country", "city"])
+		_args_location = handle_req_body(["lat", "lon", "address", "country", "city"])
 		print(_args_location)
 		if _args_location["isAllExist"] and (request.method == 'POST' or request.method == 'PUT'):
 			connection_db()
@@ -97,7 +110,7 @@ def add_activity_req():
 		_location_id = location_req()
 		if _location_id and request.method == 'POST':
 			connection_db()
-			_args = handle_req_args(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "idSport", "description", {"field":"idLocation", "required":False, "value":_location_id}])
+			_args = handle_req_body(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "idSport", "description", {"field":"idLocation", "required":False, "value":_location_id}])
 			sql_query = insert_request(TABLE_ACTIVITIES, _args["args"])
 			cursor.execute(sql_query, _args["tuple"])
 			_activity_id = conn.insert_id()
@@ -139,7 +152,7 @@ def cancel_activity_req(idActivity):
 
 def joining_activity_req():
 	try:
-		_args = handle_req_args(["idUser", "idActivity"])
+		_args = handle_req_body(["idUser", "idActivity"])
 		isJoining = request.json["isJoining"]
 		if _args["isAllExist"] and request.method == 'POST':
 			_activity_id = _args["dict"]["idActivity"]
@@ -150,7 +163,7 @@ def joining_activity_req():
 				sql_query = delete_request(TABLE_ACTIVITIES_USERS, " idUser = %s AND idActivity = %s ")
 			cursor.execute(sql_query, _args["tuple"])
 			conn.commit()
-			
+
 			cursor.execute(request_str.get_activity_req_base() + " WHERE A.id =%s;", _activity_id)
 			empRows = cursor.fetchone()
 			_res = jsonify(response({"message":("Joining" if isJoining  else "Quit") + " activity successfully", "id":_activity_id, "last_insert":empRows}))
@@ -165,14 +178,14 @@ def joining_activity_req():
 #endregion
 
 #region common bdd
-def api_select(get_request, id=None):
+def api_select(get_request, rep_tuple=None, where=""):
 	try:
 		connection_db()
-		if id:
-			cursor.execute(get_request, id)
+		if len(rep_tuple) and len(where):
+			cursor.execute(get_request + where, rep_tuple)
 			empRows = cursor.fetchone()
 		else:
-			cursor.execute(get_request)
+			cursor.execute(get_request + where)
 			empRows = cursor.fetchall()
 		_res = jsonify(response(empRows))
 		_res.status_code = 200
@@ -185,7 +198,7 @@ def api_select(get_request, id=None):
 
 def api_insert(wanted,table=TABLE_USER, message="added successfully!", get_request=None):
 	try:
-		_args = handle_req_args(wanted)
+		_args = handle_req_body(wanted)
 		if _args["isAllExist"] and request.method == 'POST':
 			sql_query = insert_request(table, _args["args"]) 
 			connection_db()
@@ -211,7 +224,7 @@ def api_insert(wanted,table=TABLE_USER, message="added successfully!", get_reque
 
 def api_update(wanted, table=TABLE_USER, message="updated successfully!", id=None):
 	try:
-		_args = handle_req_args(wanted)
+		_args = handle_req_body(wanted)
 		if _args["isAllRequiredExist"] and  len(_args["tuple"])>0 and id is not None and request.method == 'PUT':
 			sql_query = update_request(table, _args["args"], " id=%s") 
 			connection_db()
