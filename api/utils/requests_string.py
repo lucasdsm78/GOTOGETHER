@@ -25,6 +25,10 @@ def get_all_users():
 def get_user_by_id():
 	return "SELECT id as id, username as username, mail as mail, role as role FROM users WHERE id =%s"
 
+def get_all_sports():
+	return "SELECT id, name  FROM _sports"
+
+
 def get_activity_participant_by_id():
 	return """SELECT U.mail, U.username, U.id
 		FROM activitiesUsers as AU

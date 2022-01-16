@@ -192,14 +192,17 @@ def joining_activity_req():
 #endregion
 
 #region common bdd
-def api_select(get_request, rep_tuple=None, where=""):
+def api_select(get_request, rep_tuple=None, where="", is_unique=False):
 	try:
 		connection_db()
 		if len(rep_tuple) and len(where):
 			cursor.execute(get_request + where, rep_tuple)
-			empRows = cursor.fetchone()
 		else:
 			cursor.execute(get_request + where)
+
+		if (is_unique):
+			empRows = cursor.fetchone()
+		else:
 			empRows = cursor.fetchall()
 		_res = jsonify(response(empRows))
 		_res.status_code = 200

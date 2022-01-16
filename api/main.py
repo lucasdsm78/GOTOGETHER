@@ -11,12 +11,14 @@ PORT = 5000
 API_URL = f"http://{HOST}:{PORT}"
 	
 get_routes = {
-	"get_users": {"path":"/get/users", "label":"provide db users", "example_args":""},
+	"get_users": {"path":"/get/users", "label":"provide db users", "example_args":"?mail=gwen@gmail.com&username=gwen"},
 	"get_user_id": {"path":"/get/user/<int:id>", "label":"provide db user by its id", "example_args":""},
 
-	"get_activities": {"path":"/get/activities", "label":"provide db activities", "example_args":"?sport=football&location=3&begin=2021-12-22_10:30&end=2021-12-22_12:30&description=foot,friends,itescia"},
+	"get_activities": {"path":"/get/activities", "label":"provide db activities", "example_args":"?sportId=1&keywords=cergy,france&dateStart=2021-12-22 10:30&dateEnd=2021-12-22 12:30"},
 	"get_activity_id": {"path":"/get/activity/<int:id>", "label":"provide db activity by its id", "example_args":""},
 	"get_participants_id": {"path":"/get/participants/<int:idActivity>", "label":"provide db activity's participants by its id", "example_args":""},
+	"get_sports":{"path":"/get/sports", "label":"provide sports from DB", "example_args":"?name=foot"},
+	"get_sport_id":{"path":"/get/sport/<int:idSport>", "label":"provide sports from DB by its id", "example_args":""},
 }
 
 #@todo : add a secret key required to use api ()
@@ -33,7 +35,7 @@ def get_users():
 
 @app.route(get_routes["get_user_id"]["path"])
 def get_user_by_id(id):
-	return api_select(request_str.get_user_by_id(), rep_tuple=(id,))
+	return api_select(request_str.get_user_by_id(), rep_tuple=(id,), is_unique=True)
 
 @app.route('/add/user', methods=['POST'])
 def add_user():
@@ -65,7 +67,7 @@ def get_activities():
 
 @app.route(get_routes["get_activity_id"]["path"], methods=["GET"])
 def get_activity_by_id(id):
-	return api_select(request_str.get_activity_req_base() + " WHERE A.id =%s;", rep_tuple=(id,))
+	return api_select(request_str.get_activity_req_base(),  where=" WHERE A.id =%s;", rep_tuple=(id,), is_unique=True)
 
 @app.route('/add/activity', methods=['POST'])
 def add_activity():
@@ -85,10 +87,22 @@ def joining_activity():
 
 @app.route(get_routes["get_participants_id"]["path"], methods=['GET'])
 def get_activity_participant_by_id(idActivity):
-	return api_select(request_str.get_activity_participant_by_id() + f" WHERE AU.idActivity = {idActivity}")
+	return api_select(request_str.get_activity_participant_by_id(), where=" WHERE AU.idActivity = %s", rep_tuple=(str(idActivity), ), is_unique=True)
 
 #endregion
 
+#region others (like sports)
+@app.route(get_routes["get_sports"]["path"], methods=['GET'])
+def get_sports():
+	_args = handle_req_args([{"field":"id", "required":False}, {"field":"name", "required":False, "exact":False, "comparison":"LIKE"}])
+	_where = where_clause(_args.get("args"))
+	print(request_str.get_all_sports(), _where, _args.get("tuple"))
+	return api_select(request_str.get_all_sports(), where=_where, rep_tuple=_args.get("tuple"))
+
+@app.route(get_routes["get_sport_id"]["path"], methods=['GET'])
+def get_sport_by_id(idSport):
+	return api_select(request_str.get_all_sports(), where=" WHERE id=%s", rep_tuple=(str(idSport), ), is_unique=True)
+#endregion
 
 #region errors
 @app.errorhandler(404)
