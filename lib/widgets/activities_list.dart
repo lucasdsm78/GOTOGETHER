@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/api/requests.dart';
 import 'package:go_together/widgets/activity.dart';
@@ -15,7 +16,7 @@ class _ActivityListState extends State<ActivityList> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
-  int userId = 1;
+  int userId = getSessionValue("userId");
 
   @override
   void initState() {

@@ -4,6 +4,7 @@ import 'package:go_together/widgets/random_word.dart';
 import 'package:go_together/widgets/user.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/user_list.dart';
+import 'package:go_together/helper/session.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +12,10 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    createSessionValue("userId", 1);
     return MaterialApp(
       title: 'Welcome to Go Together',
         theme: ThemeData(

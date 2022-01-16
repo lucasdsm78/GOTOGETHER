@@ -15,7 +15,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   late Future<Activity> futureActivity;
-  int userId = 1;
+  int userId = getSessionValue("userId");
 
   @override
   void initState() {
