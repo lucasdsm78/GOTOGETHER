@@ -10,7 +10,7 @@ class Sport {
   factory Sport.fromJson(Map<String, dynamic> json) {
     return Sport(
       id: json['id'] as int,
-      name: json['username'] as String,
+      name: json['name'] as String,
     );
   }
 }

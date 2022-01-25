@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:go_together/helper/date.dart';
+import 'package:go_together/helper/date_extension.dart';
 
+//@todo all field found in location (locationId, address, city...) should create an entity Location
 class Activity {
-  final int id;
-  final int locationId;
+  final int? id;
+  final int? locationId;
   final String address;
   final String city;
   final String country;
@@ -21,14 +22,15 @@ class Activity {
   final String description;
   final int isCanceled;
   final String level;
-  final int participantsNumber;
+  final int attendeesNumber;
   final List<String> currentParticipants;
   final int nbCurrentParticipants;
+  final DateTime createdAt;
   final DateTime updatedAt;
 
   Activity({
-    required this.id,
-    required this.locationId,
+    this.id,
+    this.locationId,
     required this.address,
     required this.city,
     required this.country,
@@ -45,9 +47,10 @@ class Activity {
     required this.description,
     required this.isCanceled,
     required this.level,
-    required this.participantsNumber,
+    required this.attendeesNumber,
     required this.currentParticipants,
     required this.nbCurrentParticipants,
+    required this.createdAt,
     required this.updatedAt,
   });
 
@@ -71,103 +74,55 @@ class Activity {
       description: json['description'],
       isCanceled: json['isCanceled'],
       level: json['level'],
-      participantsNumber: json['participantsNumber'],
+      attendeesNumber: json['attendeesNumber'],
       currentParticipants: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
       nbCurrentParticipants: json['nbCurrentParticipants'] == null ? 0 : json['nbCurrentParticipants'] as int,
+      createdAt: HttpDate.parse(json['createdAt']),
       updatedAt: HttpDate.parse(json['updatedAt']),
     );
   }
-}
 
-class ActivityCreate {
-  final String address;
-  final String city;
-  final String country;
-  final double lat;
-  final double lon;
-
-  final int hostId;
-  final int sportId;
-
-  final DateTime dateEnd;
-  final DateTime dateStart;
-  final String description;
-  final int idLevel;
-  final int participantsNumber;
-
-  ActivityCreate({
-    required this.address,
-    required this.city,
-    required this.country,
-    required this.lat,
-    required this.lon,
-
-    required this.hostId,
-    required this.sportId,
-
-    required this.dateEnd,
-    required this.dateStart,
-    required this.description,
-    required this.idLevel,
-    required this.participantsNumber,
-  });
-
-  factory ActivityCreate.fromJson(Map<String, dynamic> json) {
-    return ActivityCreate(
-      address: json['address'],
-      city: json['city'],
-      country: json['country'],
-      lat: double.parse(json['lat']),
-      lon: double.parse(json['lon']),
-
-      hostId: json['hostId'],
-      sportId: json['sportId'],
-
-      dateEnd: HttpDate.parse(json['dateEnd']),
-      dateStart: HttpDate.parse(json['dateStart']),
-      description: json['description'],
-      idLevel: json['idLevel'],
-      participantsNumber: json['participantsNumber'],
-    );
-  }
-
-  factory ActivityCreate.fromString(String address, String city, String country,
-      double lat, double lon, int hostId, int sportId, DateTime dateStart,
-      DateTime dateEnd, String description, int idLevel, int participantsNumber) {
-    return ActivityCreate(
-      address: address,
-      city: city,
-      country: country,
-      lat: lat,
-      lon: lon,
-
-      hostId: hostId,
-      sportId: sportId,
-
-      dateEnd: dateEnd,
-      dateStart: dateStart,
-      description: description,
-      idLevel: idLevel,
-      participantsNumber: participantsNumber,
-    );
-  }
-
-  asJson(){
-    return jsonEncode(<String, String>{
+  /// in comment, fields not used by api
+  ///
+  /// currently needed for api
+  //"address": address,
+  //       "city": city,
+  //       "country": country,
+  //       "lat": lat as String,
+  //       "lon": lon as String,
+  //
+  //       "hostId": hostId as String,
+  //       "sportId": sportId as String,
+  //
+  //       "dateEnd": getMysqlDatetime(dateEnd),
+  //       "dateStart": getMysqlDatetime(dateStart),
+  //       "description": description,
+  //       "idLevel": idLevel as String,
+  //       "attendeesNumber": attendeesNumber as String,
+  toJson() {
+    return jsonEncode({
+      "id": id,
+      "locationId": locationId,
       "address": address,
       "city": city,
       "country": country,
-      "lat": lat as String,
-      "lon": lon as String,
+      "lat": lat,
+      "lon": lon,
 
-      "hostId": hostId as String,
-      "sportId": sportId as String,
+      "hostId": hostId,
+      "hostMail": hostMail,
+      "hostName": hostName,
+      "sport": sport,
 
-      "dateEnd": getMysqlDatetime(dateEnd),
-      "dateStart": getMysqlDatetime(dateStart),
+      "dateEnd": dateEnd.getDbDateTime(),
+      "dateStart": dateStart.getDbDateTime(),
       "description": description,
-      "idLevel": idLevel as String,
-      "participantsNumber": participantsNumber as String,
+      "isCanceled": isCanceled,
+      "level": level,
+      //"attendeesNumber": attendeesNumber,
+      //"currentParticipants": currentParticipants,
+      //"nbCurrentParticipants": nbCurrentParticipants,
+      //"updatedAt": updatedAt,
     });
   }
 }
