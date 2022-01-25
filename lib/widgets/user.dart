@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/api/requests.dart';
+import 'package:go_together/usecase/user.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({Key? key}) : super(key: key);
@@ -10,12 +10,13 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
+  final UserUseCase userUseCase = UserUseCase();
   late Future<User> futureUser;
 
   @override
   void initState() {
     super.initState();
-    futureUser = fetchUserById(1);
+    futureUser = userUseCase.getById(1);
   }
 
   @override

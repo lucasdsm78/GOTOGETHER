@@ -1,12 +1,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:go_together/helper/session.dart';
+import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
-import 'package:go_together/api/requests.dart';
+import 'package:go_together/models/sports.dart';
+import 'package:go_together/models/user.dart';
+import 'package:go_together/usecase/activity.dart';
+import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activity.dart';
-import 'package:http/http.dart' as http;
+import 'package:go_together/widgets/components/list_view.dart';
 
 class ActivityList extends StatefulWidget {
   const ActivityList({Key? key}) : super(key: key);
@@ -16,33 +19,76 @@ class ActivityList extends StatefulWidget {
 }
 
 class _ActivityListState extends State<ActivityList> {
+  final ActivityUseCase activityUseCase = ActivityUseCase();
+  final SportUseCase sportUseCase = SportUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
-  late int userId;
+
+  late User currentUser = Mock.userGwen;
   String keywords = "";
+  late Sport sport = Sport(id: 0, name: "");
+  List<Sport> futureSports = [];
+
+  final searchbarController = TextEditingController();
 
   Icon customIcon = const Icon(Icons.search);
   Widget customSearchBar = const Text('Activities List');
 
   Map <String, dynamic> criterionMap(){
-    return {"sportId":null, "keywords":keywords};
+    return {"sportId":/*sport.id*/null, "keywords":keywords};
+  }
+
+  void getSports() async{
+    List<Sport> res = await sportUseCase.getAll();
+    setState(() {
+      futureSports = res;
+      sport = futureSports[0];
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    futureActivities = fetchActivities(http.Client(), criterionMap());
-    //userId = FlutterSession().get("userId");//getSessionValue("userId") as int;
-    getSessionValue("userId").then((res){
+    futureSports.add(sport);
+    getSports();
+    getActivities();
+    getSessionValue("user").then((res){
+      //@todo, get user from session with mock seem having issue (currentUser not defined)
       setState(() {
-        userId = res as int;
+        currentUser = res as User;
       });
+    });
+    searchbarController.addListener(_printLatestValue);
+  }
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    // This also removes the _printLatestValue listener.
+    searchbarController.dispose();
+    super.dispose();
+  }
+
+  void _printLatestValue() {
+    keywords = searchbarController.text;
+    getActivities();
+  }
+
+  void getActivities(){
+    setState(() {
+      futureActivities = activityUseCase.getAll(map: criterionMap());
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<DropdownMenuItem> dropdownItems = futureSports.map((item) {
+      return DropdownMenuItem<Sport>(
+        child: Text(item.name),
+        value: item,
+      );
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: customSearchBar,
@@ -59,12 +105,8 @@ class _ActivityListState extends State<ActivityList> {
                       size: 28,
                     ),
                     title: TextField(
-                      onChanged: (text) {
-                        setState(() {
-                          keywords=text;
-                          futureActivities = fetchActivities(http.Client(), criterionMap());
-                        });
-                      },
+                      autofocus: true,
+                      controller: searchbarController,
                       decoration: InputDecoration(
                         hintText: 'description, city, adresse...',
                         hintStyle: TextStyle(
@@ -86,7 +128,23 @@ class _ActivityListState extends State<ActivityList> {
               });
             },
             icon: const Icon(Icons.search),
-          )
+          ),
+            /*DropdownButton(
+            value: sport,
+            icon: const Icon(Icons.arrow_downward),
+            elevation: 16,
+            style: const TextStyle(color: Colors.deepPurple),
+            underline: Container(
+              height: 2,
+              color: Colors.deepPurpleAccent,
+            ),
+            onChanged: (newValue) {
+              setState(() {
+                sport = newValue as Sport;
+              });
+            },
+            items: dropdownItems,
+          )*/
         ],
         /*actions: [
           IconButton(
@@ -101,7 +159,7 @@ class _ActivityListState extends State<ActivityList> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Activity> data = snapshot.data!;
-            return _buildActivities(data);
+            return ListViewSeparated(data: data, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -113,40 +171,6 @@ class _ActivityListState extends State<ActivityList> {
     );
   }
 
-  /*
-  void _pushSaved() {
-    Navigator.of(context).push(
-      // Add lines from here...
-      MaterialPageRoute<void>(
-        builder: (context) {
-          final tiles = _saved.map(
-                (activity) {
-              return ListTile(
-                title: Text(
-                  activity.description,
-                  style: _biggerFont,
-                ),
-              );
-            },
-          );
-          final divided = tiles.isNotEmpty
-              ? ListTile.divideTiles(
-            context: context,
-            tiles: tiles,
-          ).toList()
-              : <Widget>[];
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Saved Suggestions'),
-            ),
-            body: ListView(children: divided),
-          );
-        },
-      ), // ...to here.
-    );
-  }
-  */
   void _pushDetails(int activityId) {
     Navigator.of(context).push(
       // Add lines from here...
@@ -176,21 +200,9 @@ class _ActivityListState extends State<ActivityList> {
     );
   }
 
-  Widget _buildActivities(data) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: data.length * 2,
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return const Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          return _buildRow(data[index]);
-        });
-  }
-
   Widget _buildRow(Activity activity) {
     final alreadySaved = _saved.contains(activity);
-    final hasJoin = activity.currentParticipants.contains(userId.toString());
+    final hasJoin = activity.currentParticipants.contains(currentUser.id.toString());
     return ListTile(
       title: Text(
         activity.description + " - " + activity.hostName,
@@ -209,8 +221,8 @@ class _ActivityListState extends State<ActivityList> {
           } else {
             _saved.add(activity);
           }*/
-          // !snapshot.data!.currentParticipants.contains(userId.toString())
-          _pushDetails(activity.id);
+          // !snapshot.data!.currentParticipants.contains(currentUser.id.toString())
+          _pushDetails(activity.id!);
         });
       },
     );

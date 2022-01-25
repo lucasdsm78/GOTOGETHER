@@ -1,9 +1,9 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/session.dart';
+import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
-import 'package:go_together/api/requests.dart';
+import 'package:go_together/models/user.dart';
+import 'package:go_together/usecase/activity.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key, required this.activityId}) : super(key: key);
@@ -15,16 +15,17 @@ class ActivityDetailsScreen extends StatefulWidget {
 }
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+  final ActivityUseCase activityUseCase = ActivityUseCase();
   late Future<Activity> futureActivity;
-  late int userId;
+  late User currentUser = Mock.userGwen;
 
   @override
   void initState() {
     super.initState();
-    futureActivity = fetchActivityById(widget.activityId);
-    getSessionValue("userId").then((res){
+    futureActivity = activityUseCase.getById(widget.activityId);
+    getSessionValue("user").then((res){
       setState(() {
-        userId = res as int;
+        currentUser = res;
       });
     });
   }
@@ -50,7 +51,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         snapshot.data!.description,
                         style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0)
                     ),
-                    Text(snapshot.data!.nbCurrentParticipants.toString() + "/" + snapshot.data!.participantsNumber.toString() + " participants" ),
+                    Text(snapshot.data!.nbCurrentParticipants.toString() + "/" + snapshot.data!.attendeesNumber.toString() + " participants" ),
                     Text(snapshot.data!.address + ", " + snapshot.data!.city + ", " + snapshot.data!.country),
                     Text(snapshot.data!.dateStart.toString() + " - " + snapshot.data!.dateEnd.toString()),
                     const SizedBox(height: 30),
@@ -61,7 +62,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                           Positioned.fill(
                             child: Container(
                               decoration: BoxDecoration(
-                                gradient: !snapshot.data!.currentParticipants.contains(userId.toString()) ? LinearGradient(
+                                gradient: !snapshot.data!.currentParticipants.contains(currentUser.id.toString()) ? LinearGradient(
                                   colors: <Color>[
                                     Color(0xFF1CFF0B),
                                     Color(0xFF17D400),
@@ -85,7 +86,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                futureActivity = joinActivity(snapshot.data!, userId, snapshot.data!.currentParticipants.contains(userId.toString()));
+                                futureActivity = activityUseCase.joinActivityUser(snapshot.data!, currentUser.id!, snapshot.data!.currentParticipants.contains(currentUser.id.toString()));
                               });
                             },
                             child: const Text('Join'),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/api/requests.dart';
-import 'package:http/http.dart' as http;
+import 'package:go_together/usecase/user.dart';
+import 'package:go_together/widgets/components/list_view.dart';
 
 class UserList extends StatefulWidget {
   const UserList({Key? key}) : super(key: key);
@@ -11,6 +11,7 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
+  final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <User>{};
   late Future<List<User>> futureUsers;
@@ -18,7 +19,7 @@ class _UserListState extends State<UserList> {
   @override
   void initState() {
     super.initState();
-    futureUsers = fetchUsers(http.Client());
+    futureUsers = userUseCase.getAll();
   }
 
   @override
@@ -39,7 +40,7 @@ class _UserListState extends State<UserList> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<User> data = snapshot.data!;
-              return _buildUsers(data);
+              return ListViewSeparated(data: data, buildListItem: _buildRow);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
@@ -82,18 +83,6 @@ class _UserListState extends State<UserList> {
         },
       ), // ...to here.
     );
-  }
-
-  Widget _buildUsers(data) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: data.length * 2,
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return const Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          return _buildRow(data[index]);
-        });
   }
 
   Widget _buildRow(User user) {
