@@ -53,12 +53,19 @@ class _ActivityListState extends State<ActivityList> {
     futureSports.add(sport);
     getSports();
     getActivities();
-    getSessionValue("user").then((res){
-      //@todo, get user from session with mock seem having issue (currentUser not defined)
-      setState(() {
-        currentUser = res as User;
+
+    setCurrenUser() async {
+      log("set current user here");
+      await getSessionValue("user").then((res){
+        log(res.toString());
+        //@todo, get user from session with mock seem having issue (currentUser not defined)
+        setState(() {
+          currentUser = User.fromJson(res);
+        });
       });
-    });
+      log("current user should be set");
+    }
+    //setCurrenUser();
     searchbarController.addListener(_printLatestValue);
   }
   @override
@@ -202,13 +209,13 @@ class _ActivityListState extends State<ActivityList> {
 
   Widget _buildRow(Activity activity) {
     final alreadySaved = _saved.contains(activity);
-    final hasJoin = activity.currentParticipants.contains(currentUser.id.toString());
+    final hasJoin = activity.currentParticipants!.contains(currentUser.id.toString());
     return ListTile(
       title: Text(
         activity.description + " - " + activity.hostName,
         style: _biggerFont,
       ),
-      subtitle: Text(activity.address),
+      subtitle: Text("${activity.location.address}, ${activity.location.city}"),
       trailing: Icon(   // NEW from here...
         hasJoin ? Icons.favorite : Icons.favorite_border,
         color: hasJoin ? Colors.red : null,

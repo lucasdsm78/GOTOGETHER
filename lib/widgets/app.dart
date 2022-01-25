@@ -14,8 +14,7 @@ class GotogetherApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    createSessionValue("userId", 1);
-    createSessionValue("user", Mock.userGwen);
+    createSessionValue("user", Mock.userGwen.toJson());
     return MaterialApp(
       title: 'Welcome to Go Together',
       theme: ThemeData(

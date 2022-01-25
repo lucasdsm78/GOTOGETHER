@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Location {
   final int? id;
   final String address;
@@ -26,7 +28,7 @@ class Location {
     );
   }
 
-  Map<String, Object?> toJson() {
+  Map<String, Object?> toMap() {
     return {
       'locationId': id,
       'address': address,
@@ -36,5 +38,8 @@ class Location {
       'lon': lon,
     };
   }
-//@todo : add function toJson()
+
+  toJson() {
+    return jsonEncode(toMap());
+  }
 }
