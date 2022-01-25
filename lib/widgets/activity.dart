@@ -1,50 +1,110 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/api/objects/activity.dart';
-import 'package:go_together/api/requests.dart';
+import 'package:go_together/helper/session.dart';
+import 'package:go_together/mock/mock.dart';
+import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/user.dart';
+import 'package:go_together/usecase/activity.dart';
 
-class ActivityPage extends StatefulWidget {
-  const ActivityPage({Key? key}) : super(key: key);
+class ActivityDetailsScreen extends StatefulWidget {
+  const ActivityDetailsScreen({Key? key, required this.activityId}) : super(key: key);
+
+  final int activityId;
 
   @override
-  _ActivityPageState createState() => _ActivityPageState();
+  _ActivityDetailsScreenState createState() => _ActivityDetailsScreenState();
 }
 
-class _ActivityPageState extends State<ActivityPage> {
+class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+  final ActivityUseCase activityUseCase = ActivityUseCase();
   late Future<Activity> futureActivity;
+  late User currentUser = Mock.userGwen;
 
   @override
   void initState() {
     super.initState();
-    futureActivity = fetchActivityById(1);
+    futureActivity = activityUseCase.getById(widget.activityId);
+    getSessionValue("user").then((res){
+      setState(() {
+        currentUser = res;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Profile',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          title: const Text('Profile'),
+          title: const Text('Activity Details'),
         ),
         body: Center(
           child: FutureBuilder<Activity>(
             future: futureActivity,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data!.description);
+                //return Text(snapshot.data!.description);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                        snapshot.data!.description,
+                        style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0)
+                    ),
+                    Text(snapshot.data!.nbCurrentParticipants.toString() + "/" + snapshot.data!.attendeesNumber.toString() + " participants" ),
+                    Text(snapshot.data!.address + ", " + snapshot.data!.city + ", " + snapshot.data!.country),
+                    Text(snapshot.data!.dateStart.toString() + " - " + snapshot.data!.dateEnd.toString()),
+                    const SizedBox(height: 30),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: !snapshot.data!.currentParticipants.contains(currentUser.id.toString()) ? LinearGradient(
+                                  colors: <Color>[
+                                    Color(0xFF1CFF0B),
+                                    Color(0xFF17D400),
+                                    Color(0xFF1CFF0B),
+                                  ]) 
+                                  : LinearGradient(
+                                    colors: <Color>[
+                                      Color(0xFFFF0000),
+                                      Color(0xFFFF2525),
+                                      Color(0xFFFF0000),
+                                    ]
+                                ),
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(16.0),
+                              primary: Colors.white,
+                              textStyle: const TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                futureActivity = activityUseCase.joinActivityUser(snapshot.data!, currentUser.id!, snapshot.data!.currentParticipants.contains(currentUser.id.toString()));
+                              });
+                            },
+                            child: const Text('Join'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
+              return const Center(
+                  child: CircularProgressIndicator()
+              );
             },
           ),
         ),
-      ),
     );
   }
 }

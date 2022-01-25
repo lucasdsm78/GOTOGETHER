@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/api/objects/user.dart';
-import 'package:go_together/api/requests.dart';
+import 'package:go_together/models/user.dart';
+import 'package:go_together/usecase/user.dart';
+import 'package:go_together/widgets/components/list_view.dart';
 
 class UserList extends StatefulWidget {
   const UserList({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
+  final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <User>{};
   late Future<List<User>> futureUsers;
@@ -17,7 +19,7 @@ class _UserListState extends State<UserList> {
   @override
   void initState() {
     super.initState();
-    futureUsers = fetchUsers();
+    futureUsers = userUseCase.getAll();
   }
 
   @override
@@ -38,11 +40,13 @@ class _UserListState extends State<UserList> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<User> data = snapshot.data!;
-              return _buildUsers(data);
+              return ListViewSeparated(data: data, buildListItem: _buildRow);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
-            return CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator()
+            );
           },
         ),
       );
@@ -79,35 +83,6 @@ class _UserListState extends State<UserList> {
         },
       ), // ...to here.
     );
-  }
-
-  Widget _buildUsers(data) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: data.length * 2,
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return const Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          return _buildRow(data[index]);
-        });
-    /*
-    Center(
-          child: FutureBuilder<User>(
-            future: futureUsers,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.username);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
-    * */
   }
 
   Widget _buildRow(User user) {
