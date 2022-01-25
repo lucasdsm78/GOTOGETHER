@@ -124,7 +124,7 @@ def add_activity_req():
 		_location_id = location_req()
 		if _location_id and request.method == 'POST':
 			connection_db()
-			_args = handle_req_body(["idHostUser", "dateStart", "dateEnd", "participantsNumber", "idLevel", "idSport", "description", {"field":"idLocation", "required":False, "value":_location_id}])
+			_args = handle_req_body(["idHostUser", "dateStart", "dateEnd", "attendeesNumber", "idLevel", "idSport", "description", {"field":"idLocation", "required":False, "value":_location_id}])
 			sql_query = insert_request(TABLE_ACTIVITIES, _args["args"])
 			cursor.execute(sql_query, _args["tuple"])
 			_activity_id = conn.insert_id()
@@ -145,7 +145,7 @@ def add_activity_req():
 def update_activity_req(id):
 	_location_id = location_req()
 	wanted = [{"field":"idHostUser", "required":False}, {"field":"dateStart", "required":False}, {"field":"dateEnd", "required":False},
-		{"field":"participantsNumber", "required":False}, {"field":"idLevel", "required":False}, {"field":"description", "required":False}]
+		{"field":"attendeesNumber", "required":False}, {"field":"idLevel", "required":False}, {"field":"description", "required":False}]
 	if _location_id:
 		wanted.append({"field":"idLocation", "required":False, "value":_location_id})
 	return api_update(wanted, TABLE_ACTIVITIES, id=id)

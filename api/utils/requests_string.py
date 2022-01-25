@@ -5,8 +5,8 @@ it don't handle complex where expression
 
 def get_activity_req_base():
 	return """SELECT  U.id as hostId,  U.username as hostName, U.mail as hostMail, 
-		A.id as activityId, A.dateStart, A.dateEnd, A.participantsNumber, A.description, 
-		A.isCanceled, A.updatedAt,
+		A.id as activityId, A.dateStart, A.dateEnd, A.attendeesNumber, A.description,
+		A.isCanceled, A.updatedAt, A.createdAt,
 		S.name as sport, S.id as sportId, 
 		L.name as level, LOC.id as locationId, LOC.lat , LOC.lon, LOC.address, LOC.country, LOC.city,
 		(SELECT GROUP_CONCAT(AU.idUser) from activitiesUsers as AU WHERE AU.idActivity = A.id GROUP BY A.id ) as participantsIdConcat,
@@ -14,7 +14,7 @@ def get_activity_req_base():
 
 		FROM activities as A 
 		LEFT JOIN users as U on U.id = A.idHostUser 
-		LEFT JOIN _level as L on L.id = A.idLevel 
+		LEFT JOIN _levels as L on L.id = A.idLevel
 		LEFT JOIN _sports as S on S.id = A.idSport 
 		LEFT JOIN locations as LOC on LOC.id = A.idLocation
 		"""

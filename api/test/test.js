@@ -145,7 +145,7 @@ function apiGetAllUser(){
 //region add
 bodyActivity = JSON.stringify({
 	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
-	idHostUser:2, dateStart:"2021-12-30 10:30", dateEnd:"2021-12-30 11:30", participantsNumber:22, 
+	idHostUser:2, dateStart:"2021-12-30 10:30", dateEnd:"2021-12-30 11:30", attendeesNumber:22,
 	idLevel:3, idSport:1,  description:"match de foot entre amis et amateur"
 })
 function apiAddActivity(body){ 
@@ -163,11 +163,11 @@ function apiAddActivity(body){
 //region update
 bodyActivityUpdate = JSON.stringify({
 	lat:10, lon:15, address:"5 rue l'Oise", country:"France", city:"Cergy",
-	idHostUser:2, dateStart:"2021-12-30 10:45", dateEnd:"2021-12-30 11:30", participantsNumber:22, 
+	idHostUser:2, dateStart:"2021-12-30 10:45", dateEnd:"2021-12-30 11:30", attendeesNumber:22,
 	idLevel:3, description:"match de foot entre amis et amateur"
 })
 bodyActivityUpdateUncomplete = JSON.stringify({
-	participantsNumber:44,
+	attendeesNumber:44,
 })
 function apiUpdateActivity(idActivity, body){ 
 	return fetchJsonify(fetch( URL_BASE + 'update/activity/' + idActivity, {
