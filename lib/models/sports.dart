@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:go_together/helper/map_extension.dart';
 
 class Sport {
   final int id;
@@ -11,8 +12,8 @@ class Sport {
 
   factory Sport.fromJson(Map<String, dynamic> json) {
     return Sport(
-      id: json['id'] as int,
-      name: json['name'] as String,
+      id: json.getFromMapFirstNotNull( ["sportId", "id"]) as int,
+      name: json.getFromMapFirstNotNull( ["sport", "name"]) as String,
     );
   }
 

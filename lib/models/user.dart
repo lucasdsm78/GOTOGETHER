@@ -105,15 +105,13 @@ class User {
       "role": role,
       "password": password,
 
-      "gender": birthday == null ? null : gender!.toShortString(),
+      "gender": gender == null ? null : gender!.toShortString(),
       "birthday": birthday == null ? null : birthday!.getDbDateTime(),
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
+      "location": location == null ? null :  location!.toMap()
     };
     if(availability != null){
       map.addAll(availability!.toMap());
-    }
-    if(location != null){
-      map.addAll(location!.toMap());
     }
     return map;
   }
