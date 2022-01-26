@@ -52,7 +52,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0)
                     ),
                     Text(snapshot.data!.nbCurrentParticipants.toString() + "/" + snapshot.data!.attendeesNumber.toString() + " participants" ),
-                    Text(snapshot.data!.address + ", " + snapshot.data!.city + ", " + snapshot.data!.country),
+                    Text(snapshot.data!.location.address + ", " + snapshot.data!.location.city + ", " + snapshot.data!.location.country),
                     Text(snapshot.data!.dateStart.toString() + " - " + snapshot.data!.dateEnd.toString()),
                     const SizedBox(height: 30),
                     ClipRRect(
@@ -62,7 +62,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                           Positioned.fill(
                             child: Container(
                               decoration: BoxDecoration(
-                                gradient: !snapshot.data!.currentParticipants.contains(currentUser.id.toString()) ? LinearGradient(
+                                gradient: !snapshot.data!.currentParticipants!.contains(currentUser.id.toString()) ? LinearGradient(
                                   colors: <Color>[
                                     Color(0xFF1CFF0B),
                                     Color(0xFF17D400),
@@ -86,7 +86,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                futureActivity = activityUseCase.joinActivityUser(snapshot.data!, currentUser.id!, snapshot.data!.currentParticipants.contains(currentUser.id.toString()));
+                                futureActivity = activityUseCase.joinActivityUser(snapshot.data!, currentUser.id!, snapshot.data!.currentParticipants!.contains(currentUser.id.toString()));
                               });
                             },
                             child: const Text('Join'),
