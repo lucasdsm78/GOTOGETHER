@@ -12,8 +12,8 @@ class Sport {
 
   factory Sport.fromJson(Map<String, dynamic> json) {
     return Sport(
-      id: json.getFromMapFirstNotNull( ["sportId", "id"]) as int,
-      name: json.getFromMapFirstNotNull( ["sport", "name"]) as String,
+      id: json.getFromMapFirstNotNull( ['sportId', 'id']) as int,
+      name: json.getFromMapFirstNotNull( ['sport', 'name']) as String,
     );
   }
 

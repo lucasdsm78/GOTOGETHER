@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:go_together/helper/map_extension.dart';
+
 class Location {
   final int? id;
   final String address;
@@ -19,10 +21,10 @@ class Location {
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      id: json['locationId'],
-      address: json['address'],
-      city: json['city'],
-      country: json['country'],
+      id: json.getFromMapFirstNotNull( ['locationId', 'id']) as int,
+      address: json['address'] as String,
+      city: json['city'] as String,
+      country: json['country'] as String,
       lat: double.parse(json['lat']),
       lon: double.parse(json['lon']),
     );
@@ -30,7 +32,7 @@ class Location {
 
   Map<String, Object?> toMap() {
     return {
-      'locationId': id,
+      'id': id,
       'address': address,
       'city': city,
       'country': country,

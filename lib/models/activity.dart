@@ -8,12 +8,10 @@ import 'package:go_together/models/user.dart';
 
 import 'level.dart';
 
-//@todo all field found in location (locationId, address, city...) should create an entity Location
 class Activity {
   final int? id;
   final Location location;
 
-  //@todo convert hostId, mail et name into User, and sport intp Sport
   final User host;
   final Sport sport;
 
@@ -90,7 +88,7 @@ class Activity {
       "location": location.toMap(),
 
       "host": host.toMap(),
-      "sport": sport.toMap(), //@todo  : on va avoir des problemes entre tout les id, ou alors dans toMap avoir un String var qui peut s'ajouter au titre
+      "sport": sport.toMap(),
 
       "dateEnd": dateEnd.getDbDateTime(),
       "dateStart": dateStart.getDbDateTime(),
@@ -108,10 +106,6 @@ class Activity {
       "criterionGender": criterionGender.toShortString(),
       "limitByLevel": limitByLevel,
     };
-    map.addAll(location.toMap());
-    map.addAll(host.toMap());
-    map.addAll(sport.toMap());
-    map.addAll(level.toMap());
     return map;
   }
 
