@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/models/location.dart';
 
 /// Availability only use for user, no need to create a model file for it
 class Availability{
@@ -58,19 +59,26 @@ class User {
   final String username;
   final String mail;
   final String role;
+  final String? password;
 
-  final Gender gender;
-  final DateTime birthday;
-  final Availability availability;
+  final Gender? gender;
+  final DateTime? birthday;
+  final Availability? availability;
+  final Location? location;
+  final DateTime? createdAt;
 
   User({
     this.id,
     required this.username,
     required this.mail,
     required this.role,
-    required this.gender,
-    required this.birthday,
-    required this.availability,
+    this.password,
+
+    this.gender,
+    this.birthday,
+    this.availability,
+    this.location,
+    this.createdAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -79,9 +87,13 @@ class User {
       username: json['username'] as String,
       mail: json['mail'] as String,
       role: json['role'] as String,
-      gender: getGenderByString(json['gender']),
-      birthday: HttpDate.parse(json['birthday']),
-      availability: Availability.fromJson(json)
+      password: json['password']! as String,
+
+      gender: json['gender'] == null ? null : getGenderByString(json['gender']),
+      birthday: json['birthday'] == null ? null : HttpDate.parse(json['birthday']),
+      availability: Availability.fromJson(json),
+      location: json['locationId'] == null ? null : Location.fromJson(json),
+      createdAt: json['createdAt'] == null ? null : HttpDate.parse(json['createdAt']),
     );
   }
 
@@ -91,11 +103,18 @@ class User {
       "username": username,
       "mail": mail,
       "role": role,
-      "gender": gender.toShortString(),
-      "birthday": birthday.getDbDateTime()
-    };
-    map.addAll(availability.toMap());
+      "password": password,
 
+      "gender": birthday == null ? null : gender!.toShortString(),
+      "birthday": birthday == null ? null : birthday!.getDbDateTime(),
+      "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
+    };
+    if(availability != null){
+      map.addAll(availability!.toMap());
+    }
+    if(location != null){
+      map.addAll(location!.toMap());
+    }
     return map;
   }
 
