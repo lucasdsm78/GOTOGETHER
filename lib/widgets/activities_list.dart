@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/session.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/sports.dart';
@@ -10,6 +11,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/components/list_view.dart';
+import 'package:localstorage/localstorage.dart';
 
 class ActivityList extends StatefulWidget {
   const ActivityList({Key? key}) : super(key: key);
@@ -21,6 +23,8 @@ class ActivityList extends StatefulWidget {
 class _ActivityListState extends State<ActivityList> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final SportUseCase sportUseCase = SportUseCase();
+  final LocalStorage storage = LocalStorage('go_together_app');
+
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
@@ -50,21 +54,15 @@ class _ActivityListState extends State<ActivityList> {
   @override
   void initState() {
     super.initState();
-    getSports();
+    //getSports();
     getActivities();
 
-    setCurrenUser() async {
-      log("set current user here");
-      await getSessionValue("user").then((res){
-        log(res.toString());
-        //@todo, get user from session with mock seem having issue (currentUser not defined)
-        setState(() {
-          currentUser = User.fromJson(res);
-        });
-      });
-      log("current user should be set");
+    String? storedSport = storage.getItem("sports");
+    if(storedSport != null){
+      futureSports = parseSports(storedSport);
     }
-    //setCurrenUser();
+    currentUser = User.fromJson(jsonDecode(storage.getItem("user")));
+
     searchbarController.addListener(_printLatestValue);
   }
   @override
