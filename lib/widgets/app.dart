@@ -12,6 +12,7 @@ import 'package:go_together/widgets/user.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/user_list.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:go_together/widgets/signup.dart';
 
 class GotogetherApp extends StatelessWidget {
   GotogetherApp({Key? key}) : super(key: key);
@@ -37,8 +38,7 @@ class GotogetherApp extends StatelessWidget {
       //home:UserProfile(),
       //home:ActivityDetailsScreen(activityId: 1),
       //home:UserList(),
-     // home:ActivityList(),
-      home:ActivityCreate(),
+      home: SignUp(),
     );
   }
 
