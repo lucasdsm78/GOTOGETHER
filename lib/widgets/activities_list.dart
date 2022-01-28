@@ -52,6 +52,33 @@ class _ActivityListState extends State<ActivityList> {
     });
   }
 
+  _filterActivities(List<Activity> list){
+    List<Activity> res = [];
+    list.forEach((activity) {
+      if(_fieldContains(activity)){
+        res.add(activity);
+      }
+    });
+    return res;
+  }
+
+  bool _fieldContains(Activity activity){
+    List<String> keywordSplit = keywords.split(",");
+    bool contains = false;
+    keywordSplit.forEach((element) {
+      RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
+      if(regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)
+      || regExp.hasMatch(activity.location.city) || regExp.hasMatch(activity.location.country)
+      || regExp.hasMatch(activity.host.mail) || regExp.hasMatch(activity.host.username)){
+        contains = true;
+      }
+      else{
+        contains = false;
+      }
+    });
+    return contains;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,8 +102,10 @@ class _ActivityListState extends State<ActivityList> {
   }
 
   void _printLatestValue() {
-    keywords = searchbarController.text;
-    getActivities();
+    setState(() {
+      keywords = searchbarController.text;
+    });
+    //getActivities();
   }
 
   void getActivities(){
@@ -165,8 +194,9 @@ class _ActivityListState extends State<ActivityList> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Activity> data = snapshot.data!;
+            List<Activity> res = _filterActivities(data);
             log(data[0].toJson().toString());
-            return ListViewSeparated(data: data, buildListItem: _buildRow);
+            return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }

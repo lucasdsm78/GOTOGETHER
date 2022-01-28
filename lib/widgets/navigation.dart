@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
@@ -15,12 +17,12 @@ class NavigationState extends State<Navigation> {
   int _drawerSelectedIndex = 0;
   bool _isLastTappedDrawer = false;
   late User user;
-  LocalStorage storage = LocalStorage('poney_app');
+  LocalStorage storage = LocalStorage('go_together_app');
 
   @override
   void initState() {
     super.initState();
-    user = User.fromJson(storage.getItem('user'));
+    user = User.fromJson(jsonDecode(storage.getItem("user")));
   }
 
   List<Map<String, dynamic>> drawerLinks = [
