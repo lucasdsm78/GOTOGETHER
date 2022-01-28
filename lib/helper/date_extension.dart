@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/int_extension.dart';
 
@@ -137,6 +139,8 @@ extension DateTimeExtension on DateTime{
     int sundayDate = 16;
     return DateTime.parse("2022-01-${sundayDate + nbDays}");
   }
+
+
 }
 
 String getMysqlDate(DateTime date){
@@ -145,4 +149,14 @@ String getMysqlDate(DateTime date){
 
 String getMysqlDatetime(DateTime date){
   return getMysqlDate(date) + " ${date.hour}:${date.minute}";
+}
+
+/// handle string conversion to datetime
+/// if contains ',' this is a HttpDate
+/// else it should be a value with format Y-m-d H:i
+DateTime parseStringToDateTime(dynamic value){
+  if(value.contains(",")){
+    return HttpDate.parse(value as String);
+  }
+  return DateTime.parse(value as String);
 }

@@ -90,10 +90,10 @@ class User {
       password: json['password'] == null ? null : json['password']! as String,
 
       gender: json['gender'] == null ? null : getGenderByString(json['gender']),
-      birthday: json['birthday'] == null ? null : DateTime.parse(json['birthday']! as String), // HttpDate.parse(json['birthday']),
+      birthday: json['birthday'] == null ? null :  parseStringToDateTime(json['birthday']! as String),  // HttpDate.parse(json['birthday']),
       availability: json['monday'] == null ? null : Availability.fromJson(json),
       location: json['locationId'] == null ? null : Location.fromJson(json),
-      createdAt: json['createdAt'] == null ? null : DateTime.parse(json['createdAt']! as String),
+      createdAt: json['createdAt'] == null ? null : parseStringToDateTime(json['createdAt']! as String), // DateTime.parse(json['createdAt']! as String),
 
     );
   }

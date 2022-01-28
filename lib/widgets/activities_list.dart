@@ -15,6 +15,7 @@ import 'package:localstorage/localstorage.dart';
 
 class ActivityList extends StatefulWidget {
   const ActivityList({Key? key}) : super(key: key);
+  static const tag = "activity_list";
 
   @override
   _ActivityListState createState() => _ActivityListState();
