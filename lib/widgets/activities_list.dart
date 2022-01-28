@@ -27,7 +27,7 @@ class _ActivityListState extends State<ActivityList> {
 
   late User currentUser = Mock.userGwen;
   String keywords = "";
-  late Sport sport = Sport(id: 0, name: "");
+  late Sport sport;
   List<Sport> futureSports = [];
 
   final searchbarController = TextEditingController();
@@ -50,7 +50,6 @@ class _ActivityListState extends State<ActivityList> {
   @override
   void initState() {
     super.initState();
-    futureSports.add(sport);
     getSports();
     getActivities();
 
@@ -90,6 +89,7 @@ class _ActivityListState extends State<ActivityList> {
   @override
   Widget build(BuildContext context) {
     List<DropdownMenuItem> dropdownItems = futureSports.map((item) {
+      //@todo maybe need a future builder
       return DropdownMenuItem<Sport>(
         child: Text(item.name),
         value: item,
@@ -166,6 +166,7 @@ class _ActivityListState extends State<ActivityList> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Activity> data = snapshot.data!;
+            log(data[0].toJson().toString());
             return ListViewSeparated(data: data, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -212,7 +213,7 @@ class _ActivityListState extends State<ActivityList> {
     final hasJoin = activity.currentParticipants!.contains(currentUser.id.toString());
     return ListTile(
       title: Text(
-        activity.description + " - " + activity.hostName,
+        activity.description + " - " + activity.host.username,
         style: _biggerFont,
       ),
       subtitle: Text("${activity.location.address}, ${activity.location.city}"),

@@ -24,7 +24,6 @@ class Availability{
     this.sunday = true,
   });
 
-
   factory Availability.fromJson(Map<String, dynamic> json) {
     return Availability(
       monday: json["monday"] == null ? true : json["monday"]!=0,
@@ -83,15 +82,15 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as int,
+      id: json['id'] == null ? null : json['id'] as int,
       username: json['username'] as String,
       mail: json['mail'] as String,
       role: json['role'] as String,
-      password: json['password']! as String,
+      password: json['password'] == null ? null : json['password']! as String,
 
       gender: json['gender'] == null ? null : getGenderByString(json['gender']),
       birthday: json['birthday'] == null ? null : HttpDate.parse(json['birthday']),
-      availability: Availability.fromJson(json),
+      availability: json['monday'] == null ? null : Availability.fromJson(json),
       location: json['locationId'] == null ? null : Location.fromJson(json),
       createdAt: json['createdAt'] == null ? null : HttpDate.parse(json['createdAt']),
     );
@@ -105,15 +104,14 @@ class User {
       "role": role,
       "password": password,
 
-      "gender": birthday == null ? null : gender!.toShortString(),
+      "gender": gender == null ? null : gender!.toShortString(),
       "birthday": birthday == null ? null : birthday!.getDbDateTime(),
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
+      "location": location == null ? null :  location!.toMap()
     };
     if(availability != null){
+      ///will add into user map : monday, tuesday ...
       map.addAll(availability!.toMap());
-    }
-    if(location != null){
-      map.addAll(location!.toMap());
     }
     return map;
   }

@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'package:go_together/helper/map_extension.dart';
 
-class Sport {
+class Level {
   final int id;
   final String name;
 
-  Sport({
+  Level({
     required this.id,
     required this.name,
   });
 
-  factory Sport.fromJson(Map<String, dynamic> json) {
-    return Sport(
-      id: json.getFromMapFirstNotNull( ['sportId', 'id']) as int,
-      name: json.getFromMapFirstNotNull( ['sport', 'name']) as String,
+  factory Level.fromJson(Map<String, dynamic> json) {
+    return Level(
+      id: json.getFromMapFirstNotNull( ['levelId', 'id']) as int,
+      name: json.getFromMapFirstNotNull( ['level', 'name']) as String,
     );
   }
 

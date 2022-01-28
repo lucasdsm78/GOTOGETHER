@@ -3,23 +3,23 @@ import 'dart:convert';
 import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/models/location.dart';
+import 'package:go_together/models/sports.dart';
+import 'package:go_together/models/user.dart';
 
-//@todo all field found in location (locationId, address, city...) should create an entity Location
+import 'level.dart';
+
 class Activity {
   final int? id;
   final Location location;
 
-  //@todo convert hostId, mail et name into User, and sport intp Sport
-  final int hostId;
-  final String hostMail;
-  final String hostName;
-  final String sport;
+  final User host;
+  final Sport sport;
 
   final DateTime dateEnd;
   final DateTime dateStart;
   final String description;
   final int isCanceled;
-  final String level;
+  final Level level;
   final int attendeesNumber;
   final List<String>? currentParticipants;
   final int? nbCurrentParticipants;
@@ -34,9 +34,7 @@ class Activity {
     this.id,
     required this.location,
 
-    required this.hostId,
-    required this.hostMail,
-    required this.hostName,
+    required this.host,
     required this.sport,
 
     required this.dateEnd,
@@ -63,16 +61,14 @@ class Activity {
         lon: double.parse(json['lon'])),*/
       location: Location.fromJson(json),
 
-      hostId: json['hostId'],
-      hostMail: json['hostMail'],
-      hostName: json['hostName'],
-      sport: json['sport'],
+      host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole']),
+      sport: Sport.fromJson(json),
 
       dateEnd: HttpDate.parse(json['dateEnd']),
       dateStart: HttpDate.parse(json['dateStart']),
       description: json['description'],
       isCanceled: json['isCanceled'],
-      level: json['level'],
+      level: Level.fromJson(json),
       attendeesNumber: json['attendeesNumber'],
 
       currentParticipants: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
@@ -91,28 +87,25 @@ class Activity {
       "id": id,
       "location": location.toMap(),
 
-      "hostId": hostId,
-      "hostMail": hostMail,
-      "hostName": hostName,
-      "sport": sport,
+      "host": host.toMap(),
+      "sport": sport.toMap(),
 
       "dateEnd": dateEnd.getDbDateTime(),
       "dateStart": dateStart.getDbDateTime(),
       "description": description,
       "isCanceled": isCanceled,
-      "level": level,
+      "level": level.toMap(),
       "attendeesNumber": attendeesNumber,
 
-      "currentParticipants": currentParticipants,
-      "nbCurrentParticipants": nbCurrentParticipants,
-      "createdAt": createdAt,
-      "updatedAt": updatedAt,
+      "currentParticipants": currentParticipants == null ? null : currentParticipants,
+      "nbCurrentParticipants": nbCurrentParticipants == null ? null : nbCurrentParticipants,
+      "createdAt": createdAt == null ? null : createdAt!.getDbDateTime(),
+      "updatedAt": updatedAt == null ? null : updatedAt!.getDbDateTime(),
 
       "public": public,
-      "criterionGender": criterionGender,
+      "criterionGender": criterionGender.toShortString(),
       "limitByLevel": limitByLevel,
     };
-    map.addAll(location.toMap());
     return map;
   }
 
