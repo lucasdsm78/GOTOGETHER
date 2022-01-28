@@ -8,7 +8,7 @@ class ActivityServiceApi {
   final api = Api();
 
   Future<List<Activity>> getAll({Map<String, dynamic> map = const {}}) async {
-    log(api.handleUrlParams(true, map, []));
+    log("activity service api : " + api.handleUrlParams(true, map, []));
     final response = await api.client
         .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map, [])));
     if (response.statusCode == 200) {

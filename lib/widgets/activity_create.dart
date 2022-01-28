@@ -16,6 +16,8 @@ import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:localstorage/localstorage.dart';
 
+import 'activities_list.dart';
+
 class ActivityCreate extends StatefulWidget {
   const ActivityCreate({Key? key}) : super(key: key);
   static const tag = "activity_create";
@@ -427,9 +429,12 @@ class _ActivityCreateState extends State<ActivityCreate> {
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
   }
 
-  _addEvent(){
+  _addEvent() async {
     Activity activity = _generateActivity();
     log(activity.toJson());
-    activityUseCase.add(activity);
+    Activity? activityAdded = await activityUseCase.add(activity);
+    if(activityAdded != null){
+      Navigator.of(context).pushNamed(ActivityList.tag);
+    }
   }
 }

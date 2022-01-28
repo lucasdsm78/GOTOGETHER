@@ -195,7 +195,6 @@ class _ActivityListState extends State<ActivityList> {
           if (snapshot.hasData) {
             List<Activity> data = snapshot.data!;
             List<Activity> res = _filterActivities(data);
-            log(data[0].toJson().toString());
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
