@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
@@ -12,6 +13,8 @@ import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/components/list_view.dart';
 import 'package:localstorage/localstorage.dart';
+
+import 'components/custom_datepicker.dart';
 
 class ActivityList extends StatefulWidget {
   const ActivityList({Key? key}) : super(key: key);
@@ -34,6 +37,7 @@ class _ActivityListState extends State<ActivityList> {
   String keywords = "";
   late Sport sport;
   List<Sport> futureSports = [];
+  DateTime? selectedDate;//DateTime.now();
 
   final searchbarController = TextEditingController();
 
@@ -52,15 +56,24 @@ class _ActivityListState extends State<ActivityList> {
     });
   }
 
+  /// Used in CustomDatePicker to update [selectedDate] with [date] value.
+  /// Then filter lessons.
+  _updateSelectedDate(DateTime date){
+    setState(() {
+      selectedDate = date;
+    });
+  }
+
   _filterActivities(List<Activity> list){
     List<Activity> res = [];
     list.forEach((activity) {
-      if(_fieldContains(activity)){
+      if(_fieldContains(activity) && (selectedDate ==null || activity.dateStart.getOnlyDate() == selectedDate!.getOnlyDate()) ){
         res.add(activity);
       }
     });
     return res;
   }
+
 
   bool _fieldContains(Activity activity){
     List<String> keywordSplit = keywords.split(",");
@@ -93,6 +106,7 @@ class _ActivityListState extends State<ActivityList> {
 
     searchbarController.addListener(_printLatestValue);
   }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree.
@@ -127,6 +141,7 @@ class _ActivityListState extends State<ActivityList> {
     return Scaffold(
       appBar: AppBar(
         title: customSearchBar,
+        leading: CustomDatePicker(initialDate: selectedDate, onSelected: _updateSelectedDate,),
         actions: [
           IconButton(
             onPressed: () {
@@ -158,7 +173,7 @@ class _ActivityListState extends State<ActivityList> {
                   );
                 } else {
                   customIcon = const Icon(Icons.search);
-                  customSearchBar = const Text('Activities List');
+                  customSearchBar = const Text('Activities List ');
                 }
               });
             },
@@ -244,7 +259,14 @@ class _ActivityListState extends State<ActivityList> {
         activity.description + " - " + activity.host.username,
         style: _biggerFont,
       ),
-      subtitle: Text("${activity.location.address}, ${activity.location.city}"),
+      subtitle: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:[
+          Text("${activity.location.address}, ${activity.location.city}"),
+          Text(activity.dateStart.getFrenchDateTime())
+        ]
+      ),
       trailing: Icon(   // NEW from here...
         hasJoin ? Icons.favorite : Icons.favorite_border,
         color: hasJoin ? Colors.red : null,
