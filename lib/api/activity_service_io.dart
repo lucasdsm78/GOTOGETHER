@@ -35,7 +35,7 @@ class ActivityServiceApi {
       body: activity.toJson(),
     );
     if (response.statusCode == 201) {
-      return Activity.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
+      return Activity.fromJson(jsonDecode(response.body)["success"]);
     } else {
       throw Exception('Failed to create activity.');
     }

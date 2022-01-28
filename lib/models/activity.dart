@@ -26,9 +26,9 @@ class Activity {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  final bool public;
-  final Gender criterionGender;
-  final bool limitByLevel;
+  final bool? public;
+  final Gender? criterionGender;
+  final bool? limitByLevel;
 
   Activity({
     this.id,
@@ -48,9 +48,9 @@ class Activity {
     this.createdAt,
     this.updatedAt,
 
-    required this.public,
-    required this.criterionGender,
-    required this.limitByLevel,
+    this.public,
+    this.criterionGender,
+    this.limitByLevel,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
@@ -103,7 +103,7 @@ class Activity {
       "updatedAt": updatedAt == null ? null : updatedAt!.getDbDateTime(),
 
       "public": public,
-      "criterionGender": criterionGender.toShortString(),
+      "criterionGender": criterionGender == null ? null : criterionGender!.toShortString(),
       "limitByLevel": limitByLevel,
     };
     return map;

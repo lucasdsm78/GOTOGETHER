@@ -7,6 +7,7 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activities_list.dart';
+import 'package:go_together/widgets/activity_create.dart';
 import 'package:go_together/widgets/user.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/user_list.dart';
@@ -36,7 +37,8 @@ class GotogetherApp extends StatelessWidget {
       //home:UserProfile(),
       //home:ActivityDetailsScreen(activityId: 1),
       //home:UserList(),
-      home:ActivityList(),
+     // home:ActivityList(),
+      home:ActivityCreate(),
     );
   }
 

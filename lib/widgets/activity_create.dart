@@ -1,14 +1,20 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/level.dart';
+import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
-import 'package:go_together/helper/session.dart';
+import 'package:localstorage/localstorage.dart';
 
 class ActivityCreate extends StatefulWidget {
   const ActivityCreate({Key? key}) : super(key: key);
@@ -19,7 +25,10 @@ class ActivityCreate extends StatefulWidget {
 
 class _ActivityCreateState extends State<ActivityCreate> {
   List<Sport> futureSports = [];
+  List<Level> futureLevels = [Level(id: 1, name: "pro"), Level(id: 2, name: "semi-pro"), Level(id: 3, name: "amateur")];
   final SportUseCase sportUseCase = SportUseCase();
+  final ActivityUseCase activityUseCase = ActivityUseCase();
+  final LocalStorage storage = LocalStorage('go_together_app');
 
   late Sport sport = Sport(id: 0, name: "");
   late User currentUser = Mock.userGwen;
@@ -30,8 +39,8 @@ class _ActivityCreateState extends State<ActivityCreate> {
   TextEditingController titleEventInput = TextEditingController();
   TextEditingController nbTotalParticipantsInput = TextEditingController();
 
-  String criterGender = 'Oui';
-  String eventLevel = 'Débutant';
+  String criterGender = 'Tous';
+  late Level eventLevel;
   String eventDescription = "";
   String titleEvent = "";
   int nbManquants = 0;
@@ -41,16 +50,22 @@ class _ActivityCreateState extends State<ActivityCreate> {
   int yearNow = DateTime.now().year;
   int monthNow = DateTime.now().month;
   int dayNow = DateTime.now().day;
-  bool? public = false;
+  bool public = false;
 
   String dateTimeEvent = "";
 
   void getSports() async{
-    List<Sport> res = await sportUseCase.getAll();
-    setState(() {
-      futureSports = res;
-      sport = futureSports[0];
-    });
+    String? storedSport = storage.getItem("sports");
+    if(storedSport != null){
+      futureSports = parseSports(storedSport);
+    }
+    else {
+      List<Sport> res = await sportUseCase.getAll();
+      setState(() {
+        futureSports = res;
+        sport = futureSports[0];
+      });
+    }
   }
 
   @override
@@ -58,17 +73,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
     super.initState();
     futureSports.add(sport);
     getSports();
-
-    setCurrenUser() async {
-      log("set current user here");
-      await getSessionValue("user").then((res){
-        log(res.toString());
-        setState(() {
-          currentUser = User.fromJson(res);
-        });
-      });
-      log("current user should be set");
-    }
+    eventLevel = futureLevels[0];
   }
 
   @override
@@ -153,12 +158,13 @@ class _ActivityCreateState extends State<ActivityCreate> {
                 items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
                   return DropdownMenuItem<Sport>(
                     value: value,
-                    child: Text(value.toString()),
+                    child: Text(value.name.toString()),
                   );
                 }).toList(),
             ),
 
             // Event nombre manquants
+            //@todo : nb manquant surement pas utiles, et aucun champs prévu en BDD
             TextFormField(
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
@@ -212,9 +218,9 @@ class _ActivityCreateState extends State<ActivityCreate> {
               leading: Radio(
                 value: true,
                 groupValue: public,
-                onChanged: (bool? value) {
+                onChanged: (value) {
                   setState(() {
-                    public = value;
+                    public = value as bool;
                   });
                 },
                 activeColor: Colors.green,
@@ -227,9 +233,9 @@ class _ActivityCreateState extends State<ActivityCreate> {
               leading: Radio(
                 value: false,
                 groupValue: public,
-                onChanged: (bool? value) {
+                onChanged: (value) {
                   setState(() {
-                    public = value;
+                    public = value as bool;
                   });
                 },
                 activeColor: Colors.green,
@@ -237,7 +243,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
 
             // Limité aux hommes ?
-            Text("Limite aux hommes ?"),
+            Text("Accessible à "),
             DropdownButton<String>(
                 value: criterGender,
                 elevation: 16,
@@ -247,7 +253,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                     criterGender = newValue!;
                   });
                 },
-                items: <String>['Oui', 'Uniquement les femmes', 'Homme et femme']
+                items: <String>['Tous', 'Hommes', 'Femmes']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -258,22 +264,21 @@ class _ActivityCreateState extends State<ActivityCreate> {
 
             // Event level
             Text("Event level"),
-            DropdownButton<String>(
+            DropdownButton<Level>(
                 value: eventLevel,
                 elevation: 16,
                 style: const TextStyle(color: Colors.deepPurple),
-                onChanged: (String? newValue) {
+                onChanged: (newValue) {
                   setState(() {
-                    eventLevel = newValue!;
+                    eventLevel = newValue as Level;
                   });
                 },
-                items: <String>['Débutant', 'Amateur', 'Confirmé']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
+                items: futureLevels.map<DropdownMenuItem<Level>>((Level value) {
+                return DropdownMenuItem<Level>(
+                  value: value,
+                  child: Text(value.name.toString()),
                   );
-                }).toList()
+                }).toList(),
             ),
 
             ElevatedButton(
@@ -289,6 +294,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                     nbManquants = int.parse(nbManquantsInput.text);
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
+                  _addEvent();
 
                   showDialog(
                       context: context,
@@ -345,13 +351,13 @@ class _ActivityCreateState extends State<ActivityCreate> {
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Text('Limité aux hommes ? : $criterGender ',
+                                  Text('Accessible à ? : $criterGender ',
                                     style: const TextStyle(
                                         color: Colors.red,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Text('Event level ? : $eventLevel ',
+                                  Text('Event level ? : ${eventLevel.name} ',
                                     style: const TextStyle(
                                         color: Colors.red,
                                         fontSize: 16.0,
@@ -371,5 +377,18 @@ class _ActivityCreateState extends State<ActivityCreate> {
         ),
       ),
     );
+  }
+
+  Activity _generateActivity(){
+    Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
+     return  Activity(location: location, host: currentUser, sport: sport, dateEnd: DateTime.parse(dateTimeEvent).add(_duration),
+         dateStart: DateTime.parse(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
+         attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
+  }
+
+  _addEvent(){
+    Activity activity = _generateActivity();
+    log(activity.toJson());
+    activityUseCase.add(activity);
   }
 }

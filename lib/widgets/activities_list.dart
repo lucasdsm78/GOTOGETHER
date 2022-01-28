@@ -23,10 +23,11 @@ class ActivityList extends StatefulWidget {
 class _ActivityListState extends State<ActivityList> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final SportUseCase sportUseCase = SportUseCase();
+  final LocalStorage storage = LocalStorage('go_together_app');
+
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <Activity>{};
   late Future<List<Activity>> futureActivities;
-  final LocalStorage storage = LocalStorage('go_together_app');
 
   late User currentUser = Mock.userGwen;
   String keywords = "";

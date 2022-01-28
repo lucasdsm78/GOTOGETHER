@@ -93,6 +93,10 @@ extension DateTimeExtension on DateTime{
     return date;
   }
 
+  DateTime addMinutes(int nbMinutes){
+    return this.add(Duration( minutes: nbMinutes));
+  }
+
   /// Returns date after adding some minutes, and return a formated date
   String addMinutesAndStringify(int nbMinutes){
     return this.add(Duration( minutes: nbMinutes)).getFrenchDateTime();
