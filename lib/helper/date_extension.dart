@@ -125,7 +125,7 @@ extension DateTimeExtension on DateTime{
 
   /// Returns date and time with 'Y-m-d H:i' format
   String getDbDateTime(){
-    return  "${getDbDate()} ${this.hour.left0()}:${this.minute.left0()}";
+    return "${getDbDate()} ${this.hour.left0()}:${this.minute.left0()}:00";
   }
 
   ///  For Dev only, used to fake fixed date (2022-01-16)

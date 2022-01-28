@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
@@ -89,10 +90,11 @@ class User {
       password: json['password'] == null ? null : json['password']! as String,
 
       gender: json['gender'] == null ? null : getGenderByString(json['gender']),
-      birthday: json['birthday'] == null ? null : HttpDate.parse(json['birthday']),
+      birthday: json['birthday'] == null ? null : DateTime.parse(json['birthday']! as String), // HttpDate.parse(json['birthday']),
       availability: json['monday'] == null ? null : Availability.fromJson(json),
       location: json['locationId'] == null ? null : Location.fromJson(json),
-      createdAt: json['createdAt'] == null ? null : HttpDate.parse(json['createdAt']),
+      createdAt: json['createdAt'] == null ? null : DateTime.parse(json['createdAt']! as String),
+
     );
   }
 

@@ -31,8 +31,8 @@ dependencies:
     sdk: flutter
   english_words: ^4.0.0
   http: ^0.13.4
-  flutter_session: ^0.1.1
-  #localstorage: ^4.0.0+1 # used in another project for session, if flutter_session isn't enough, use this one
+  #flutter_session: ^0.1.1 # some issue when trying access current user
+  localstorage: ^4.0.0+1 # used in another project for session, if flutter_session isn't enough, use this one
   intl: ^0.17.0
   flutter_slidable: ^1.2.0
   datetime_picker_formfield: ^2.0.0

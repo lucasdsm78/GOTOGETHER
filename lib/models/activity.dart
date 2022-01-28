@@ -64,8 +64,8 @@ class Activity {
       host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole']),
       sport: Sport.fromJson(json),
 
-      dateEnd: HttpDate.parse(json['dateEnd']),
-      dateStart: HttpDate.parse(json['dateStart']),
+      dateEnd: DateTime.parse(json['dateEnd']! as String) ,
+      dateStart: DateTime.parse(json['dateStart']! as String),
       description: json['description'],
       isCanceled: json['isCanceled'],
       level: Level.fromJson(json),
@@ -73,8 +73,8 @@ class Activity {
 
       currentParticipants: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
       nbCurrentParticipants: json['nbCurrentParticipants'] == null ? 0 : json['nbCurrentParticipants'] as int,
-      createdAt: HttpDate.parse(json['createdAt']),
-      updatedAt: HttpDate.parse(json['updatedAt']),
+      createdAt: DateTime.parse(json['createdAt']! as String) ,
+      updatedAt: DateTime.parse(json['updatedAt']! as String) ,
 
       public: json["public"] == null ? true : json["public"]!=0,
       criterionGender: json["criterionGender"] == null ? Gender.male : getGenderByString(json["criterionGender"]),

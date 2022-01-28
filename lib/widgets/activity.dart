@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
@@ -23,11 +22,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   void initState() {
     super.initState();
     futureActivity = activityUseCase.getById(widget.activityId);
-    getSessionValue("user").then((res){
+    /*getSessionValue("user").then((res){
       setState(() {
         currentUser = res;
       });
-    });
+    });*/
   }
 
   @override
