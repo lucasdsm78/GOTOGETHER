@@ -71,7 +71,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
   @override
   void initState() {
     super.initState();
-    futureSports.add(sport);
     getSports();
     eventLevel = futureLevels[0];
   }
@@ -91,7 +90,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
+        child: ListView( //@todo : use a ListView(children:[])
           children: <Widget>[
 
             // Event title
@@ -109,26 +108,28 @@ class _ActivityCreateState extends State<ActivityCreate> {
               },
               controller: titleEventInput,
             ),
-
-            ElevatedButton(
-                onPressed: () {
-                  DatePicker.showDatePicker(context,
-                      showTitleActions: true,
-                      minTime: DateTime(yearNow, monthNow, dayNow),
-                      onConfirm: (date) {
-                        setState(() {
-                          dateTimeEvent = date.toString();
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.fr);
-                },
-                child: const Text(
+            Row(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      DatePicker.showDatePicker(context,
+                          showTitleActions: true,
+                          minTime: DateTime(yearNow, monthNow, dayNow),
+                          onConfirm: (date) {
+                            setState(() {
+                              dateTimeEvent = date.toString();
+                            });
+                          }, currentTime: DateTime.now(), locale: LocaleType.fr);
+                    },
+                    child: const Icon(Icons.calendar_today_outlined)/*Text(
                   "Choisir une date pour l'évènement",
-                )
+                )*/
+                ),
+
+                Text("Date de l'évènement $dateTimeEvent "),
+              ],
             ),
 
-            Text("Date de l'évènement $dateTimeEvent "),
-
-            // Event description
             TextFormField(
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
@@ -144,63 +145,107 @@ class _ActivityCreateState extends State<ActivityCreate> {
               controller: eventDescriptionInput,
             ),
 
-            // Event sport
-            Text("Votre sport"),
-            DropdownButton<Sport>(
-                value: sport,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                onChanged: (newValue) {
-                  setState(() {
-                    sport = newValue as Sport;
-                  });
-                },
-                items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
-                  return DropdownMenuItem<Sport>(
-                    value: value,
-                    child: Text(value.name.toString()),
-                  );
-                }).toList(),
+            Row(
+              children: [
+                Expanded(
+                    flex:1,
+                    child:
+                    // Event sport
+                    //Text("Votre sport"),
+                  DropdownButton<Sport>(
+                    value: sport,
+                    elevation: 16,
+                    style: const TextStyle(color: Colors.deepPurple),
+                    onChanged: (newValue) {
+                      setState(() {
+                        sport = newValue as Sport;
+                      });
+                    },
+                    items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
+                      return DropdownMenuItem<Sport>(
+                        value: value,
+                        child: Text(value.name.toString()),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                Expanded(
+                  flex:1,
+                  child:
+                  // Event level
+                  //Text("Event level"),
+                    DropdownButton<Level>(
+                      value: eventLevel,
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.deepPurple),
+                      onChanged: (newValue) {
+                        setState(() {
+                          eventLevel = newValue as Level;
+                        });
+                      },
+                      items: futureLevels.map<DropdownMenuItem<Level>>((Level value) {
+                        return DropdownMenuItem<Level>(
+                          value: value,
+                          child: Text(value.name.toString()),
+                        );
+                      }).toList(),
+                    ),
+                )
+              ],
+            ),
+            // Event description
+
+            Row(
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: // Event nombre manquants
+                    //@todo : nb manquant surement pas utiles, et aucun champs prévu en BDD
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Nombre manquants',
+                      ),
+                      keyboardType: TextInputType.number,
+                      // Check if event description are not empty
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text for this input';
+                        }
+                        return null;
+                      },
+                      controller: nbManquantsInput,
+                    ),
+                ),
+                Expanded(
+                  flex:1,
+                    child: // Nb total participants
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Nombre total de participants',
+                      ),
+                      keyboardType: TextInputType.number,
+                      // Check if event description are not empty
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text for this input';
+                        }
+                        return null;
+                      },
+                      controller: nbTotalParticipantsInput,
+                    ),
+                )
+              ],
             ),
 
-            // Event nombre manquants
-            //@todo : nb manquant surement pas utiles, et aucun champs prévu en BDD
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Nombre manquants',
-              ),
-              keyboardType: TextInputType.number,
-              // Check if event description are not empty
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text for this input';
-                }
-                return null;
-              },
-              controller: nbManquantsInput,
-            ),
 
-            // Nb total participants
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Nombre total de participants',
-              ),
-              keyboardType: TextInputType.number,
-              // Check if event description are not empty
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text for this input';
-                }
-                return null;
-              },
-              controller: nbTotalParticipantsInput,
-            ),
 
             // Duration
+            // @todo : place it in a dialog maybe, like to select date
             Text("Duration :"),
             Expanded(
+              flex:1,
                 child: DurationPicker(
                   duration: _duration,
                   baseUnit: BaseUnit.minute,
@@ -208,39 +253,52 @@ class _ActivityCreateState extends State<ActivityCreate> {
                     setState(() => _duration = val);
                   },
                   snapToMins: 5.0,
-                )),
+                  height: 160,
+                )
+            ),
 
             // Public / Entre amis
-
             //Publique
-            ListTile(
-              title: Text("Publique"),
-              leading: Radio(
-                value: true,
-                groupValue: public,
-                onChanged: (value) {
-                  setState(() {
-                    public = value as bool;
-                  });
-                },
-                activeColor: Colors.green,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  flex:1,
+                  child: ListTile(
+                    title: Text("Publique"),
+                    leading: Radio(
+                      value: true,
+                      groupValue: public,
+                      onChanged: (value) {
+                        setState(() {
+                          public = value as bool;
+                        });
+                      },
+                      activeColor: Colors.green,
+                    ),
+                  ),
+                ),
+                Expanded(
+                    flex:1,
+                    child:// Entre amis
+                    ListTile(
+                      title: Text("Entre amis"),
+                      leading: Radio(
+                        value: false,
+                        groupValue: public,
+                        onChanged: (value) {
+                          setState(() {
+                            public = value as bool;
+                          });
+                        },
+                        activeColor: Colors.green,
+                      ),
+                    ),
+                )
+              ],
             ),
 
-            // Entre amis
-            ListTile(
-                title: Text("Entre amis"),
-              leading: Radio(
-                value: false,
-                groupValue: public,
-                onChanged: (value) {
-                  setState(() {
-                    public = value as bool;
-                  });
-                },
-                activeColor: Colors.green,
-              ),
-            ),
+
+
 
             // Limité aux hommes ?
             Text("Accessible à "),
@@ -262,24 +320,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
                 }).toList()
             ),
 
-            // Event level
-            Text("Event level"),
-            DropdownButton<Level>(
-                value: eventLevel,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                onChanged: (newValue) {
-                  setState(() {
-                    eventLevel = newValue as Level;
-                  });
-                },
-                items: futureLevels.map<DropdownMenuItem<Level>>((Level value) {
-                return DropdownMenuItem<Level>(
-                  value: value,
-                  child: Text(value.name.toString()),
-                  );
-                }).toList(),
-            ),
 
             ElevatedButton(
               onPressed: () {
