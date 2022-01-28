@@ -48,7 +48,7 @@ class Api{
 
   List<Sport> parseSports(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    log(parsed.toString());
+    log("Api sport parsed = " + parsed.toString());
     return parsed.map<Sport>((json) => Sport.fromJson(json)).toList();
   }
 
