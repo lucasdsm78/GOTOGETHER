@@ -20,9 +20,20 @@ extension GenderExtension on Gender{
   String toShortString() {
     return this.toString().enumValueToNormalCase();
   }
+
+  String translate(){
+    switch (this) {
+      case Gender.female:
+        return "Femmes";
+      case Gender.male:
+        return "Hommes";
+      default:
+        return "Hommes";
+    }
+  }
 }
 
 /// Get gender from a string
 Gender getGenderByString(String gender){
-  return Gender.values.firstWhere((element) => element.toShortString() == gender);
+  return Gender.values.firstWhere((element) => element.toShortString() == gender || element.translate() == gender);
 }

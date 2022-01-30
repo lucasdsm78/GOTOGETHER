@@ -6,8 +6,8 @@ import 'package:go_together/usecase/activity.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key, required this.activityId}) : super(key: key);
-
   final int activityId;
+  static const tag = "activity_details";
 
   @override
   _ActivityDetailsScreenState createState() => _ActivityDetailsScreenState();

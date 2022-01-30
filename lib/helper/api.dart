@@ -42,7 +42,7 @@ class Api{
 
   List<Activity> parseActivities(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    log(parsed.toString());
+    log("api parse activity : " + parsed.toString());
     return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
   }
 

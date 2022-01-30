@@ -4,14 +4,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/sports.dart';
-import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_create.dart';
-import 'package:go_together/widgets/user.dart';
-import 'package:go_together/widgets/activity.dart';
-import 'package:go_together/widgets/user_list.dart';
 import 'package:localstorage/localstorage.dart';
+
+import 'package:go_together/widgets/navigation.dart';
 
 class GotogetherApp extends StatelessWidget {
   GotogetherApp({Key? key}) : super(key: key);
@@ -27,6 +25,12 @@ class GotogetherApp extends StatelessWidget {
     getSports();
 
     return MaterialApp(
+      routes: {
+        // put routes here
+        ActivityList.tag: (context) => const ActivityList(),
+        ActivityCreate.tag: (context) => const ActivityCreate(),
+      },
+      debugShowCheckedModeBanner: false,
       title: 'Welcome to Go Together',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
@@ -38,7 +42,7 @@ class GotogetherApp extends StatelessWidget {
       //home:ActivityDetailsScreen(activityId: 1),
       //home:UserList(),
      // home:ActivityList(),
-      home:ActivityCreate(),
+      home:Navigation(),
     );
   }
 

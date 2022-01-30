@@ -16,8 +16,11 @@ import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:localstorage/localstorage.dart';
 
+import 'activities_list.dart';
+
 class ActivityCreate extends StatefulWidget {
   const ActivityCreate({Key? key}) : super(key: key);
+  static const tag = "activity_create";
 
   @override
   _ActivityCreateState createState() => _ActivityCreateState();
@@ -30,7 +33,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
-  late Sport sport = Sport(id: 0, name: "");
+  late Sport sport = Sport.fromJson({"id": 1, "name": "football"});
   late User currentUser = Mock.userGwen;
 
   final _formKey = GlobalKey<FormState>();
@@ -57,7 +60,10 @@ class _ActivityCreateState extends State<ActivityCreate> {
   void getSports() async{
     String? storedSport = storage.getItem("sports");
     if(storedSport != null){
-      futureSports = parseSports(storedSport);
+      setState(() {
+        futureSports = parseSports(storedSport);
+        sport = futureSports[0];
+      });
     }
     else {
       List<Sport> res = await sportUseCase.getAll();
@@ -244,17 +250,14 @@ class _ActivityCreateState extends State<ActivityCreate> {
             // Duration
             // @todo : place it in a dialog maybe, like to select date
             Text("Duration :"),
-            Expanded(
-              flex:1,
-                child: DurationPicker(
-                  duration: _duration,
-                  baseUnit: BaseUnit.minute,
-                  onChange: (val) {
-                    setState(() => _duration = val);
-                  },
-                  snapToMins: 5.0,
-                  height: 160,
-                )
+             DurationPicker(
+              duration: _duration,
+              baseUnit: BaseUnit.minute,
+              onChange: (val) {
+                setState(() => _duration = val);
+              },
+              snapToMins: 5.0,
+              height: 160,
             ),
 
             // Public / Entre amis
@@ -303,22 +306,22 @@ class _ActivityCreateState extends State<ActivityCreate> {
             // Limité aux hommes ?
             Text("Accessible à "),
             DropdownButton<String>(
-                value: criterGender,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    criterGender = newValue!;
-                  });
-                },
-                items: <String>['Tous', 'Hommes', 'Femmes']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList()
-            ),
+              value: criterGender,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              onChanged: (String? newValue) {
+                setState(() {
+                  criterGender = newValue!;
+                });
+              },
+              items: <String>['Tous', 'Hommes', 'Femmes']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList()
+          ),
 
 
             ElevatedButton(
@@ -421,14 +424,17 @@ class _ActivityCreateState extends State<ActivityCreate> {
 
   Activity _generateActivity(){
     Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-     return  Activity(location: location, host: currentUser, sport: sport, dateEnd: DateTime.parse(dateTimeEvent).add(_duration),
-         dateStart: DateTime.parse(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
+     return  Activity(location: location, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
+         dateStart: parseStringToDateTime(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
   }
 
-  _addEvent(){
+  _addEvent() async {
     Activity activity = _generateActivity();
     log(activity.toJson());
-    activityUseCase.add(activity);
+    Activity? activityAdded = await activityUseCase.add(activity);
+    if(activityAdded != null){
+      Navigator.of(context).pushNamed(ActivityList.tag);
+    }
   }
 }
