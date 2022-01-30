@@ -11,6 +11,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activity.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
+import 'package:go_together/widgets/components/filter_dialog.dart';
 import 'package:go_together/widgets/components/list_view.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -73,7 +74,9 @@ class _ActivityListState extends State<ActivityList> {
       appBar: TopSearchBar(
           customSearchBar: const Text('Activities List'),
           searchbarController: searchbarController,
-          leading:  CustomDatePicker(initialDate: selectedDate, onSelected: _updateSelectedDate,)
+          leading:IconButton(onPressed: (){
+            dialogue();
+          }, icon: Icon(Icons.more_horiz))
       ),
       body: FutureBuilder<List<Activity>>(
         future: futureActivities,
@@ -106,7 +109,7 @@ class _ActivityListState extends State<ActivityList> {
   Widget _buildRow(Activity activity) {
     final hasJoin = activity.currentParticipants!.contains(currentUser.id.toString());
     return ListTile(
-      title: CustomText(activity.description + " - " + activity.host.username, factor: 1.4),
+      title: CustomText(activity.description + " - " + activity.host.username),
       subtitle: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,6 +128,17 @@ class _ActivityListState extends State<ActivityList> {
           _seeMore(activity.id!);
         });
       },
+    );
+  }
+
+  /// Display a dialog containing a listView of all leasons for the day
+  Future<Null> dialogue() async{
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return FilterDialog(selectedDate: selectedDate, onSelectDate: _updateSelectedDate,
+            sport: sport, sportList: futureSports, onChangeSport: _updateSelectedSport,);
+        }
     );
   }
 
@@ -164,11 +178,19 @@ class _ActivityListState extends State<ActivityList> {
     });
   }
 
+  _updateSelectedSport(Sport newSport){
+    setState(() {
+      sport = newSport;
+    });
+  }
+
   /// Filter activities depending on [keywords], [selectedDate]
   _filterActivities(List<Activity> list){
     List<Activity> res = [];
     list.forEach((activity) {
-      if(_fieldContains(activity) && (selectedDate ==null || activity.dateStart.getOnlyDate() == selectedDate!.getOnlyDate()) ){
+      if(_fieldContains(activity)
+          && (selectedDate ==null || activity.dateStart.getOnlyDate() == selectedDate!.getOnlyDate())
+          && sport.id == activity.sport.id){
         res.add(activity);
       }
     });
