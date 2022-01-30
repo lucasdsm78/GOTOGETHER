@@ -1,6 +1,56 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 
+class TopSearchBar extends StatefulWidget implements PreferredSizeWidget {
+  const TopSearchBar({Key? key, required this.customSearchBar, required this.searchbarController, this.leading}) : super(key: key);
+  final Widget customSearchBar;
+  final TextEditingController searchbarController;
+  final Widget? leading;
+
+  @override
+  _TopSearchBarState createState() => _TopSearchBarState();
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize =>  const Size.fromHeight(50.0);
+}
+
+class _TopSearchBarState extends State<TopSearchBar> {
+  Widget customSearchBar = const Text('');
+  Icon customIcon = const Icon(Icons.search);
+
+  @override
+  void initState() {
+    super.initState();
+    customSearchBar = widget.customSearchBar;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: customSearchBar,
+      leading: widget.leading,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar = SearchBar( searchbarController: widget.searchbarController);
+              } else {
+                customIcon = const Icon(Icons.search);
+                customSearchBar = widget.customSearchBar;
+              }
+            });
+          },
+          icon: customIcon,
+        ),
+      ],
+    );
+  }
+}
+
+
 class SearchBar extends StatelessWidget {
   const SearchBar({Key? key, this.placeholder, required this.searchbarController}) : super(key: key);
   final String? placeholder;

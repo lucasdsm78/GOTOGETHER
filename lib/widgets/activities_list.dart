@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/date_extension.dart';
@@ -39,9 +40,6 @@ class _ActivityListState extends State<ActivityList> {
   DateTime? selectedDate;//DateTime.now();
 
   final searchbarController = TextEditingController();
-  Icon customIcon = const Icon(Icons.search);
-  Widget customSearchBar = const Text('Activities List');
-
 
   @override
   void initState() {
@@ -72,25 +70,10 @@ class _ActivityListState extends State<ActivityList> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: customSearchBar,
-        leading: CustomDatePicker(initialDate: selectedDate, onSelected: _updateSelectedDate,),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                if (customIcon.icon == Icons.search) {
-                  customIcon = const Icon(Icons.cancel);
-                  customSearchBar = SearchBar( searchbarController: searchbarController);
-                } else {
-                  customIcon = const Icon(Icons.search);
-                  customSearchBar = const Text('Activities List ');
-                }
-              });
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
+      appBar: TopSearchBar(
+          customSearchBar: const Text('Activities List'),
+          searchbarController: searchbarController,
+          leading:  CustomDatePicker(initialDate: selectedDate, onSelected: _updateSelectedDate,)
       ),
       body: FutureBuilder<List<Activity>>(
         future: futureActivities,
@@ -195,19 +178,20 @@ class _ActivityListState extends State<ActivityList> {
   /// Check if some activity fields contain the keywords in searchbar
   bool _fieldContains(Activity activity){
     List<String> keywordSplit = keywords.split(",");
-    bool contains = false;
+    List<bool> contains = [];
     keywordSplit.forEach((element) {
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
-      if(regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)
+      if(
+          (regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)
           || regExp.hasMatch(activity.location.city) || regExp.hasMatch(activity.location.country)
-          || regExp.hasMatch(activity.host.mail) || regExp.hasMatch(activity.host.username)){
-        contains = true;
+          || regExp.hasMatch(activity.host.mail) || regExp.hasMatch(activity.host.username)) ){
+        contains.add(true);
       }
       else{
-        contains = false;
+        contains.add(false);
       }
     });
-    return contains;
+    return contains.where((item) => item == false).isEmpty;
   }
 
   /// Update [keywords], used in searchbar controller
