@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+//@todo only created for dev purpose
+
 class MapScreen extends StatefulWidget {
   static String tag = "google_map";
   @override

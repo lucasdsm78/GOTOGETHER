@@ -36,7 +36,7 @@ class _MapDialogState extends State<MapDialog> {
         Container(
             height: height,
             width: width,
-            child:CustomMap(pos:pos, onMark:_updatePos)
+            child: CustomMap(pos:pos, onMark:_updatePos)
         ),
         TextButton(
           onPressed: (){
@@ -46,5 +46,4 @@ class _MapDialogState extends State<MapDialog> {
       ],
     );
   }
-
 }
