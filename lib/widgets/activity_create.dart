@@ -14,6 +14,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:go_together/widgets/components/map_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'activities_list.dart';
@@ -131,8 +132,14 @@ class _ActivityCreateState extends State<ActivityCreate> {
                   "Choisir une date pour l'évènement",
                 )*/
                 ),
-
                 Text("Date de l'évènement $dateTimeEvent "),
+
+                ElevatedButton(
+                    onPressed: () {
+                      mapDialogue();
+                    },
+                    child: const Icon(Icons.map)
+                ),
               ],
             ),
 
@@ -420,6 +427,17 @@ class _ActivityCreateState extends State<ActivityCreate> {
         ),
       ),
     );
+  }
+
+  mapDialogue() async{
+    dynamic res = await showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return MapDialog();
+        }
+    );
+    log("----- CLOSE MAP DIALOG");
+    log(res.toString());
   }
 
   Activity _generateActivity(){

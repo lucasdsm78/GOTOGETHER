@@ -95,7 +95,7 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         _origin = Marker(
           markerId: const MarkerId("origin"),
-          infoWindow: const InfoWindow(title: "Origin"),
+          infoWindow: InfoWindow(title: "Origin ${pos.latitude} ${pos.longitude}"),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           position: pos,
 
