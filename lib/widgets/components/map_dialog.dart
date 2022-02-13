@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_together/models/location.dart';
 import 'package:go_together/widgets/components/Map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'custom_text.dart';
@@ -12,6 +14,7 @@ class MapDialog extends StatefulWidget {
 
 class _MapDialogState extends State<MapDialog> {
   LatLng? pos ;
+  Location? location;
 
   @override
   void initState() {
@@ -21,6 +24,18 @@ class _MapDialogState extends State<MapDialog> {
   _updatePos(LatLng newPos){
     setState(() {
       pos = newPos;
+    });
+  }
+  _updateLocation(Location newLocation){
+    setState(() {
+      location = newLocation;
+    });
+  }
+  _getPosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+    setState(() {
+      pos = LatLng(position.latitude,  position.longitude);
     });
   }
 
@@ -36,11 +51,11 @@ class _MapDialogState extends State<MapDialog> {
         Container(
             height: height,
             width: width,
-            child: CustomMap(pos:pos, onMark:_updatePos)
+            child: CustomMap(pos:pos, onMark:_updateLocation)
         ),
         TextButton(
           onPressed: (){
-            Navigator.pop(context, pos);
+            Navigator.pop(context, location); // quit dialog and return a value
           },
           child: Text("confirm location"))
       ],

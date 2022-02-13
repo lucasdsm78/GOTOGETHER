@@ -57,6 +57,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   bool public = false;
 
   String dateTimeEvent = "";
+  Location? location ;
 
   void getSports() async{
     String? storedSport = storage.getItem("sports");
@@ -436,13 +437,16 @@ class _ActivityCreateState extends State<ActivityCreate> {
           return MapDialog();
         }
     );
+    setState(() {
+      location = res as Location;
+    });
     log("----- CLOSE MAP DIALOG");
     log(res.toString());
   }
 
   Activity _generateActivity(){
-    Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-     return  Activity(location: location, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
+    //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
+     return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
          dateStart: parseStringToDateTime(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
   }
