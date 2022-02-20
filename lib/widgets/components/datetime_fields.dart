@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:go_together/helper/date_extension.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
@@ -56,7 +58,7 @@ class BasicDateTimeField extends StatelessWidget {
         onShowPicker: (context, currentValue) async {
           final date = await showDatePicker(
               context: context,
-              firstDate: DateTime(1900),
+              firstDate: DateTime(2020),
               initialDate: currentValue ?? DateTime.now(),
               lastDate: DateTime(2100));
           if (date != null) {
@@ -72,5 +74,44 @@ class BasicDateTimeField extends StatelessWidget {
         },
       ),
     ]);
+  }
+}
+
+
+
+class DateTimePickerButton extends StatefulWidget {
+  const DateTimePickerButton({Key? key, required this.datetime, required this.onPressed}) : super(key: key);
+  final DateTime? datetime;
+  final Function onPressed;
+
+  @override
+  _DateTimePickerButtonState createState() => _DateTimePickerButtonState();
+}
+
+class _DateTimePickerButtonState extends State<DateTimePickerButton> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: () {
+          DatePicker.showDateTimePicker(context,
+              showTitleActions: true,
+              minTime: DateTime.now(),
+              onConfirm: (date) {
+                widget.onPressed(date);
+              }, currentTime: DateTime.now(), locale: LocaleType.fr);
+        },
+        child: const Icon(Icons.calendar_today_outlined)
+    );
   }
 }

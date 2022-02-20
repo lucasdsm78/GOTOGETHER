@@ -18,6 +18,7 @@ import 'package:go_together/widgets/components/map_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'activities_list.dart';
+import 'components/datetime_fields.dart';
 
 class ActivityCreate extends StatefulWidget {
   const ActivityCreate({Key? key}) : super(key: key);
@@ -88,6 +89,11 @@ class _ActivityCreateState extends State<ActivityCreate> {
     super.dispose();
   }
 
+  _setEventDate(date){
+      setState(() {
+        dateTimeEvent = date.toString();
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,29 +124,21 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
             Row(
               children: [
-                ElevatedButton(
-                    onPressed: () {
-                      DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          minTime: DateTime(yearNow, monthNow, dayNow),
-                          onConfirm: (date) {
-                            setState(() {
-                              dateTimeEvent = date.toString();
-                            });
-                          }, currentTime: DateTime.now(), locale: LocaleType.fr);
-                    },
-                    child: const Icon(Icons.calendar_today_outlined)/*Text(
-                  "Choisir une date pour l'évènement",
-                )*/
-                ),
-                Text("Date de l'évènement $dateTimeEvent "),
-
+                DateTimePickerButton(
+                    datetime: (dateTimeEvent !="" ? DateTime.parse(dateTimeEvent) : DateTime.now()),
+                    onPressed: _setEventDate),
+                Text("Date : $dateTimeEvent "),
+              ],
+            ),
+            Row(
+              children: [
                 ElevatedButton(
                     onPressed: () {
                       mapDialogue();
                     },
                     child: const Icon(Icons.map)
                 ),
+                Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
               ],
             ),
 
@@ -346,80 +344,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
                   _addEvent();
-
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          child: Container(
-                            height: 250,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text('Description : $eventDescription',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Title : $titleEvent ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Date event : $dateTimeEvent ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Nombre manquants : $nbManquants ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Nombre total de participants : $nbTotalParticipants ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Public : $public ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Duration : $_duration ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Accessible à ? : $criterGender ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Event level ? : ${eventLevel.name} ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      });
                 }
               },
               child: const Text('Create event'),

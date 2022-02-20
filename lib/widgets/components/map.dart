@@ -41,7 +41,7 @@ class _CustomMapState extends State<CustomMap> {
   Widget build(BuildContext context) {
     return GoogleMap(
         myLocationButtonEnabled: false,
-        zoomControlsEnabled: false,
+        zoomControlsEnabled: true,
         onMapCreated: (controller) => _mapController = controller,
         initialCameraPosition: _initialCameraPosition,
         markers: {
@@ -65,12 +65,35 @@ class _CustomMapState extends State<CustomMap> {
     return val ?? defaultVal;
   }
 
+  getFirstFilledAndComplete(List<dynamic> list, {dynamic defaultVal}){
+    dynamic val = "";
+    for(int i=0; i< list.length; i++){
+      if(list[i] != null){
+        if( (list[i] is String && list[i] !="")
+            || (list[i] is List && list[i].isNotEmpty)){
+          val = _getMoreComplete(val, list[i]);
+          //break;
+        }
+      }
+    }
+    return val ?? defaultVal;
+  }
+
+  _getMoreComplete(String search, String subject){
+    RegExp regExp = RegExp(
+      r"" + search + "",
+      caseSensitive: false,
+      multiLine: false,
+    );
+    return regExp.hasMatch(subject) ? subject : search + subject;
+  }
+
   _addMarker(LatLng pos) async {
     Placemark placemark = await _getAddress(pos);
     log(placemark.toString());
 
     Gt.Location loc = Gt.Location(
-        address: getFirstFilled([placemark.name, placemark.street, placemark.thoroughfare], defaultVal: "") as String,
+        address: getFirstFilledAndComplete([placemark.street, placemark.name, placemark.thoroughfare], defaultVal: "") as String,
         city: getFirstFilled([placemark.locality], defaultVal: "") as String,
         country: getFirstFilled([placemark.country], defaultVal: "") as String,
         lat:pos.latitude, lon: pos.longitude);
