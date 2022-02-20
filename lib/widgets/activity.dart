@@ -1,3 +1,7 @@
+
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
@@ -8,6 +12,7 @@ class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key, required this.activityId}) : super(key: key);
   final int activityId;
   static const tag = "activity_details";
+
 
   @override
   _ActivityDetailsScreenState createState() => _ActivityDetailsScreenState();
@@ -93,6 +98,18 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         ],
                       ),
                     ),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          primary: Colors.white,
+                        ),
+                        onPressed:() {
+                            //log('${snapshot.data!.id}, description: ${ snapshot.data!.description} ');
+                            activityUseCase.delete(snapshot.data!.id.toString() );
+
+                        },
+                        child: const Text('Annuler')
+                    )
                   ],
                 );
               } else if (snapshot.hasError) {

@@ -80,7 +80,7 @@ class ActivityServiceApi {
 
   Future<Activity> delete(String id) async {
     final response = await api.client
-        .delete(Uri.parse(api.host + 'activity/$id'),
+        .delete(Uri.parse(api.host + 'delete/activity/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
