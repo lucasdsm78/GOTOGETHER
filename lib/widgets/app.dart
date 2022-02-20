@@ -35,10 +35,10 @@ class GotogetherApp extends StatelessWidget {
         ),
       ),
       //home:UserProfile(),
-      //home:ActivityDetailsScreen(activityId: 1),
+      home:ActivityDetailsScreen(activityId: 1),
       //home:UserList(),
      // home:ActivityList(),
-      home:ActivityCreate(),
+      //home:ActivityCreate(),
     );
   }
 

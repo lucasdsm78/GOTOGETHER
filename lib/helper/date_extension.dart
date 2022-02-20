@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/int_extension.dart';
 
@@ -145,4 +147,11 @@ String getMysqlDate(DateTime date){
 
 String getMysqlDatetime(DateTime date){
   return getMysqlDate(date) + " ${date.hour}:${date.minute}";
+}
+
+DateTime parseStringToDateTime(dynamic value){
+  if(value.contains(",")){
+    return HttpDate.parse(value as String);
+  }
+  return DateTime.parse(value as String);
 }
