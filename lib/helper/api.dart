@@ -24,6 +24,7 @@ class Api{
   final host = "http://51.255.51.106:5000/";
   final mainHeader = {
     'Content-Type': 'application/json; charset=UTF-8',
+    'secret_key' :'?somekey_thatWillReject_1orMore_unwantedRequest'
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
   };
 

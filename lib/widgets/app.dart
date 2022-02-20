@@ -7,6 +7,7 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_create.dart';
+import 'package:go_together/widgets/google_maps.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/signup.dart';
 
@@ -21,7 +22,6 @@ class GotogetherApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    //createSessionValue("user", Mock.userGwen.toJson());
     storage.setItem('user', Mock.userGwen.toJson());
     getSports();
 
@@ -30,6 +30,7 @@ class GotogetherApp extends StatelessWidget {
         // put routes here
         ActivityList.tag: (context) => const ActivityList(),
         ActivityCreate.tag: (context) => const ActivityCreate(),
+        MapScreen.tag: (context) => MapScreen(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Welcome to Go Together',

@@ -1,5 +1,8 @@
 
+import 'dart:io';
+
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/models/user.dart';
 
 class Mock {
@@ -9,7 +12,7 @@ class Mock {
     mail:"gwenael.mw@gmail.com",
     role:"ADMIN",
     gender: Gender.male,
-    birthday: DateTime.now(),
+    birthday: parseStringToDateTime(DateTime.now().getDbDateTime()),
     availability: Availability(monday: false, wednesday: false)
   );
 
@@ -19,7 +22,7 @@ class Mock {
     mail:"gwenael.mw@orange.fr",
     role:"USER",
     gender: Gender.male,
-    birthday: DateTime.now(),
+    birthday: parseStringToDateTime(DateTime.now().getDbDateTime()),
     availability: Availability(sunday: false),
 
   );

@@ -14,9 +14,11 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:go_together/widgets/components/map_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'activities_list.dart';
+import 'components/datetime_fields.dart';
 
 class ActivityCreate extends StatefulWidget {
   const ActivityCreate({Key? key}) : super(key: key);
@@ -56,6 +58,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   bool public = false;
 
   String dateTimeEvent = "";
+  Location? location ;
 
   void getSports() async{
     String? storedSport = storage.getItem("sports");
@@ -86,6 +89,11 @@ class _ActivityCreateState extends State<ActivityCreate> {
     super.dispose();
   }
 
+  _setEventDate(date){
+      setState(() {
+        dateTimeEvent = date.toString();
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,23 +124,21 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
             Row(
               children: [
+                DateTimePickerButton(
+                    datetime: (dateTimeEvent !="" ? DateTime.parse(dateTimeEvent) : DateTime.now()),
+                    onPressed: _setEventDate),
+                Text("Date : $dateTimeEvent "),
+              ],
+            ),
+            Row(
+              children: [
                 ElevatedButton(
                     onPressed: () {
-                      DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          minTime: DateTime(yearNow, monthNow, dayNow),
-                          onConfirm: (date) {
-                            setState(() {
-                              dateTimeEvent = date.toString();
-                            });
-                          }, currentTime: DateTime.now(), locale: LocaleType.fr);
+                      mapDialogue();
                     },
-                    child: const Icon(Icons.calendar_today_outlined)/*Text(
-                  "Choisir une date pour l'évènement",
-                )*/
+                    child: const Icon(Icons.map)
                 ),
-
-                Text("Date de l'évènement $dateTimeEvent "),
+                Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
               ],
             ),
 
@@ -338,80 +344,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
                   _addEvent();
-
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          child: Container(
-                            height: 250,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text('Description : $eventDescription',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Title : $titleEvent ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Date event : $dateTimeEvent ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Nombre manquants : $nbManquants ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Nombre total de participants : $nbTotalParticipants ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Public : $public ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Duration : $_duration ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Accessible à ? : $criterGender ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text('Event level ? : ${eventLevel.name} ',
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      });
                 }
               },
               child: const Text('Create event'),
@@ -422,9 +354,23 @@ class _ActivityCreateState extends State<ActivityCreate> {
     );
   }
 
+  mapDialogue() async{
+    dynamic res = await showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return MapDialog();
+        }
+    );
+    setState(() {
+      location = res as Location;
+    });
+    log("----- CLOSE MAP DIALOG");
+    log(res.toString());
+  }
+
   Activity _generateActivity(){
-    Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-     return  Activity(location: location, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
+    //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
+     return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
          dateStart: parseStringToDateTime(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
   }
