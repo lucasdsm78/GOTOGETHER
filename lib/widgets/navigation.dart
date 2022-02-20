@@ -9,6 +9,7 @@ import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_create.dart';
 
 class Navigation extends StatefulWidget {
+  static const tag = "navigation";
   @override
   State<StatefulWidget> createState() => NavigationState();
 }
@@ -26,10 +27,10 @@ class NavigationState extends State<Navigation> {
     user = User.fromJson(jsonDecode(storage.getItem("user")));
   }
 
-  List<Map<String, dynamic>> drawerLinks = [
+  static List<Map<String, dynamic>> drawerLinks = [
     // {"widget": ActivityList(), "title": "Liste des événements"},
   ];
-  List<Map<String, dynamic>> bottomBarLinks = [
+  static List<Map<String, dynamic>> bottomBarLinks = [
     {
       "widget": ActivityList(),
       "title": "Liste des Activités",

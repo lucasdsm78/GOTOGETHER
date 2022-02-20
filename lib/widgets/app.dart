@@ -32,6 +32,7 @@ class GotogetherApp extends StatelessWidget {
         ActivityList.tag: (context) => const ActivityList(),
         ActivityCreate.tag: (context) => const ActivityCreate(),
         MapScreen.tag: (context) => MapScreen(),
+        Navigation.tag: (context) => Navigation(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Welcome to Go Together',

@@ -15,6 +15,7 @@ import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:go_together/widgets/components/map_dialog.dart';
+import 'package:go_together/widgets/navigation.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'activities_list.dart';
@@ -380,7 +381,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
     log(activity.toJson());
     Activity? activityAdded = await activityUseCase.add(activity);
     if(activityAdded != null){
-      Navigator.of(context).pushNamed(ActivityList.tag);
+      Navigator.of(context).popAndPushNamed(Navigation.tag);
     }
   }
 }

@@ -80,12 +80,17 @@ class _CustomMapState extends State<CustomMap> {
   }
 
   _getMoreComplete(String search, String subject){
-    RegExp regExp = RegExp(
+    RegExp regExpSearch = RegExp(
       r"" + search + "",
       caseSensitive: false,
       multiLine: false,
     );
-    return regExp.hasMatch(subject) ? subject : search + subject;
+    RegExp regExpSubject = RegExp(
+      r"" + subject + "",
+      caseSensitive: false,
+      multiLine: false,
+    );
+    return regExpSearch.hasMatch(subject) ? subject : (regExpSubject.hasMatch(search) ? search : search + subject) ;
   }
 
   _addMarker(LatLng pos) async {
