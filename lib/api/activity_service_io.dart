@@ -43,7 +43,7 @@ class ActivityServiceApi {
 
   Future<Activity> updatePost(Activity activity) async {
     final response = await api.client
-        .post(Uri.parse(api.host + 'activity/${activity.id}'),
+        .put(Uri.parse(api.host + '/update/activity/${activity.id}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
