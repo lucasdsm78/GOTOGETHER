@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GO TOGETHER </string>
+
+<!--    <string name="facebook_app_id">1060198344541552</string>-->
+<!--    <string name="fb_login_protocol_scheme">fb1060198344541552</string>-->
+<!--    <string name="facebook_client_token">9aef1c27be75edd7d04b9ebf80a76158</string>-->
+
+    <!-- Replace "000000000000" with your Facebook App ID here. -->
+<!--    <string name="facebook_app_id">1060198344541552</string>-->
+
+    <!--
+      Replace "000000000000" with your Facebook App ID here.
+      **NOTE**: The scheme needs to start with `fb` and then your ID.
+    -->
+<!--    <string name="fb_login_protocol_scheme">35b97c6a72fef6ae74cce1c3099d5f4f</string>-->
+</resources>
