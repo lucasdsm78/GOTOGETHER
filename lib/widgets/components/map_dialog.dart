@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_together/models/location.dart';
-import 'package:go_together/widgets/components/Map.dart';
+import 'package:go_together/widgets/components/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'custom_text.dart';
 
