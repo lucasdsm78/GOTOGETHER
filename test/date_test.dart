@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/usecase/message.dart';
 
 
 void main() {
@@ -14,11 +18,10 @@ group('date_extension', (){
       expect(dateTime.getWeekDayName(), "thursday");
     });
     test('get month  of today', () async {
-      // Test code goes here.
-      final DateTime dateTime = DateTime.now();
-      expect(dateTime.getMonthName(), "February".toLowerCase());
+      // Test code goes here
+       final DateTime dateTime = DateTime.now();
+       expect(dateTime.getMonthName(), "Februy".toLowerCase());
     });
-
   });
 }
 

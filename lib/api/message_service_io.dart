@@ -16,11 +16,11 @@ class MessageServiceApi {
     }
   }
 
-  Future<Message> getById(int id) async {
+  Future<List<Message>> getById(int id) async {
     final response = await api.client
         .get(Uri.parse(api.host + 'messages/$id'));
     if (response.statusCode == 200) {
-      return Message.fromJson(jsonDecode(response.body)["success"]);
+      return compute(api.parseMessages, response.body);
     } else {
       throw Exception('Failed to load message');
     }

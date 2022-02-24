@@ -23,14 +23,19 @@ extension MethodExtension on Method {
 class Api{
   final http.Client client = http.Client();
   final host = "http://51.255.51.106:5000/";
-  final mainHeader = {
+  var mainHeader = { // ne dois pas etre final, et on doit faire une nouvelle methode 'setMainHeader'
     'Content-Type': 'application/json; charset=UTF-8',
     'secret_key' :'?somekey_thatWillReject_1orMore_unwantedRequest'
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
   };
 
+  setMainHeader(keyPara, val){
+    // update mainHeader
+    mainHeader[keyPara]=val ;
+  }
 
   String handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored){
+
     String params = "";
     int count = 0;
     map.forEach((key, value){
