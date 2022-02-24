@@ -12,6 +12,10 @@ class UserUseCase {
     return api.getById(id).then((value) => value);
   }
 
+  Future<String> getJWTTokenByGoogleToken(String tokenGoogle) async {
+    return api.getJWTTokenByGoogleToken(tokenGoogle).then((value) => value);
+  }
+
   Future<User?> add(User user) async {
     return api.add(user).then((value) => value);
   }

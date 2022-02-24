@@ -1,14 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
+import 'package:go_together/usecase/user.dart';
 import 'package:go_together/widgets/user_info_google.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Authentication {
+
   static Future<User?> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
+    final UserUseCase userUseCase = UserUseCase();
 
     if (kIsWeb) {
       GoogleAuthProvider authProvider = GoogleAuthProvider();
@@ -36,11 +43,31 @@ class Authentication {
           idToken: googleSignInAuthentication.idToken,
         );
 
+        final String? token = googleSignInAuthentication.idToken;
+
+        debugPrint('token : $token');
+
         try {
           final UserCredential userCredential =
               await auth.signInWithCredential(credential);
 
           user = userCredential.user;
+
+          // ********* GENERATE TOKEN JWT
+          final UserUseCase userUseCase = UserUseCase();
+
+          debugPrint('user: $user');
+
+          if(user != null) {
+            String idToken = await user.getIdToken();
+            debugPrint('idToken: $idToken');
+
+            String tokenGoogleJWT = await userUseCase
+                .getJWTTokenByGoogleToken(idToken);
+            debugPrint('tokenJWT: $tokenGoogleJWT');
+          }
+
+          // ************************************
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {
             ScaffoldMessenger.of(context).showSnackBar(
