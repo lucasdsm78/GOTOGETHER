@@ -4,6 +4,7 @@ import 'package:go_together/helper/string_extension.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
+import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
 
 enum Method {
@@ -57,5 +58,11 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
 
     return parsed.map<User>((json) => User.fromJson(json)).toList();
+  }
+
+  List<Message> parseMessages(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+
+    return parsed.map<Message>((json) => Message.fromJson(json)).toList();
   }
 }
