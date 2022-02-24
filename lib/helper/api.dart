@@ -4,6 +4,7 @@ import 'package:go_together/helper/string_extension.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
+import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
 
 enum Method {
@@ -22,14 +23,19 @@ extension MethodExtension on Method {
 class Api{
   final http.Client client = http.Client();
   final host = "http://51.255.51.106:5000/";
-  final mainHeader = {
+  var mainHeader = { // ne dois pas etre final, et on doit faire une nouvelle methode 'setMainHeader'
     'Content-Type': 'application/json; charset=UTF-8',
     'secret_key' :'?somekey_thatWillReject_1orMore_unwantedRequest'
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
   };
 
+  setMainHeader(keyPara, val){
+    // update mainHeader
+    mainHeader[keyPara]=val ;
+  }
 
   String handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored){
+
     String params = "";
     int count = 0;
     map.forEach((key, value){
@@ -57,5 +63,11 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
 
     return parsed.map<User>((json) => User.fromJson(json)).toList();
+  }
+
+  List<Message> parseMessages(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+
+    return parsed.map<Message>((json) => Message.fromJson(json)).toList();
   }
 }
