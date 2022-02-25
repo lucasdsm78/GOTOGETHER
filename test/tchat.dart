@@ -75,6 +75,16 @@ void main() {
     });
 
   });
+
+  test('read message with user 1 encrypted for user 1', () async{
+      messageUseCase.api.api.setToken(token1);
+      final messagesUser1 = await messageUseCase.getById(idMainConversation);
+
+  });
+
+  test('read message with user 1 encrypted for user 2', () async{
+
+  });
 }
 
 
