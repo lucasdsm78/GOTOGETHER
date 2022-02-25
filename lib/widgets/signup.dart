@@ -6,6 +6,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/user.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
@@ -195,6 +196,7 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
 }
 
 class _SignUp extends State<SignUp> {
+  final LocalStorage storage = LocalStorage('go_together_app');
   int yearNow = DateTime.now().year;
   int monthNow = DateTime.now().month;
   int dayNow = DateTime.now().day;
@@ -213,23 +215,35 @@ class _SignUp extends State<SignUp> {
   {
     String message = "Bonjour";
     print("bonjour");
-    final pair = generateRSAkeyPair(exampleSecureRandom());
-    final public = pair.publicKey;
-    final private = pair.privateKey;
+    // final pair = generateRSAkeyPair(exampleSecureRandom());
+    // final public = pair.publicKey;
+    // final private = pair.privateKey;
 
-    final pemPublicKey = encodePublicKeyToPem(public);
-    print("ma clé publique = $pemPublicKey");
-    final pemPrivateKey = encodePrivateKeyToPem(private);
-    print("ma clé privée = $pemPrivateKey");
-    final pubKey = parsePublicKeyFromPem(pemPublicKey);
-    final privKey = parsePrivateKeyFromPem(pemPrivateKey);
+    // final pemPublicKey = encodePublicKeyToPem(public);
+    // print("ma clé publique = $pemPublicKey");
+    // final pemPrivateKey = encodePrivateKeyToPem(private);
+    // print("ma clé privée = $pemPrivateKey");
+    // final pubKey = parsePublicKeyFromPem(pemPublicKey);
+    // final privKey = parsePrivateKeyFromPem(pemPrivateKey);
+
+    // final pubKeyAlice = parsePublicKeyFromPem("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsDX+okk4FcdaFD0nvM7uZGdrQTyL2u2PdRk8mGa1BgpqgaoP8s7JZsgejVEaHxKGtCEsOuLSjZ/4veNqwuvwP1L3DAo02udJpqDRCQ4hmhS2ulDvU2qt0WHM1tqOyofvizDfFVBaDbGu+36tOHrk8RBh6KvikgCA1V//sDYTtzazmCfLicTx2AKKoXbML22Lh7b9Nlhy/cVlhiGsf6fJ5Nc+juZch2u2g5E0fzvqHLKGI5CTNB2sJTwl/yeJ3Os3pf4uWjMwbVFjB/7LvHZMMuWCGSStQzpEHC6/jeQcegUWQGC42kYBpextqwJmGq0LzOO/c3UhGwXAtxXVclD38QIDAQAB");
+    final privKeyAlice = parsePrivateKeyFromPem("MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCwNf6iSTgVx1oUPSe8zu5kZ2tBPIva7Y91GTyYZrUGCmqBqg/yzslmyB6NURofEoa0ISw64tKNn/i942rC6/A/UvcMCjTa50mmoNEJDiGaFLa6UO9Taq3RYczW2o7Kh++LMN8VUFoNsa77fq04euTxEGHoq+KSAIDVX/+wNhO3NrOYJ8uJxPHYAoqhdswvbYuHtv02WHL9xWWGIax/p8nk1z6O5lyHa7aDkTR/O+ocsoYjkJM0HawlPCX/J4nc6zel/i5aMzBtUWMH/su8dkwy5YIZJK1DOkQcLr+N5Bx6BRZAYLjaRgGl7G2rAmYarQvM479zdSEbBcC3FdVyUPfxAgMBAAECggEAPwxCvJxIFfrLLzymcDb2MzSRurjILaAcWUCbXsg48x1c+GH57N2yUDVAQT4Ig5+kVOUdp0ArKANaA89QDshOoMm1nTg1qzFgN9+Ii53jxfatXsLAru8XnDhLC4EN4Ed9HSdyWnTyk73EpzWvEutd6Sb8cTy3B5hogHAl0022BjJSNezpMc6QfKhEkSlYuooKM8+QzMa9uPTfBvYGIPsM0doUZ9Z943a0Qk6ta9t2BEtDVjGKCJq9z4Gs6pII9vDWuoz9l3coexd8p0FYt4E95pURftBrdURMwhLvwG6u0K3FTiZOrX3FR9fyjA2TxIPDrmeILDuXkcg72kNhmwW2VQKBgQDwAosZ7ksEfqcte4lAHM8Chzdy9pgGUJ+d5g4jTR1tTOCFtcz2c4pmKOICD9//9D9csD3E3Jz3XNt8bwwwkEu8OWoDRHpxOGnwLeRjlnclEDPamrYg8nz2h+7kcYnwYSzzyongiPHb6K+7fM2PshSRVyS/qpTgpFbzoo4rdmtnqwKBgQC781X7Jj+zsTuliUEp/ix2iA+b7mw2v4ad0yLRtcwea6xfU7ZvskBGknvB8renek4Gd2hreRvTYZjDBPdcCjF7oJeHfrG/3rDBdZv8FGBpJ4fZ3hyv6MQBiTRXDQqarK4aZ3nt/aG3pzx5MS96pcgFZxe9WvwjA/oO35bfjQGS0wKBgGKnCPodoqQ0Uw806hN6Q/SsE7Sje5WM6i8C8ui7t87HfLo5IghjMY4QW+WxFMemY6z7nEggzjw25Nje5EnJ5fd2OgchzJphL9pTYr80h8CqSkYetaIRSiAje6RWrvYpW0rSA55Ra+iSWjlccToRXrbm9On7ebpkkoEOXhWrVTaFAoGBAInNoSXyZlRmxxfY6blTTeBeZCttBVSi2p2O94GQ7KcFRS3jn+iHZg8YSbrrLfKSfvDIzfu2oUs7zJh4ZLDMHHnLRi6nGsZWDXzasVKC0ilnPXjlHF1xqXyCz6hfvH2pzEE5yzFOfCq+aF1nTat8L4qeis5gDmvR956+Gs2vgg7XAoGAQqFz8AZzoYRU6qt9hCckuFZB1FCkTzbiAw5gjY3prOXuSd2iDHG1cueboYcPyC45hVoBzsjWigfXavG9RbOvqhEZuwKAB9GgLch70nuDenF4gJFbz/O6Q0KWRxfWFMZ3TY8mfeEdxQVbo9hYRgXPl2GizZTklezPvxuubrmKQJ8=");
+
+    storage.setItem('pubKey', "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsDX+okk4FcdaFD0nvM7uZGdrQTyL2u2PdRk8mGa1BgpqgaoP8s7JZsgejVEaHxKGtCEsOuLSjZ/4veNqwuvwP1L3DAo02udJpqDRCQ4hmhS2ulDvU2qt0WHM1tqOyofvizDfFVBaDbGu+36tOHrk8RBh6KvikgCA1V//sDYTtzazmCfLicTx2AKKoXbML22Lh7b9Nlhy/cVlhiGsf6fJ5Nc+juZch2u2g5E0fzvqHLKGI5CTNB2sJTwl/yeJ3Os3pf4uWjMwbVFjB/7LvHZMMuWCGSStQzpEHC6/jeQcegUWQGC42kYBpextqwJmGq0LzOO/c3UhGwXAtxXVclD38QIDAQAB");
+    String test = storage.getItem('pubKey');
+
+    print(test);
+
+    final pubKeyBob = parsePublicKeyFromPem("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1h6yJbSFD2pnbOgzj6Oh7L0zlFS9ePopaCKhPmIG7Bk7sXk2IN3BsP8fv0DbTJCePL9xUQcvMmzMP4YfCKLo/NnyC3H3aF5KTvYzxOY6NZ6BiUkEYCdTfgMNszT6v6MriWfqCeakRCy0JVoKpO32DuuefsrMUKnKg+LatMc3DW1FejSzckbzt9qdtbOFANAHoTvtwDda2qyzO+VKhUw3vqpSwj3gNTiFiDJTs/3JBXVN5+r3q3X9AM6iVVOxxcyIYoNkbdqiP0PHex6DCi9yyCam5r3egfHEfY2pQCEbgiYEvQX0VUZXdktBK3SPZYPgGfpOOu3ZFL3T72xit/DrgwIDAQAB");
+    final privKeyBob = parsePrivateKeyFromPem("MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDWHrIltIUPamds6DOPo6HsvTOUVL14+iloIqE+YgbsGTuxeTYg3cGw/x+/QNtMkJ48v3FRBy8ybMw/hh8Iouj82fILcfdoXkpO9jPE5jo1noGJSQRgJ1N+Aw2zNPq/oyuJZ+oJ5qRELLQlWgqk7fYO655+ysxQqcqD4tq0xzcNbUV6NLNyRvO32p21s4UA0AehO+3AN1rarLM75UqFTDe+qlLCPeA1OIWIMlOz/ckFdU3n6verdf0AzqJVU7HFzIhig2Rt2qI/Q8d7HoMKL3LIJqbmvd6B8cR9jalAIRuCJgS9BfRVRld2S0ErdI9lg+AZ+k467dkUvdPvbGK38OuDAgMBAAECggEAbOGjGYVYfGRRP5I8VfiRqL71caI9zzz2vVuOvxg+COUz86V9nuzlR8oULL8gRSjtLlrzlo6es3ebzVm4gj3FWH7DlIpZkxsPkmOkI6YnR4jYuiUFMpgM3vFSkCSKtdSVmQPcgThlo71PxgapjwDqtN+f8z3Q89vDfZloObFsD0jpadJ3j6c1hDKuMaS/SiRIWtKZ2M/IqHUH56LuHdEWRVlijBex0iN4ZMXvUtqwJzy+Q0MYpU6clGEh5bPU7jpG3HLd00gVNNwUOwLVAF3a1v3dP6xITxRiNo/grrkW10j+qooJBzNmS9ooDH4XP7jWQm2QthbqNTMvnFAOSS2kIQKBgQDxNRv6YBz+CVYo1r6DToj9+mJi7ljheoiXSufKdCGiOuBP4HQM2Q32hg9OUBX0AUKssOuYX5hc0Y4mR/TRKTg2XJoH4YCTqYIwSA/GRCNcRsR9nFMvBE2Z3NbhmKNE9ZLPpc/gQvWHI6lryTbm+WW81Rur0iF1GwDFDVxRy3nKewKBgQDjQFHJiiFwfFq978nAZSwGar2q/sdu4WkyC00hbEMOptXrLihrKreLVao7wVSJHzMgDgsv+VrOsoDiwACx6/+vy6vMYI0uu7mASMXyE0mnsr2WQFeK+hg+BkPl+hop8EzMIbL0jUAKcrz3TRWbiK12f4NWIgG+yaAD3xHIPtQ4mQKBgCcBdaLJhCa4j8xO3cQSISkhImPpM0pTLF9653zfxsibSMbh/yJMv2tMRpFddg9dXNDcU1zyqIrqAFjEbhyc09BGrUn093vpf3obTSG8xxMXBpNhgjoqMfpdsgoNSunN5I3bvIABk/7kj3M0uMIlNoSQ2caxVmO/mCJFhNZdVzadAoGAEz6pLnYiKtJ9JMSfw0lOFyUG9uoonX09WV2XpJL0gtMiHo6EIb82V/hjODhBHnOj8rz9uYxWYla/j3RPGsIvnwWSgPZUPnbrWK/RA5UakbcTUxwTzdMsJmSFb35kpNSSzF62NvuXRss8sXy3rbo/Zl+aEbtDhpKwmGNVsC2R71ECgYEAmbTDNXxOrYG+i/VW89VBEpP9QqkU1CgTH85CCHyNXam+MzLGljfgiBlmZDuY4NThJdLLmg2rOu+OuO/lOdwHe80B7yh2IaiGfOkyqwDx+cUZFoza77Rc2LsW0YRvMw0VHL0gt/R6kGhq6eggKeKJWa1s4uAMHZLifDRSqNyenPs=");
 
     List<int> list = message.codeUnits;
     Uint8List data = Uint8List.fromList(list);
 
-    final encryptData = rsaEncrypt(pubKey, data);
+    final pubKeyAlice = parsePublicKeyFromPem(test);
+    final encryptData = rsaEncrypt(pubKeyAlice, data);
     print(encryptData);
-    final decryptData = rsaDecrypt(privKey, encryptData);
+    final decryptData = rsaDecrypt(privKeyAlice, encryptData);
     String result = Utf8Decoder().convert(decryptData);
     print(result);
 
