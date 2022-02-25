@@ -113,7 +113,10 @@ void main() {
     });
 
     test('add message with user 1, which is inside the conversation', () async{
+      //get number of message before inserting a new one
       messageUseCase.api.api.setToken(token1);
+      final messagesUser1 = await messageUseCase.getById(idMainConversation);
+
       String message = "this is test message from flutter";
 
       //region generate crypted message for all user in conversation
@@ -141,11 +144,19 @@ void main() {
       //expect(decryptedMsg2, isNot(equals(message)));
 
       //@todo check signature
+
+      //check if there is one message more in DB now
+      final messagesUser1After = await messageUseCase.getById(idMainConversation);
+      expect(messagesUser1.length, equals(messagesUser1After.length + 1));
     });
 
   });
 
   test('try add message with a user out of the conversation', () async{
+    //get number of message before inserting a new one
+    messageUseCase.api.api.setToken(token1);
+    final messagesUser1 = await messageUseCase.getById(idMainConversation);
+
     messageUseCase.api.api.setToken(tokenExt);
     String message = "this is a message from a user out of conversation";
 
@@ -158,6 +169,11 @@ void main() {
     expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
         predicate((e) => e is ApiErr && e.codeStatus == 403) // because only user in conversation can add new message
     ));
+
+    //check if there is same number of message in DB than before trying to add
+    messageUseCase.api.api.setToken(token1);
+    final messagesUser1After = await messageUseCase.getById(idMainConversation);
+    expect(messagesUser1.length, equals(messagesUser1After.length));
   });
 
 /*
