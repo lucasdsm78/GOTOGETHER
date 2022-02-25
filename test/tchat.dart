@@ -73,8 +73,7 @@ void main() {
   }
 
   group('get messages from api for conversation 1', () {
-    test(
-        'with 1 account inside main conversation', () async {
+    test('with 1 account inside main conversation', () async {
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
@@ -86,8 +85,7 @@ void main() {
       }
     });
 
-    test(
-        'with 1 account outside main conversation', () async {
+    test('with 1 account outside main conversation', () async {
       messageUseCase.api.api.setToken(tokenExt);
       expect(() async => await messageUseCase.getById(idMainConversation),
           throwsA(
@@ -95,8 +93,7 @@ void main() {
           ));
     });
 
-    test(
-        'with 2 accounts inside main conversation', () async {
+    test('with 2 accounts inside main conversation', () async {
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
@@ -118,6 +115,7 @@ void main() {
   });
 
   group('add message in api for conversation 1 Tchat', (){
+    //@todo : api should check if message is encrypted before add in DB, that will required one more test then
     test('with user 1, which is inside the conversation', () async{
       //get number of message before inserting a new one
       messageUseCase.api.api.setToken(token1);
@@ -129,17 +127,20 @@ void main() {
       List<Message> listMessage = [];
       conversation.forEach((element) {
         Uint8List encryptData = encrypt(message, element.pubKey);
-        listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+        Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
+        String cryptedMessageSigned = addSignature(encryptData.toString(), signature.toString());
+        listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
       });
       //endregion
 
       final messageSend = await messageUseCase.add(idMainConversation, listMessage);
-
+      Map<String,String> map = splitSignedAndCryptedMessage(messageSend.bodyMessage);
+      String messageBody = map["encryptedMsg"]!;
       expect(messageSend.idReceiver, 1);
       expect(messageSend.idSender, 1);
 
       //region decrypt for user 1
-      String decryptedMsg = decryptFromString(messageSend.bodyMessage, privateKey1);
+      String decryptedMsg = decryptFromString(messageBody, privateKey1);
       expect(decryptedMsg, message);
       expect(privateKey1, isNot(equals(privateKey2)));
       //endregion
@@ -149,7 +150,7 @@ void main() {
       //debugPrint(decryptedMsg2);
       //expect(decryptedMsg2, isNot(equals(message)));
 
-      //@todo check signature
+      rsaVerifyFromKeyStringAndStringBytes(pubKey1, messageBody, map["signature"]!);
 
       //check if there is one message more in DB now
       final messagesUser1After = await messageUseCase.getById(idMainConversation);
