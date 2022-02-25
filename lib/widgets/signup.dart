@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:cryptography/cryptography.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/user.dart';
@@ -28,69 +25,7 @@ class _SignUp extends State<SignUp> {
   bool error = false;
   int? val = 1;
 
-  validForm() async{
-
-    final algorithm = Ed25519();
-    final algorithm1 = X25519();
-    final algorithm2 = Chacha20(macAlgorithm: Hmac.sha256());
-
-
-    // Generate a key pair.
-
-    final keyPairAlice = await algorithm1.newKeyPair();
-
-    // Get a public key for our peer.
-    final keyPairBob = await algorithm1.newKeyPair();
-
-    // Sign
-    final text = "bonjour";
-
-    List<int> message = text.codeUnits;
-    print(text);
-
-    final signature = await algorithm.sign(
-      message,
-      keyPair: keyPairAlice,
-    );
-
-    // Anyone can verify the signature
-    final isVerified = await algorithm.verify(
-      message,
-      signature: signature,
-    );
-
-    print('OK signature: $isVerified');
-
-
-    final remotePublicKeyBob = await keyPairBob.extractPublicKey();
-
-    // We can now calculate a shared secret.
-    final sharedSecret = await algorithm1.sharedSecretKey(
-      keyPair: keyPairAlice,
-      remotePublicKey: remotePublicKeyBob,
-    );
-
-    // Encrypt
-    final secretBox = await algorithm2.encrypt(
-      message,
-      secretKey: sharedSecret,
-    );
-
-    print('Ciphertext: ${secretBox.cipherText}');
-
-    // Decrypt
-    final clearText = await algorithm2.decrypt(
-      secretBox,
-      secretKey: sharedSecret,
-    );
-
-    String result = new Utf8Decoder().convert(clearText);
-    print('Cleartext: $result');
-
-
-
-
-
+  validForm(){
     if (_formKey.currentState!.validate()){
       if(val == 1){
         _gender = Gender.male;
