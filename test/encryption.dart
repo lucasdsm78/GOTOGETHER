@@ -31,14 +31,15 @@ void main() {
       String pubKey = keyGenerator.getPubKeyFromStorage();
 
       Uint8List encryptData = encrypt(message, pubKey);
-      final signature = rsaSignFromKeyString(privateKey, encryptData);
+      Uint8List signature = rsaSignFromKeyString(privateKey, encryptData);
       String cryptedMessageSigned = addSignature(encryptData.toString(), signature.toString());
 
       Map<String,String> map = splitSignedAndCryptedMessage(cryptedMessageSigned);
       String decryptedMsg = decryptFromString(map["encryptedMsg"]!, privateKey);
-      rsaVerifyFromKeyStringAndListInt(pubKey, jsonDecode(map["encryptedMsg"]!).cast<int>(), jsonDecode(map["signature"]!).cast<int>());
+      rsaVerifyFromKeyStringAndStringBytes(pubKey, map["encryptedMsg"]!, map["signature"]!);
 
       expect(message, decryptedMsg);
+      expect(signature.toString(), map["signature"]!);
     });
 
     /*test('try to crypt and sign a message, then decrypt and check signature of message with bad key', () async{

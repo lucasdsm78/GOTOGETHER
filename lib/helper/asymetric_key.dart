@@ -307,4 +307,7 @@ bool rsaVerifyFromKeyString(String publicKey, Uint8List signedData, Uint8List si
 bool rsaVerifyFromKeyStringAndListInt(String publicKey, List<int> listSignedData, List<int> listSignature) {
   return rsaVerify( parsePublicKeyFromPem(publicKey), Uint8List.fromList(listSignedData), Uint8List.fromList(listSignature));
 }
+bool rsaVerifyFromKeyStringAndStringBytes(String publicKey, String listSignedData, String listSignature) {
+  return rsaVerifyFromKeyStringAndListInt(publicKey, jsonDecode(listSignedData).cast<int>(), jsonDecode(listSignature).cast<int>());
+}
 //endregion

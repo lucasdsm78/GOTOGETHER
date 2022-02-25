@@ -72,43 +72,53 @@ void main() {
     return pubKey;
   }
 
-  group('API Tchat', (){
-    test('get messages from api for conversation 1 with account inside main conversation', () async {
+  group('get messages from api for conversation 1', () {
+    test(
+        'with 1 account inside main conversation', () async {
+      messageUseCase.api.api.setToken(token1);
+      final messagesUser1 = await messageUseCase.getById(idMainConversation);
+
+      if (messagesUser1.isNotEmpty) {
+        expect(messagesUser1[0].idReceiver, 1);
+        String pubKeyUser1 = getUserPubKeyFromConversation(
+            conversation, messagesUser1[0].idReceiver);
+        expect(pubKeyUser1, pubKey1);
+      }
+    });
+
+    test(
+        'with 1 account outside main conversation', () async {
+      messageUseCase.api.api.setToken(tokenExt);
+      expect(() async => await messageUseCase.getById(idMainConversation),
+          throwsA(
+              predicate((e) => e is ApiErr && e.codeStatus == 403)
+          ));
+    });
+
+    test(
+        'with 2 accounts inside main conversation', () async {
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
       messageUseCase.api.api.setToken(token2);
       final messagesUser2 = await messageUseCase.getById(idMainConversation);
 
-      if(messagesUser1.isNotEmpty){
+      if (messagesUser1.isNotEmpty) {
         expect(messagesUser1[0].idReceiver, 1);
-        String pubKeyUser1 = getUserPubKeyFromConversation(conversation, messagesUser1[0].idReceiver);
+        String pubKeyUser1 = getUserPubKeyFromConversation(
+            conversation, messagesUser1[0].idReceiver);
         expect(pubKeyUser1, pubKey1);
       }
 
-      if(messagesUser2.isNotEmpty){
+      if (messagesUser2.isNotEmpty) {
         expect(messagesUser2[0].idReceiver, 2);
       }
       expect(messagesUser1.length, messagesUser2.length);
     });
+  });
 
-    test('get messages from api for conversation 1 with 1 account outside main conversation', () async {
-      messageUseCase.api.api.setToken(token1);
-      final messagesUser1 = await messageUseCase.getById(idMainConversation);
-
-      //region try to get messages with user outside conversation
-      messageUseCase.api.api.setToken(tokenExt);
-      expect(() async => await messageUseCase.getById(idMainConversation), throwsA(
-          predicate((e) => e is ApiErr && e.codeStatus == 403)
-      ));
-      //endregion
-
-      if(messagesUser1.isNotEmpty){
-        expect(messagesUser1[0].idReceiver, 1);
-      }
-    });
-
-    test('add message with user 1, which is inside the conversation', () async{
+  group('add message in api for conversation 1 Tchat', (){
+    test('with user 1, which is inside the conversation', () async{
       //get number of message before inserting a new one
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
@@ -143,45 +153,33 @@ void main() {
 
       //check if there is one message more in DB now
       final messagesUser1After = await messageUseCase.getById(idMainConversation);
-      expect(messagesUser1.length, equals(messagesUser1After.length + 1));
+      expect(messagesUser1.length +1 , equals(messagesUser1After.length));
     });
 
-  });
-
-  test('try add message with a user out of the conversation', () async{
-    //get number of message before inserting a new one
-    messageUseCase.api.api.setToken(token1);
-    final messagesUser1 = await messageUseCase.getById(idMainConversation);
-
-    messageUseCase.api.api.setToken(tokenExt);
-    String message = "this is a message from a user out of conversation";
-
-    List<Message> listMessage = [];
-    conversation.forEach((element) {
-      Uint8List encryptData = encrypt(message, element.pubKey);
-      listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
-    });
-
-    expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
-        predicate((e) => e is ApiErr && e.codeStatus == 403) // because only user in conversation can add new message
-    ));
-
-    //check if there is same number of message in DB than before trying to add
-    messageUseCase.api.api.setToken(token1);
-    final messagesUser1After = await messageUseCase.getById(idMainConversation);
-    expect(messagesUser1.length, equals(messagesUser1After.length));
-  });
-
-/*
-  test('read message with user 1 encrypted for user 1', () async{
+    test('try add message with a user out of the conversation', () async{
+      //get number of message before inserting a new one
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
+      messageUseCase.api.api.setToken(tokenExt);
+      String message = "this is a message from a user out of conversation";
+
+      List<Message> listMessage = [];
+      conversation.forEach((element) {
+        Uint8List encryptData = encrypt(message, element.pubKey);
+        listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+      });
+
+      expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
+          predicate((e) => e is ApiErr && e.codeStatus == 403) // because only user in conversation can add new message
+      ));
+
+      //check if there is same number of message in DB than before trying to add
+      messageUseCase.api.api.setToken(token1);
+      final messagesUser1After = await messageUseCase.getById(idMainConversation);
+      expect(messagesUser1.length, equals(messagesUser1After.length));
+    });
   });
-
-  test('read message with user 1 encrypted for user 2', () async{
-
-  });*/
 }
 
 
