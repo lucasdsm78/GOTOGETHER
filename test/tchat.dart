@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/api.dart';
 
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
@@ -60,8 +61,11 @@ void main() {
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
       messageUseCase.api.api.setToken(tokenExt);
-      final messagesUser2 = await messageUseCase.getById(idMainConversation); //@todo maybe could return the error when failed to get data with 200 status
-      
+      // final messagesUser2 = await messageUseCase.getById(idMainConversation); //@todo maybe could return the error when failed to get data with 200 status
+      expect(() async => await messageUseCase.getById(idMainConversation), throwsA(
+          predicate((e) => e is ApiErr && e.codeStatus == 403)
+      ));
+
       //@todo check message signature, and try decrypt each message + add corresponding test
       //expect user 1 can read messagesUser1, but not messagesUser2.
       //expect user 2 can read messagesUser2, but not messagesUser1.
@@ -69,7 +73,6 @@ void main() {
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
       }
-      expect(messagesUser2.length, 0);
     });
 
     test('add message with user 1', () async{
@@ -106,12 +109,9 @@ void main() {
       listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
     });
 
-    runZonedGuarded(() async {
-      final messageSend = await messageUseCase.add(idMainConversation, listMessage); //expect an error here, because user out of conversation
-      debugPrint("no error detected");
-    }, (Object error, StackTrace stack) {
-      debugPrint(error.toString());
-    });
+    expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
+        predicate((e) => e is ApiErr && e.codeStatus == 403)
+    ));
 
     //expect a refusal
   });

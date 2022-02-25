@@ -15,7 +15,7 @@ class MessageServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseMessages, response.body);
     } else {
-      throw Exception('Failed to load messages');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load messages");
     }
   }
 
@@ -27,8 +27,7 @@ class MessageServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseMessages, response.body);
     } else {
-      return [];
-      //throw Exception('Failed to load message');
+      throw ApiErr(codeStatus: response.statusCode, message: "can't load message");
     }
   }
 
@@ -40,7 +39,7 @@ class MessageServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseConversation, response.body);
     } else {
-      throw Exception('Failed to load conversations data');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load conversations data");
     }
   }
 
@@ -59,7 +58,7 @@ class MessageServiceApi {
     if (response.statusCode == 201) {
       return Message.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
-      throw Exception('Failed to insert message.');
+      throw ApiErr(codeStatus: response.statusCode, message: "can't add message in this conversation");
     }
   }
 }

@@ -12,7 +12,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseUsers, response.body);
     } else {
-      throw Exception('Failed to load users');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load users");
     }
   }
 
@@ -22,7 +22,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)["success"]);
     } else {
-      throw Exception('Failed to load user');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load user");
     }
   }
 
@@ -34,7 +34,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)["success"]["token"];
     } else {
-      throw Exception('Failed to load token');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load token");
     }
   }
 
@@ -47,7 +47,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)["success"]["token"];
     } else {
-      throw Exception('Failed to load token');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load token");
     }
   }
 
@@ -60,7 +60,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to update pubkey');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to update public key");
     }
   }
 
@@ -75,7 +75,7 @@ class UserServiceApi {
     if (response.statusCode == 201) {
       return User.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
-      throw Exception('Failed to create user.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to create user");
     }
   }
 
@@ -91,7 +91,7 @@ class UserServiceApi {
     if (jsonDecode(response.body)['success'] != null) {
       return User.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to update user.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to update user");
     }
   }
 
@@ -111,7 +111,7 @@ class UserServiceApi {
       if (jsonDecode(response.body)['success'] != null) {
         return User.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to update user.');
+        throw ApiErr(codeStatus: response.statusCode, message: "failed to update user");
       }
     }
   }
@@ -127,7 +127,7 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to delete user.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to delete user");
     }
   }
 }

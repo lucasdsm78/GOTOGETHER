@@ -13,7 +13,7 @@ class SportServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseSports, response.body);
     } else {
-      throw Exception('Failed to load sports');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load sports");
     }
   }
 
@@ -23,7 +23,7 @@ class SportServiceApi {
     if (response.statusCode == 200) {
       return Sport.fromJson(jsonDecode(response.body)["success"]);
     } else {
-      throw Exception('Failed to load sport');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load sport");
     }
   }
 }

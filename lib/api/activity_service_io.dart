@@ -14,7 +14,7 @@ class ActivityServiceApi {
     if (response.statusCode == 200) {
       return compute(api.parseActivities, response.body);
     } else {
-      throw Exception('Failed to load activities');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
     }
   }
 
@@ -24,7 +24,7 @@ class ActivityServiceApi {
     if (response.statusCode == 200) {
       return Activity.fromJson(jsonDecode(response.body)["success"]);
     } else {
-      throw Exception('Failed to load activity');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load activity");
     }
   }
 
@@ -37,7 +37,7 @@ class ActivityServiceApi {
     if (response.statusCode == 201) {
       return Activity.fromJson(jsonDecode(response.body)["success"]);
     } else {
-      throw Exception('Failed to create activity.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to create activity");
     }
   }
 
@@ -53,7 +53,7 @@ class ActivityServiceApi {
     if (jsonDecode(response.body)['success'] != null) {
       return Activity.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to update activity.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to update activity");
     }
   }
 
@@ -73,7 +73,7 @@ class ActivityServiceApi {
       if (jsonDecode(response.body)['success'] != null) {
         return Activity.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to update activity.');
+        throw ApiErr(codeStatus: response.statusCode, message: "failed to update activity");
       }
     }
   }
@@ -89,7 +89,7 @@ class ActivityServiceApi {
     if (response.statusCode == 200) {
       return Activity.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to delete activity.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to delete activity");
     }
   }
 
@@ -107,7 +107,7 @@ class ActivityServiceApi {
     if (response.statusCode == 200) {
       return Activity.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
-      throw Exception('Failed to join an activity.');
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to join an activity");
     }
   }
 }

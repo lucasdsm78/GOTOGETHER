@@ -80,3 +80,12 @@ class Api{
     return parsed.map<Conversation>((json) => Conversation.fromJson(json)).toList();
   }
 }
+
+class ApiErr implements Exception {
+  int codeStatus;
+  String message;
+
+  String errMsg() => 'an error occured with status $codeStatus, $message';
+
+  ApiErr({required this.codeStatus, required this.message});
+}
