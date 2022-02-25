@@ -51,6 +51,20 @@ class UserServiceApi {
     }
   }
 
+  Future<bool> setPublicKey(String publicKey) async {
+    final response = await api.client
+        .patch(Uri.parse(api.host + 'users/set_pubkey'),
+      headers: api.mainHeader,
+      body: jsonEncode({"pubKey":publicKey}),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to update pubkey');
+    }
+  }
+
+
   Future<User> add(User user) async {
     //ex : createUser(User(username: "flutterUser2", mail: "flutterUser2@gmail.com", password: "flutterPass"));
     final response = await api.client

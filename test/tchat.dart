@@ -1,9 +1,9 @@
-import 'dart:developer';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:go_together/usecase/message.dart';
 import 'package:go_together/usecase/user.dart';
@@ -15,16 +15,23 @@ void main() {
   late String token1;
   late String token2;
   late String tokenExt;
-  late List<Message> messagesList;
 
   final idMainConversation = 1;
+  late List<Conversation> conversation ;
 
   setUpAll(() async{
     token1 = await userUseCase.getJWTTokenByGoogleToken("someGoogleToken");
     token2 = await userUseCase.getJWTTokenByLogin({"mail":"gwenael.mw@orange.fr", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
     tokenExt = await userUseCase.getJWTTokenByLogin({"mail":"someMail6@gmail.com", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
 
+
+    // generate 3 keypair, one for each user.
+    //then set pubkey --> bool isUpdate = await userUseCase.setPublicKey("publicKeyHere");
     userUseCase.api.api.setToken(token1);
+    bool isUpdate = await userUseCase.setPublicKey("publicKeyHere");
+
+    messageUseCase.api.api.setToken(token1); //@required user 1 to be in the conversation
+    conversation = await messageUseCase.getConversationById(idMainConversation);
   }) ;
 
   group('API Tchat', (){
@@ -36,8 +43,13 @@ void main() {
       final messagesUser2 = await messageUseCase.getById(idMainConversation);
 
       //@todo check message signature, and try decrypt each message + add corresponding test
+      //expect user 1 can read messagesUser1, but not messagesUser2.
+      //expect user 2 can read messagesUser2, but not messagesUser1.
+
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
+      }
+      if(messagesUser2.isNotEmpty){
         expect(messagesUser2[0].idReceiver, 2);
       }
       expect(messagesUser1.length, messagesUser2.length);
@@ -48,9 +60,12 @@ void main() {
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
       messageUseCase.api.api.setToken(tokenExt);
-      final messagesUser2 = await messageUseCase.getById(idMainConversation);
+      final messagesUser2 = await messageUseCase.getById(idMainConversation); //@todo maybe could return the error when failed to get data with 200 status
       
       //@todo check message signature, and try decrypt each message + add corresponding test
+      //expect user 1 can read messagesUser1, but not messagesUser2.
+      //expect user 2 can read messagesUser2, but not messagesUser1.
+
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
       }
@@ -59,11 +74,14 @@ void main() {
 
     test('add message with user 1', () async{
       messageUseCase.api.api.setToken(token1);
-      final conversation = await messageUseCase.getConversationById(idMainConversation);
+
       String message = "this is test message from flutter";
+      //@todo encrypt message and sign it with user 1 keypair
+
       List<Message> listMessage = [];
       conversation.forEach((element) {
-        listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 1, createdAt: DateTime.now()));
+        //element.pubKey
+        listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
       });
 
       final messageSend = await messageUseCase.add(idMainConversation, listMessage);
@@ -76,6 +94,29 @@ void main() {
 
   });
 
+  test('add message with a user out of the conversation', () async{
+    messageUseCase.api.api.setToken(tokenExt);
+
+    String message = "this is a message from a user out of conversation";
+    //@todo encrypt message and sign it with outside user keypair
+
+    List<Message> listMessage = [];
+    conversation.forEach((element) {
+      //element.pubKey
+      listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+    });
+
+    runZonedGuarded(() async {
+      final messageSend = await messageUseCase.add(idMainConversation, listMessage); //expect an error here, because user out of conversation
+      debugPrint("no error detected");
+    }, (Object error, StackTrace stack) {
+      debugPrint(error.toString());
+    });
+
+    //expect a refusal
+  });
+
+/*
   test('read message with user 1 encrypted for user 1', () async{
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
@@ -84,7 +125,7 @@ void main() {
 
   test('read message with user 1 encrypted for user 2', () async{
 
-  });
+  });*/
 }
 
 
