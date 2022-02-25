@@ -11,8 +11,10 @@ import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
+import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/key_generators/api.dart';
 import 'package:pointycastle/key_generators/rsa_key_generator.dart';
+import 'package:pointycastle/signers/rsa_signer.dart';
 import 'dart:typed_data';
 import 'package:pointycastle/src/platform_check/platform_check.dart';
 
@@ -117,6 +119,7 @@ encodePublicKeyToPem(RSAPublicKey publicKey) {
 }
 
 encodePrivateKeyToPem(RSAPrivateKey privateKey) {
+
   var version = ASN1Integer(BigInt.from(0));
 
   var algorithmSeq = ASN1Sequence();
@@ -195,6 +198,37 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
       : output.sublist(0, outputOffset);
 }
 
+
+// fonction qui permet de créer la signature
+
+Uint8List rsaSign(RSAPrivateKey privateKey, Uint8List dataToSign) {
+
+  final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
+
+  signer.init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey)); // true=sign
+
+  final sig = signer.generateSignature(dataToSign);
+
+  return sig.bytes;
+}
+
+// fonction qui permet de verifier la signature
+
+bool rsaVerify(RSAPublicKey publicKey, Uint8List signedData, Uint8List signature) {
+  final sig = RSASignature(signature);
+
+  final verifier = RSASigner(SHA256Digest(), '0609608648016503040201');
+
+  verifier.init(false, PublicKeyParameter<RSAPublicKey>(publicKey)); // false=verify
+
+  try {
+    return verifier.verifySignature(signedData, sig);
+  } on ArgumentError {
+    return false; // for Pointy Castle 1.0.2 when signature has been modified
+  }
+}
+
+
 class _SignUp extends State<SignUp> {
   final LocalStorage storage = LocalStorage('go_together_app');
   int yearNow = DateTime.now().year;
@@ -240,13 +274,15 @@ class _SignUp extends State<SignUp> {
     List<int> list = message.codeUnits;
     Uint8List data = Uint8List.fromList(list);
 
-    final pubKeyAlice = parsePublicKeyFromPem(test);
-    final encryptData = rsaEncrypt(pubKeyAlice, data);
-    print(encryptData);
-    final decryptData = rsaDecrypt(privKeyAlice, encryptData);
-    String result = Utf8Decoder().convert(decryptData);
-    print(result);
 
+
+    final pubKeyAlice = parsePublicKeyFromPem(test);
+    final encryptData = rsaEncrypt(pubKeyBob, data);
+    final signature = rsaSign(privKeyAlice, encryptData); // creation de la signature à partir de le message cryptée
+    final decryptData = rsaDecrypt(privKeyBob, encryptData); // décrypte le message
+    String result = Utf8Decoder().convert(decryptData);
+    String cryptMessageSigned = "$result $signature"; // crée le message crypté avec la signature qui sera split avec final splitted = cryptMessageSigned.split(' ');"
+    print(rsaVerify(pubKeyAlice, encryptData ,signature));// envoie true si la signature provient de l'emmeteur
 
 
     if (_formKey.currentState!.validate()){
