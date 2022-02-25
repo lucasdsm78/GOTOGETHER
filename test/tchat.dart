@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/asymetric_key.dart';
 
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
@@ -20,37 +23,43 @@ void main() {
   late String pubKey1;
   late String pubKey2;
   late String pubKeyExt;
+  late String privateKey1;
+  late String privateKey2;
+  late String privateKeyExt;
 
   final idMainConversation = 1;
   late List<Conversation> conversation ;
 
-  setUserKeyPair(String path){
-    if(true){ // if exist in localStorage
-      //get the key pair from localStorage
-      //return
-    }
-    //else generate it
-    return "publicKeyHere";
-  }
-
   setUpAll(() async{
+    //region generate token for 3 different user
     token1 = await userUseCase.getJWTTokenByGoogleToken("someGoogleToken");
     token2 = await userUseCase.getJWTTokenByLogin({"mail":"gwenael.mw@orange.fr", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
     tokenExt = await userUseCase.getJWTTokenByLogin({"mail":"someMail6@gmail.com", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
+    //endregion
 
+    //region get key  pair for 3 user
+    AsymetricKeyGenerator keyGenerator = AsymetricKeyGenerator();
+    //keyGenerator.generateKey();
+    pubKey1 = keyGenerator.getPubKeyFromStorage();
+    privateKey1 = keyGenerator.getPrivateKeyFromStorage();
 
-    // get (from localstorage) or generate 3 keypair, one for each test user
-    pubKey1 = setUserKeyPair("");
-    pubKey2 = setUserKeyPair("");
-    pubKeyExt = setUserKeyPair("");
+    keyGenerator.setId("2");
+    pubKey2 = keyGenerator.getPubKeyFromStorage();
+    privateKey2 = keyGenerator.getPrivateKeyFromStorage();
 
-    //then set pubkey --> bool isUpdate = await userUseCase.setPublicKey("publicKeyHere");
+    keyGenerator.setId("ext");
+    pubKeyExt = keyGenerator.getPubKeyFromStorage();
+    privateKeyExt = keyGenerator.getPubKeyFromStorage();
+    //endregion
+
+    //region then set pubkey
     userUseCase.api.api.setToken(token1);
     await userUseCase.setPublicKey(pubKey1);
     userUseCase.api.api.setToken(token2);
     await userUseCase.setPublicKey(pubKey2);
     userUseCase.api.api.setToken(tokenExt);
     await userUseCase.setPublicKey(pubKeyExt);
+    //endregion
 
     messageUseCase.api.api.setToken(token1); //@required user 1 to be in the conversation
     conversation = await messageUseCase.getConversationById(idMainConversation);
@@ -75,16 +84,12 @@ void main() {
       messageUseCase.api.api.setToken(token2);
       final messagesUser2 = await messageUseCase.getById(idMainConversation);
 
-      //@todo check message signature, and try decrypt each message + add corresponding test
-      //expect user 1 can read messagesUser1, but not messagesUser2.
-      //expect user 2 can read messagesUser2, but not messagesUser1.
-
-
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
         String pubKeyUser1 = getUserPubKeyFromConversation(conversation, messagesUser1[0].idReceiver);
         expect(pubKeyUser1, pubKey1);
       }
+
       if(messagesUser2.isNotEmpty){
         expect(messagesUser2[0].idReceiver, 2);
       }
@@ -100,10 +105,6 @@ void main() {
           predicate((e) => e is ApiErr && e.codeStatus == 403)
       ));
 
-      //@todo check message signature, and try decrypt each message + add corresponding test
-      //expect user 1 can read messagesUser1, but not messagesUser2.
-      //expect user outside can't read any message.
-
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
       }
@@ -111,40 +112,49 @@ void main() {
 
     test('add message with user 1, which is inside the conversation', () async{
       messageUseCase.api.api.setToken(token1);
-
       String message = "this is test message from flutter";
-      //@todo encrypt message and sign it with user 1 keypair
 
+      //region generate crypted message for all user in conversation
       List<Message> listMessage = [];
       conversation.forEach((element) {
-        //element.pubKey
-        listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+        Uint8List encryptData = encrypt(message, element.pubKey);
+        listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
       });
+      //endregion
 
       final messageSend = await messageUseCase.add(idMainConversation, listMessage);
-      debugPrint(messageSend.toString());
 
-      //@todo decrypte, check signature and add corresponding expectation
       expect(messageSend.idReceiver, 1);
       expect(messageSend.idSender, 1);
+
+      //region decrypt for user 1
+      String decryptedMsg = decryptFromString(messageSend.bodyMessage, privateKey1);
+      expect(decryptedMsg, message);
+      expect(privateKey1, isNot(equals(privateKey2)));
+      //endregion
+
+      //@todo should test to decrypt with privateKey2 and should fail. need to handling error
+      //String decryptedMsg2 = decryptFromString( messageSend.bodyMessage, privateKey2);
+      //debugPrint(decryptedMsg2);
+      //expect(decryptedMsg2, isNot(equals(message)));
+
+      //@todo check signature
     });
 
   });
 
   test('try add message with a user out of the conversation', () async{
     messageUseCase.api.api.setToken(tokenExt);
-
     String message = "this is a message from a user out of conversation";
-    //@todo encrypt message and sign it with outside user keypair
 
     List<Message> listMessage = [];
     conversation.forEach((element) {
-      //element.pubKey
-      listMessage.add(Message(id: 0, bodyMessage: message, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+      Uint8List encryptData = encrypt(message, element.pubKey);
+      listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
     });
 
     expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
-        predicate((e) => e is ApiErr && e.codeStatus == 403)
+        predicate((e) => e is ApiErr && e.codeStatus == 403) // because only user in conversation can add new message
     ));
   });
 
