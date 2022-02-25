@@ -15,6 +15,7 @@ import 'package:pointycastle/src/platform_check/platform_check.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/signers/rsa_signer.dart';
 
+//region helpers keys pair / encryption
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateRSAkeyPair( SecureRandom secureRandom, {int bitLength = 2048}) {
   // Create an RSA key generator and initialize it
   final keyGen = RSAKeyGenerator()..init(ParametersWithRandom(RSAKeyGeneratorParameters(BigInt.parse('65537'), bitLength, 64), secureRandom));
@@ -181,7 +182,7 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
       ? output
       : output.sublist(0, outputOffset);
 }
-
+//endregion
 
 
 class AsymetricKeyGenerator{
@@ -269,9 +270,14 @@ decryptFromListInt(List<int> list, String privateKey){
 //endregion
 //endregion
 
-
-
 //region signature
+addSignature(String encryptData, String signature){
+  return "$encryptData.$signature";
+}
+splitSignedAndCryptedMessage(String message){
+  List<String> list = message.split(".");
+  return {"encryptedMsg":list[0], "signature":list[1]};
+}
 // fonction qui permet de créer la signature
 Uint8List rsaSign(RSAPrivateKey privateKey, Uint8List dataToSign) {
   final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
@@ -297,5 +303,8 @@ bool rsaVerify(RSAPublicKey publicKey, Uint8List signedData, Uint8List signature
 }
 bool rsaVerifyFromKeyString(String publicKey, Uint8List signedData, Uint8List signature) {
   return rsaVerify( parsePublicKeyFromPem(publicKey), signedData, signature);
+}
+bool rsaVerifyFromKeyStringAndListInt(String publicKey, List<int> listSignedData, List<int> listSignature) {
+  return rsaVerify( parsePublicKeyFromPem(publicKey), Uint8List.fromList(listSignedData), Uint8List.fromList(listSignature));
 }
 //endregion

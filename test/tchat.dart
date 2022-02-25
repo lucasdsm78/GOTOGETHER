@@ -1,9 +1,5 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/asymetric_key.dart';
 
@@ -32,7 +28,7 @@ void main() {
 
   setUpAll(() async{
     //region generate token for 3 different user
-    token1 = await userUseCase.getJWTTokenByGoogleToken("someGoogleToken");
+    token1 = await userUseCase.getJWTTokenByGoogleToken("eyJhbGciOiJSUzI1NiIsImtpZCI6ImNmNWQ4ZTc0ZjNjNDg2ZWU1MDNkNWVlYzkzYTEwMWM2NGJhY2Y3ZGEiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiTHVjYXMgREEgU0lMVkEgTUFSUVVFUyIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQVRYQUp5UHdBRUFoSzNNWnJsSkR5dUhwOGxJZ2t5bllOR2dyMnpJM2g3Sz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9nby10b2dldGhlci00ODc5ZiIsImF1ZCI6ImdvLXRvZ2V0aGVyLTQ4NzlmIiwiYXV0aF90aW1lIjoxNjQ1NzE0OTQwLCJ1c2VyX2lkIjoiY3BGV0xpb0MwUGJGcWo0WU5yVTA3UkFBR1d5MSIsInN1YiI6ImNwRldMaW9DMFBiRnFqNFlOclUwN1JBQUdXeTEiLCJpYXQiOjE2NDU3MTQ5NDAsImV4cCI6MTY0NTcxODU0MCwiZW1haWwiOiJsdWNhcy5kYS1zaWx2YS1tYXJxdWVzQGVkdS5lc2llZS1pdC5mciIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTEzNzQ5NjYzODQ4NjgxMzEwNjEzIl0sImVtYWlsIjpbImx1Y2FzLmRhLXNpbHZhLW1hcnF1ZXNAZWR1LmVzaWVlLWl0LmZyIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.YQhwgl90YzTkd5XO27wdYayq7sp6pZZAm3jJk12moBHK7XOomdqIop9GGDnCFHcebdNOa06s5HrJyFiwXryR06yhhsc6EY5AzRFAGI2UBGfrVrfXNq9HtQE_sjAZvb3pe4-XT3RrYrWMaonxv80F");
     token2 = await userUseCase.getJWTTokenByLogin({"mail":"gwenael.mw@orange.fr", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
     tokenExt = await userUseCase.getJWTTokenByLogin({"mail":"someMail6@gmail.com", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
     //endregion
