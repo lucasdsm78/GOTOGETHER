@@ -100,10 +100,12 @@ void main() {
       messageUseCase.api.api.setToken(token1);
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
+      //region try to get messages with user outside conversation
       messageUseCase.api.api.setToken(tokenExt);
       expect(() async => await messageUseCase.getById(idMainConversation), throwsA(
           predicate((e) => e is ApiErr && e.codeStatus == 403)
       ));
+      //endregion
 
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);

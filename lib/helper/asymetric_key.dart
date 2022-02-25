@@ -260,9 +260,7 @@ decrypt(Uint8List encryptData, String privateKey){
   return Utf8Decoder().convert(decryptData);
 }
 decryptFromString(String encryptData, String privateKey){
-  List<int> list = jsonDecode(encryptData).cast<int>();
-  Uint8List bytes = Uint8List.fromList(list);
-  return decrypt(bytes, privateKey);
+  return decryptFromListInt(jsonDecode(encryptData).cast<int>(), privateKey);
 }
 decryptFromListInt(List<int> list, String privateKey){
   Uint8List bytes = Uint8List.fromList(list);
