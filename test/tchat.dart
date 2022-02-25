@@ -145,10 +145,10 @@ void main() {
       expect(privateKey1, isNot(equals(privateKey2)));
       //endregion
 
-      //@todo should test to decrypt with privateKey2 and should fail. need to handling error
-      //String decryptedMsg2 = decryptFromString( messageSend.bodyMessage, privateKey2);
-      //debugPrint(decryptedMsg2);
-      //expect(decryptedMsg2, isNot(equals(message)));
+      //should fail to decrypt with user 2 private key, sending a custom error
+      expect(() => decryptFromString(messageBody, privateKey2), throwsA(
+          predicate((e) => e is EncryptionErr)
+      ));
 
       rsaVerifyFromKeyStringAndStringBytes(pubKey1, messageBody, map["signature"]!);
 

@@ -160,6 +160,7 @@ Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) {
 }
 
 Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
+  try{
   final numBlocks = input.length ~/ engine.inputBlockSize +
       ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
 
@@ -181,6 +182,9 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
   return (output.length == outputOffset)
       ? output
       : output.sublist(0, outputOffset);
+  } on Error catch(e){
+    throw EncryptionErr(codeStatus: 1, message: "can't encrypt");
+  }
 }
 //endregion
 
@@ -245,20 +249,37 @@ class AsymetricKeyGenerator{
   }
 }
 
+class EncryptionErr implements Exception {
+  int codeStatus;
+  String message;
+
+  String errMsg() => 'an error occured status code : $message - $codeStatus -';
+
+  EncryptionErr({required this.codeStatus, required this.message});
+}
+
 //region decrypt / encrypt
 Uint8List encrypt(String message, String pubKey){
-  List<int> list = message.codeUnits;
-  Uint8List data = Uint8List.fromList(list);
+  try{
+    List<int> list = message.codeUnits;
+    Uint8List data = Uint8List.fromList(list);
 
-  final pubKeyAlice = parsePublicKeyFromPem(pubKey);
-  return  rsaEncrypt(pubKeyAlice, data);
+    final pubKeyAlice = parsePublicKeyFromPem(pubKey);
+    return  rsaEncrypt(pubKeyAlice, data);
+  } on Exception catch(e){
+    throw EncryptionErr(codeStatus: 1, message: "can't encrypt");
+  }
 }
 
 //region decrypt
 decrypt(Uint8List encryptData, String privateKey){
-  final privKeyBites = parsePrivateKeyFromPem(privateKey);
-  final decryptData = rsaDecrypt(privKeyBites, encryptData);
-  return Utf8Decoder().convert(decryptData);
+  try{
+    final privKeyBites = parsePrivateKeyFromPem(privateKey);
+    final decryptData = rsaDecrypt(privKeyBites, encryptData);
+    return Utf8Decoder().convert(decryptData);
+  } on Exception catch(e){
+    throw EncryptionErr(codeStatus: 1, message: "can't encrypt");
+  }
 }
 decryptFromString(String encryptData, String privateKey){
   return decryptFromListInt(jsonDecode(encryptData).cast<int>(), privateKey);
