@@ -12,6 +12,9 @@ import 'package:pointycastle/key_generators/rsa_key_generator.dart';
 import 'dart:typed_data';
 import 'package:pointycastle/src/platform_check/platform_check.dart';
 
+import 'package:pointycastle/digests/sha256.dart';
+import 'package:pointycastle/signers/rsa_signer.dart';
+
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateRSAkeyPair( SecureRandom secureRandom, {int bitLength = 2048}) {
   // Create an RSA key generator and initialize it
   final keyGen = RSAKeyGenerator()..init(ParametersWithRandom(RSAKeyGeneratorParameters(BigInt.parse('65537'), bitLength, 64), secureRandom));
@@ -31,7 +34,7 @@ SecureRandom exampleSecureRandom() {
   return secureRandom;
 }
 
-parsePublicKeyFromPem(pemString) {
+RSAPublicKey parsePublicKeyFromPem(pemString) {
   Uint8List publicKeyDER = base64.decode(pemString);
   var asn1Parser = ASN1Parser(publicKeyDER);
   var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
@@ -50,7 +53,7 @@ parsePublicKeyFromPem(pemString) {
   return rsaPublicKey;
 }
 
-parsePrivateKeyFromPem(pemString) {
+RSAPrivateKey parsePrivateKeyFromPem(pemString) {
   Uint8List privateKeyDER = base64.decode(pemString);
   var asn1Parser = ASN1Parser(privateKeyDER);
   var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
@@ -232,7 +235,7 @@ class AsymetricKeyGenerator{
 
       final pemPublicKey = encodePublicKeyToPem(public);
       final pemPrivateKey = encodePrivateKeyToPem(private);
-      //final pubKey = parsePublicKeyFromPem(pemPublicKey);
+      final pubKey = parsePublicKeyFromPem(pemPublicKey);
       //final privKey = parsePrivateKeyFromPem(pemPrivateKey);
 
       setPubKeyFromStorage(pemPublicKey);
@@ -241,6 +244,7 @@ class AsymetricKeyGenerator{
   }
 }
 
+//region decrypt / encrypt
 Uint8List encrypt(String message, String pubKey){
   List<int> list = message.codeUnits;
   Uint8List data = Uint8List.fromList(list);
@@ -263,5 +267,37 @@ decryptFromString(String encryptData, String privateKey){
 decryptFromListInt(List<int> list, String privateKey){
   Uint8List bytes = Uint8List.fromList(list);
   return decrypt(bytes, privateKey);
+}
+//endregion
+//endregion
+
+
+
+//region signature
+// fonction qui permet de créer la signature
+Uint8List rsaSign(RSAPrivateKey privateKey, Uint8List dataToSign) {
+  final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
+  signer.init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey)); // true=sign
+  final sig = signer.generateSignature(dataToSign);
+  return sig.bytes;
+}
+Uint8List rsaSignFromKeyString(String privateKey, Uint8List dataToSign) {
+  return rsaSign( parsePrivateKeyFromPem(privateKey), dataToSign);
+}
+
+
+// fonction qui permet de verifier la signature
+bool rsaVerify(RSAPublicKey publicKey, Uint8List signedData, Uint8List signature) {
+  final sig = RSASignature(signature);
+  final verifier = RSASigner(SHA256Digest(), '0609608648016503040201');
+  verifier.init(false, PublicKeyParameter<RSAPublicKey>(publicKey)); // false=verify
+  try {
+    return verifier.verifySignature(signedData, sig);
+  } on ArgumentError {
+    return false; // for Pointy Castle 1.0.2 when signature has been modified
+  }
+}
+bool rsaVerifyFromKeyString(String publicKey, Uint8List signedData, Uint8List signature) {
+  return rsaVerify( parsePublicKeyFromPem(publicKey), signedData, signature);
 }
 //endregion
