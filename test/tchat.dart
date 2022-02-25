@@ -17,8 +17,21 @@ void main() {
   late String token2;
   late String tokenExt;
 
+  late String pubKey1;
+  late String pubKey2;
+  late String pubKeyExt;
+
   final idMainConversation = 1;
   late List<Conversation> conversation ;
+
+  setUserKeyPair(String path){
+    if(true){ // if exist in localStorage
+      //get the key pair from localStorage
+      //return
+    }
+    //else generate it
+    return "publicKeyHere";
+  }
 
   setUpAll(() async{
     token1 = await userUseCase.getJWTTokenByGoogleToken("someGoogleToken");
@@ -26,14 +39,33 @@ void main() {
     tokenExt = await userUseCase.getJWTTokenByLogin({"mail":"someMail6@gmail.com", "password":"somePa\$\$w0rd"}); //somePa$$w0rd
 
 
-    // generate 3 keypair, one for each user.
+    // get (from localstorage) or generate 3 keypair, one for each test user
+    pubKey1 = setUserKeyPair("");
+    pubKey2 = setUserKeyPair("");
+    pubKeyExt = setUserKeyPair("");
+
     //then set pubkey --> bool isUpdate = await userUseCase.setPublicKey("publicKeyHere");
     userUseCase.api.api.setToken(token1);
-    bool isUpdate = await userUseCase.setPublicKey("publicKeyHere");
+    await userUseCase.setPublicKey(pubKey1);
+    userUseCase.api.api.setToken(token2);
+    await userUseCase.setPublicKey(pubKey2);
+    userUseCase.api.api.setToken(tokenExt);
+    await userUseCase.setPublicKey(pubKeyExt);
 
     messageUseCase.api.api.setToken(token1); //@required user 1 to be in the conversation
     conversation = await messageUseCase.getConversationById(idMainConversation);
   }) ;
+
+
+  String getUserPubKeyFromConversation(List<Conversation> conv, int idUser){
+    String pubKey = "";
+    conv.forEach((element) {
+      if(element.userId == idUser){
+        pubKey = element.pubKey;
+      }
+    });
+    return pubKey;
+  }
 
   group('API Tchat', (){
     test('get messages from api for conversation 1 with account inside main conversation', () async {
@@ -47,8 +79,11 @@ void main() {
       //expect user 1 can read messagesUser1, but not messagesUser2.
       //expect user 2 can read messagesUser2, but not messagesUser1.
 
+
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
+        String pubKeyUser1 = getUserPubKeyFromConversation(conversation, messagesUser1[0].idReceiver);
+        expect(pubKeyUser1, pubKey1);
       }
       if(messagesUser2.isNotEmpty){
         expect(messagesUser2[0].idReceiver, 2);
@@ -61,21 +96,20 @@ void main() {
       final messagesUser1 = await messageUseCase.getById(idMainConversation);
 
       messageUseCase.api.api.setToken(tokenExt);
-      // final messagesUser2 = await messageUseCase.getById(idMainConversation); //@todo maybe could return the error when failed to get data with 200 status
       expect(() async => await messageUseCase.getById(idMainConversation), throwsA(
           predicate((e) => e is ApiErr && e.codeStatus == 403)
       ));
 
       //@todo check message signature, and try decrypt each message + add corresponding test
       //expect user 1 can read messagesUser1, but not messagesUser2.
-      //expect user 2 can read messagesUser2, but not messagesUser1.
+      //expect user outside can't read any message.
 
       if(messagesUser1.isNotEmpty){
         expect(messagesUser1[0].idReceiver, 1);
       }
     });
 
-    test('add message with user 1', () async{
+    test('add message with user 1, which is inside the conversation', () async{
       messageUseCase.api.api.setToken(token1);
 
       String message = "this is test message from flutter";
@@ -97,7 +131,7 @@ void main() {
 
   });
 
-  test('add message with a user out of the conversation', () async{
+  test('try add message with a user out of the conversation', () async{
     messageUseCase.api.api.setToken(tokenExt);
 
     String message = "this is a message from a user out of conversation";
@@ -112,8 +146,6 @@ void main() {
     expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(
         predicate((e) => e is ApiErr && e.codeStatus == 403)
     ));
-
-    //expect a refusal
   });
 
 /*

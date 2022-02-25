@@ -85,7 +85,7 @@ class ApiErr implements Exception {
   int codeStatus;
   String message;
 
-  String errMsg() => 'an error occured with status $codeStatus, $message';
+  String errMsg() => 'an error occured with status code - $codeStatus - , $message';
 
   ApiErr({required this.codeStatus, required this.message});
 }
