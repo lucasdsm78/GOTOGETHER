@@ -15,7 +15,6 @@ class Message {
     required this.idReceiver,
     required this.idSender,
     required this.createdAt,
-
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -32,6 +31,9 @@ class Message {
     return {
       'id': id,
       'message': bodyMessage,
+      'idUserReceiver': idReceiver,
+      'idSender': idSender,
+      "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
     };
   }
 

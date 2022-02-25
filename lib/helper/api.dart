@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:go_together/helper/string_extension.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/models/messages.dart';
@@ -23,7 +24,7 @@ extension MethodExtension on Method {
 class Api{
   final http.Client client = http.Client();
   final host = "http://51.255.51.106:5000/";
-  var mainHeader = { // ne dois pas etre final, et on doit faire une nouvelle methode 'setMainHeader'
+  var mainHeader = {
     'Content-Type': 'application/json; charset=UTF-8',
     'secret_key' :'?somekey_thatWillReject_1orMore_unwantedRequest'
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
@@ -32,6 +33,9 @@ class Api{
   setMainHeader(keyPara, val){
     // update mainHeader
     mainHeader[keyPara]=val ;
+  }
+  setToken(val){
+    setMainHeader("x-access-tokens", val);
   }
 
   String handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored){
@@ -69,5 +73,10 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
 
     return parsed.map<Message>((json) => Message.fromJson(json)).toList();
+  }
+
+  List<Conversation> parseConversation(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"]["conversation"].cast<Map<String, dynamic>>();
+    return parsed.map<Conversation>((json) => Conversation.fromJson(json)).toList();
   }
 }

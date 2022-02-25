@@ -38,6 +38,19 @@ class UserServiceApi {
     }
   }
 
+  Future<String> getJWTTokenByLogin(Map<String, String> login) async {
+    final response = await api.client
+        .post(Uri.parse(api.host + 'authentication'),
+        headers: api.mainHeader,
+        body: jsonEncode(login),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)["success"]["token"];
+    } else {
+      throw Exception('Failed to load token');
+    }
+  }
+
   Future<User> add(User user) async {
     //ex : createUser(User(username: "flutterUser2", mail: "flutterUser2@gmail.com", password: "flutterPass"));
     final response = await api.client
