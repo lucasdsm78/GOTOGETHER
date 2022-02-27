@@ -14,10 +14,12 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
+import 'package:go_together/widgets/components/custom_row.dart';
 import 'package:go_together/widgets/components/dropdown_gender.dart';
 import 'package:go_together/widgets/components/dropdown_level.dart';
 import 'package:go_together/widgets/components/dropdown_sports.dart';
 import 'package:go_together/widgets/components/map_dialog.dart';
+import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -51,7 +53,8 @@ class _ActivityCreateState extends State<ActivityCreate> {
   Duration _duration = const Duration(hours: 0, minutes: 0);
   bool public = false;
 
-  String dateTimeEvent = "";
+//  String dateTimeEvent = "";
+  DateTime dateTimeEvent = DateTime.now();
   Location? location ;
 
   @override
@@ -67,7 +70,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
   //region setter
   _setEventDate(date){
       setState(() {
-        dateTimeEvent = date.toString();
+        dateTimeEvent = date as DateTime;
       });
   }
   _setEventSport(newSport) {
@@ -83,6 +86,11 @@ class _ActivityCreateState extends State<ActivityCreate> {
   _setEventGender(newValue){
     setState(() {
       criterGender = newValue!;
+    });
+  }
+  _setEventPrivacy(newValue){
+    setState(() {
+      public = newValue!;
     });
   }
   //endregion
@@ -104,11 +112,10 @@ class _ActivityCreateState extends State<ActivityCreate> {
                 controller: eventDescriptionInput
             ),
 
-
             Row(
               children: [
                 DateTimePickerButton(
-                    datetime: (dateTimeEvent !="" ? DateTime.parse(dateTimeEvent) : DateTime.now()),
+                    datetime: dateTimeEvent ,
                     onPressed: _setEventDate),
                 Text("Date : $dateTimeEvent "),
               ],
@@ -125,48 +132,31 @@ class _ActivityCreateState extends State<ActivityCreate> {
               ],
             ),
 
-            Row(
-              children: [
-                Expanded(
-                    flex:1,
-                    child: DropdownSports(sport: sport,onChange:_setEventSport)
-                ),
-                Expanded(
-                  flex:1,
-                  child: DropdownLevel(level: eventLevel,onChange: _setEventLevel)
-                ),
-                Expanded(                   // Limité aux hommes ?
-                flex:1,
-                  child: Column(children: [
-                    Text("Accessible à "),
-                    DropdownGender(criterGender: criterGender, onChange: _setEventGender),
-                  ],
-                  )
-                )
+            CustomRow(children: [
+              DropdownSports(sport: sport,onChange:_setEventSport),
+              DropdownLevel(level: eventLevel,onChange: _setEventLevel),
+              Column(children: [
+                Text("Accessible à "),
+                DropdownGender(criterGender: criterGender, onChange: _setEventGender),
               ],
-            ),
-            // Event description
+              )
+            ]),
 
-            Row(
+            CustomRow(
               children: [
-                Expanded(
-                  flex:1,
-                    child: // Nb total participants
-                    CustomInput(
-                      title: "Nombre total de participants",
-                      notValidError: "Please enter a number of participant",
-                      controller: nbTotalParticipantsInput,
-                      type: TextInputType.number,
-                    ),
-                )
-              ],
+                CustomInput(
+                  title: "Nombre total de participants",
+                  notValidError: "Please enter a number of participant",
+                  controller: nbTotalParticipantsInput,
+                  type: TextInputType.number,
+                ),
+              ]
             ),
-
 
             // Duration
             // @todo : place it in a dialog maybe, like to select date
             Text("Duration :"),
-             DurationPicker(
+            DurationPicker(
               duration: _duration,
               baseUnit: BaseUnit.minute,
               onChange: (val) {
@@ -177,44 +167,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
 
             // Public / Entre amis
-            Row(
-              children: [
-                Expanded(
-                  flex:1,
-                  child: ListTile(
-                    title: Text("Publique"),
-                    leading: Radio(
-                      value: true,
-                      groupValue: public,
-                      onChanged: (value) {
-                        setState(() {
-                          public = true;
-                        });
-                      },
-                      activeColor: Colors.green,
-                    ),
-                  ),
-                ),
-                Expanded(
-                    flex:1,
-                    child:// Entre amis
-                    ListTile(
-                      title: Text("Entre amis"),
-                      leading: Radio(
-                        value: false,
-                        groupValue: public,
-                        onChanged: (value) {
-                          setState(() {
-                            public = false;
-                          });
-                        },
-                        activeColor: Colors.green,
-                      ),
-                    ),
-                )
-              ],
-            ),
-
+            RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
             ElevatedButton(
               onPressed: () {
@@ -251,8 +204,8 @@ class _ActivityCreateState extends State<ActivityCreate> {
 
   Activity _generateActivity(){
     //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-     return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: parseStringToDateTime(dateTimeEvent).add(_duration),
-         dateStart: parseStringToDateTime(dateTimeEvent), isCanceled: 0, description: eventDescription,  level: eventLevel,
+     return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: dateTimeEvent.add(_duration),
+         dateStart: dateTimeEvent, isCanceled: 0, description: eventDescription,  level: eventLevel,
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
   }
 
