@@ -54,14 +54,22 @@ class Authentication {
           user = userCredential.user;
 
           // ********* GENERATE TOKEN JWT
+
+          // Nous récupérons le use case de l'user
+          // Le usecase permet de lister toutes les fonctions que
+          // l'utilisateur peut faire
+
           final UserUseCase userUseCase = UserUseCase();
 
           debugPrint('user: $user');
 
           if(user != null) {
+            // Nous récupérons le token de l'utilisateur quand il appuie
+            // sur le bouton de connexion
             String idToken = await user.getIdToken();
             debugPrint('idToken: $idToken');
-
+            // Nous appelons la fonction pour récupérer le token JWT généré par
+            // l'API en Flask
             String tokenGoogleJWT = await userUseCase
                 .getJWTTokenByGoogleToken(idToken);
             debugPrint('tokenJWT: $tokenGoogleJWT');
