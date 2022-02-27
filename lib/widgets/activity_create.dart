@@ -3,17 +3,20 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:go_together/usecase/activity.dart';
-import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:go_together/widgets/components/custom_input.dart';
+import 'package:go_together/widgets/components/dropdown_gender.dart';
+import 'package:go_together/widgets/components/dropdown_level.dart';
+import 'package:go_together/widgets/components/dropdown_sports.dart';
 import 'package:go_together/widgets/components/map_dialog.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:localstorage/localstorage.dart';
@@ -30,9 +33,6 @@ class ActivityCreate extends StatefulWidget {
 }
 
 class _ActivityCreateState extends State<ActivityCreate> {
-  List<Sport> futureSports = [];
-  List<Level> futureLevels = [Level(id: 1, name: "pro"), Level(id: 2, name: "semi-pro"), Level(id: 3, name: "amateur")];
-  final SportUseCase sportUseCase = SportUseCase();
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
@@ -42,47 +42,21 @@ class _ActivityCreateState extends State<ActivityCreate> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController eventDescriptionInput = TextEditingController();
   TextEditingController nbManquantsInput = TextEditingController();
-  TextEditingController titleEventInput = TextEditingController();
   TextEditingController nbTotalParticipantsInput = TextEditingController();
 
   String criterGender = 'Tous';
-  late Level eventLevel;
+  late Level eventLevel = MockLevel.levelList[0];
   String eventDescription = "";
-  String titleEvent = "";
-  int nbManquants = 0;
   int nbTotalParticipants = 0;
   Duration _duration = const Duration(hours: 0, minutes: 0);
-
-  int yearNow = DateTime.now().year;
-  int monthNow = DateTime.now().month;
-  int dayNow = DateTime.now().day;
   bool public = false;
 
   String dateTimeEvent = "";
   Location? location ;
 
-  void getSports() async{
-    String? storedSport = storage.getItem("sports");
-    if(storedSport != null){
-      setState(() {
-        futureSports = parseSports(storedSport);
-        sport = futureSports[0];
-      });
-    }
-    else {
-      List<Sport> res = await sportUseCase.getAll();
-      setState(() {
-        futureSports = res;
-        sport = futureSports[0];
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getSports();
-    eventLevel = futureLevels[0];
   }
 
   @override
@@ -90,11 +64,28 @@ class _ActivityCreateState extends State<ActivityCreate> {
     super.dispose();
   }
 
+  //region setter
   _setEventDate(date){
       setState(() {
         dateTimeEvent = date.toString();
       });
   }
+  _setEventSport(newSport) {
+    setState(() {
+      sport = newSport as Sport;
+    });
+  }
+  _setEventLevel(newLevel) {
+    setState(() {
+      eventLevel = newLevel as Level;
+    });
+  }
+  _setEventGender(newValue){
+    setState(() {
+      criterGender = newValue!;
+    });
+  }
+  //endregion
 
   @override
   Widget build(BuildContext context) {
@@ -107,22 +98,13 @@ class _ActivityCreateState extends State<ActivityCreate> {
         key: _formKey,
         child: ListView( //@todo : use a ListView(children:[])
           children: <Widget>[
-
-            // Event title
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Title',
-              ),
-              // Check if event description are not empty
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text for event title';
-                }
-                return null;
-              },
-              controller: titleEventInput,
+            CustomInput(
+                title: "Description",
+                notValidError: "Please enter some text for event description",
+                controller: eventDescriptionInput
             ),
+
+
             Row(
               children: [
                 DateTimePickerButton(
@@ -143,66 +125,23 @@ class _ActivityCreateState extends State<ActivityCreate> {
               ],
             ),
 
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Description',
-              ),
-              // Check if event description are not empty
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text for event description';
-                }
-                return null;
-              },
-              controller: eventDescriptionInput,
-            ),
-
             Row(
               children: [
                 Expanded(
                     flex:1,
-                    child:
-                    // Event sport
-                    //Text("Votre sport"),
-                  DropdownButton<Sport>(
-                    value: sport,
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    onChanged: (newValue) {
-                      setState(() {
-                        sport = newValue as Sport;
-                      });
-                    },
-                    items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
-                      return DropdownMenuItem<Sport>(
-                        value: value,
-                        child: Text(value.name.toString()),
-                      );
-                    }).toList(),
-                  ),
+                    child: DropdownSports(sport: sport,onChange:_setEventSport)
                 ),
                 Expanded(
                   flex:1,
-                  child:
-                  // Event level
-                  //Text("Event level"),
-                    DropdownButton<Level>(
-                      value: eventLevel,
-                      elevation: 16,
-                      style: const TextStyle(color: Colors.deepPurple),
-                      onChanged: (newValue) {
-                        setState(() {
-                          eventLevel = newValue as Level;
-                        });
-                      },
-                      items: futureLevels.map<DropdownMenuItem<Level>>((Level value) {
-                        return DropdownMenuItem<Level>(
-                          value: value,
-                          child: Text(value.name.toString()),
-                        );
-                      }).toList(),
-                    ),
+                  child: DropdownLevel(level: eventLevel,onChange: _setEventLevel)
+                ),
+                Expanded(                   // Limité aux hommes ?
+                flex:1,
+                  child: Column(children: [
+                    Text("Accessible à "),
+                    DropdownGender(criterGender: criterGender, onChange: _setEventGender),
+                  ],
+                  )
                 )
               ],
             ),
@@ -211,47 +150,17 @@ class _ActivityCreateState extends State<ActivityCreate> {
             Row(
               children: [
                 Expanded(
-                    flex: 1,
-                    child: // Event nombre manquants
-                    //@todo : nb manquant surement pas utiles, et aucun champs prévu en BDD
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Nombre manquants',
-                      ),
-                      keyboardType: TextInputType.number,
-                      // Check if event description are not empty
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text for this input';
-                        }
-                        return null;
-                      },
-                      controller: nbManquantsInput,
-                    ),
-                ),
-                Expanded(
                   flex:1,
                     child: // Nb total participants
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Nombre total de participants',
-                      ),
-                      keyboardType: TextInputType.number,
-                      // Check if event description are not empty
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text for this input';
-                        }
-                        return null;
-                      },
+                    CustomInput(
+                      title: "Nombre total de participants",
+                      notValidError: "Please enter a number of participant",
                       controller: nbTotalParticipantsInput,
+                      type: TextInputType.number,
                     ),
                 )
               ],
             ),
-
 
 
             // Duration
@@ -268,7 +177,6 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
 
             // Public / Entre amis
-            //Publique
             Row(
               children: [
                 Expanded(
@@ -280,7 +188,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                       groupValue: public,
                       onChanged: (value) {
                         setState(() {
-                          public = value as bool;
+                          public = true;
                         });
                       },
                       activeColor: Colors.green,
@@ -297,7 +205,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                         groupValue: public,
                         onChanged: (value) {
                           setState(() {
-                            public = value as bool;
+                            public = false;
                           });
                         },
                         activeColor: Colors.green,
@@ -308,40 +216,11 @@ class _ActivityCreateState extends State<ActivityCreate> {
             ),
 
 
-
-
-            // Limité aux hommes ?
-            Text("Accessible à "),
-            DropdownButton<String>(
-              value: criterGender,
-              elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
-              onChanged: (String? newValue) {
-                setState(() {
-                  criterGender = newValue!;
-                });
-              },
-              items: <String>['Tous', 'Hommes', 'Femmes']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList()
-          ),
-
-
             ElevatedButton(
               onPressed: () {
-                // Check the form and return true if it's valid, false otherwise
                 if (_formKey.currentState!.validate()) {
-                  // We display a snack bar if the form is valid
-                  // And then, we insert into database data form
-
                   setState(() {
                     eventDescription = eventDescriptionInput.text;
-                    titleEvent = titleEventInput.text;
-                    nbManquants = int.parse(nbManquantsInput.text);
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
                   _addEvent();
@@ -368,6 +247,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
     log("----- CLOSE MAP DIALOG");
     log(res.toString());
   }
+
 
   Activity _generateActivity(){
     //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
