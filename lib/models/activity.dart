@@ -74,7 +74,7 @@ class Activity {
       updatedAt: parseStringToDateTime(json['updatedAt']! as String),
 
       public: json["public"] == null ? true : json["public"]!=0,
-      criterionGender: json["criterionGender"] == null ? Gender.male : getGenderByString(json["criterionGender"]),
+      criterionGender: json["criterionGender"] == null ? null : getGenderByString(json["criterionGender"]),
       limitByLevel: json["limitByLevel"] == null ? true : json["limitByLevel"]!=0,
     );
   }

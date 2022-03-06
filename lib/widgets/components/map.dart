@@ -28,6 +28,9 @@ class _CustomMapState extends State<CustomMap> {
       target: (widget.pos != null ? widget.pos! : const LatLng(49.035617, 2.060325)),
       zoom: 11.0,
     );
+    if(widget.pos != null){
+      _addMarker(widget.pos!);
+    }
 
   }
 
@@ -47,7 +50,7 @@ class _CustomMapState extends State<CustomMap> {
         markers: {
           if(_origin != null) _origin!,
         },
-        onLongPress: _addMarker,
+        onTap: _addMarker,
     );
   }
 
@@ -85,12 +88,19 @@ class _CustomMapState extends State<CustomMap> {
       caseSensitive: false,
       multiLine: false,
     );
+    RegExp regExpSearchSplit = RegExp(
+      r"" + search.split(" ").join("|") + "",
+      caseSensitive: false,
+      multiLine: false,
+    );
     RegExp regExpSubject = RegExp(
       r"" + subject + "",
       caseSensitive: false,
       multiLine: false,
     );
-    return regExpSearch.hasMatch(subject) ? subject : (regExpSubject.hasMatch(search) ? search : search + subject) ;
+    //regExpSubject.firstMatch("");
+    return regExpSearch.hasMatch(subject) ? subject 
+        : (regExpSubject.hasMatch(search) || regExpSearchSplit.hasMatch(subject) ? search : search + " " + subject) ;
   }
 
   _addMarker(LatLng pos) async {

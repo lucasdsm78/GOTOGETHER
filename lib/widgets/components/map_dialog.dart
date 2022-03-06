@@ -6,7 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'custom_text.dart';
 
 class MapDialog extends StatefulWidget {
-  const MapDialog({Key? key}) : super(key: key);
+  const MapDialog({Key? key, this.location}) : super(key: key);
+  final Location? location;
 
   @override
   _MapDialogState createState() => _MapDialogState();
@@ -19,6 +20,10 @@ class _MapDialogState extends State<MapDialog> {
   @override
   void initState() {
     super.initState();
+    location = widget.location;
+    setState(() {
+      pos = LatLng(location!.lat, location!.lon);
+    });
   }
 
   _updatePos(LatLng newPos){

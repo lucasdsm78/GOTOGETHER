@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
@@ -136,7 +137,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                 DateTimePickerButton(
                     datetime: dateTimeEvent ,
                     onPressed: _setEventDate),
-                Text("Date : $dateTimeEvent "),
+                Text("Date : ${dateTimeEvent.getFrenchDateTime()} "),
               ],
             ),
             Row(
@@ -210,14 +211,16 @@ class _ActivityCreateState extends State<ActivityCreate> {
     dynamic res = await showDialog(
         context: context,
         builder: (BuildContext context){
-          return MapDialog();
+          return MapDialog(location: location,);
         }
     );
-    setState(() {
-      location = res as Location;
-    });
-    log("----- CLOSE MAP DIALOG");
-    log(res.toString());
+    if(res != null){
+      setState(() {
+        location = res as Location;
+      });
+      log("----- CLOSE MAP DIALOG");
+      log(res.toString());
+    }
   }
 
 
