@@ -6,7 +6,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/google_maps.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/activities_list.dart';
-import 'package:go_together/widgets/activity_create.dart';
+import 'package:go_together/widgets/activity_set.dart';
 
 class Navigation extends StatefulWidget {
   static const tag = "navigation";
@@ -37,6 +37,7 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.list)
     },
     {
+      //"widget": ActivityCreate(idActivity: 42,),
       "widget": ActivityCreate(),
       "title": "Crée une activité",
       "icon": Icon(Icons.play_lesson)

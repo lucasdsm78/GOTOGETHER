@@ -51,7 +51,7 @@ class ActivityServiceApi {
     );
     print(jsonDecode(response.body));
     if (jsonDecode(response.body)['success'] != null) {
-      return Activity.fromJson(jsonDecode(response.body));
+      return Activity.fromJson(jsonDecode(response.body)['success']);
     } else {
       throw Exception('Failed to update activity.');
     }

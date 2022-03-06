@@ -1,8 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/date_extension.dart';
-import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
@@ -23,12 +21,13 @@ import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:localstorage/localstorage.dart';
 
-import 'activities_list.dart';
 import 'components/datetime_fields.dart';
 
+//@todo refactor file into activity_set.dart
 class ActivityCreate extends StatefulWidget {
-  const ActivityCreate({Key? key}) : super(key: key);
+  const ActivityCreate({Key? key, this.idActivity}) : super(key: key);
   static const tag = "activity_create";
+  final int? idActivity;
 
   @override
   _ActivityCreateState createState() => _ActivityCreateState();
@@ -50,16 +49,35 @@ class _ActivityCreateState extends State<ActivityCreate> {
   late Level eventLevel = MockLevel.levelList[0];
   String eventDescription = "";
   int nbTotalParticipants = 0;
-  Duration _duration = const Duration(hours: 0, minutes: 0);
+  Duration _duration = Duration(hours: 0, minutes: 0);
   bool public = false;
 
 //  String dateTimeEvent = "";
   DateTime dateTimeEvent = DateTime.now();
   Location? location ;
+  bool isUpdating = false;
 
   @override
   void initState() {
     super.initState();
+    isUpdating = widget.idActivity !=null;
+    if(isUpdating){
+      activityUseCase.getById(widget.idActivity!).then((value) {
+        sport = value.sport;
+        criterGender = (value.criterionGender != null ? value.criterionGender!.translate() : "Tous");
+        eventLevel = value.level;
+        eventDescriptionInput.text = value.description;
+        nbTotalParticipantsInput.text = value.attendeesNumber.toString();
+        nbTotalParticipants = value.attendeesNumber;
+        setState(() {
+          _duration = value.dateEnd.difference(value.dateStart);
+        });
+        public = value.public!;
+        dateTimeEvent = value.dateStart;
+        location = value.location;
+
+      });
+    }
   }
 
   @override
@@ -179,7 +197,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
                   _addEvent();
                 }
               },
-              child: const Text('Create event'),
+              child: Text((isUpdating ? "Mettre à jour " : "Créer l'événement")),
             ),
           ],
         ),
@@ -206,13 +224,14 @@ class _ActivityCreateState extends State<ActivityCreate> {
     //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
      return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: dateTimeEvent.add(_duration),
          dateStart: dateTimeEvent, isCanceled: 0, description: eventDescription,  level: eventLevel,
-         attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)) , limitByLevel: false);
+         attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)),
+       limitByLevel: false, id: widget.idActivity);
   }
 
   _addEvent() async {
     Activity activity = _generateActivity();
     log(activity.toJson());
-    Activity? activityAdded = await activityUseCase.add(activity);
+    Activity? activityAdded =(isUpdating ? await activityUseCase.update(activity) :await activityUseCase.add(activity) );
     if(activityAdded != null){
       Navigator.of(context).popAndPushNamed(Navigation.tag);
     }

@@ -96,11 +96,11 @@ class _ActivityListState extends State<ActivityList> {
     );
   }
 
-  void _seeMore(int activityId) {
+  void _seeMore(Activity activity) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return  ActivityDetailsScreen(activityId: activityId);
+          return  ActivityDetailsScreen(activity: activity);
         },
       ),
     );
@@ -125,7 +125,7 @@ class _ActivityListState extends State<ActivityList> {
       ),
       onTap: () {
         setState(() {
-          _seeMore(activity.id!);
+          _seeMore(activity);
         });
       },
     );
