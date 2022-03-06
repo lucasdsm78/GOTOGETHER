@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
@@ -25,9 +26,9 @@ import 'components/datetime_fields.dart';
 
 //@todo refactor file into activity_set.dart
 class ActivityCreate extends StatefulWidget {
-  const ActivityCreate({Key? key, this.idActivity}) : super(key: key);
+  const ActivityCreate({Key? key, this.activity}) : super(key: key);
   static const tag = "activity_create";
-  final int? idActivity;
+  final Activity? activity;
 
   @override
   _ActivityCreateState createState() => _ActivityCreateState();
@@ -60,9 +61,9 @@ class _ActivityCreateState extends State<ActivityCreate> {
   @override
   void initState() {
     super.initState();
-    isUpdating = widget.idActivity !=null;
+    isUpdating = widget.activity !=null;
     if(isUpdating){
-      activityUseCase.getById(widget.idActivity!).then((value) {
+      activityUseCase.getById(widget.activity!.id!).then((value) {
         sport = value.sport;
         criterGender = (value.criterionGender != null ? value.criterionGender!.translate() : "Tous");
         eventLevel = value.level;
@@ -225,7 +226,7 @@ class _ActivityCreateState extends State<ActivityCreate> {
      return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: dateTimeEvent.add(_duration),
          dateStart: dateTimeEvent, isCanceled: 0, description: eventDescription,  level: eventLevel,
          attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)),
-       limitByLevel: false, id: widget.idActivity);
+       limitByLevel: false, id: widget.activity!.id!);
   }
 
   _addEvent() async {

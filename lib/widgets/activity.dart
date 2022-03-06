@@ -3,11 +3,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:flutter_observer/Observable.dart';
+
+import 'navigation.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);
@@ -92,6 +96,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       setState(() {
                         activity = updatedActivity;
                       });
+                      Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted,
+                          notifyName : NotificationCenter.userJoinActivity.name,map: {});
                     },
                     child: const Text('Join'),
                   ),
@@ -106,6 +112,10 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                   ),
                   onPressed:() {
                     activityUseCase.delete(activity.id.toString() );
+                    Observable.instance.notifyObservers(NotificationCenter.userCancelActivity.stateImpacted,
+                        notifyName : NotificationCenter.userCancelActivity.name,map: {});
+                    Navigator.of(context).popAndPushNamed(Navigation.tag);
+
                   },
                   child: const Text('Annuler')
                 )
