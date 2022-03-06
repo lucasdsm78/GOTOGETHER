@@ -31,6 +31,7 @@ class UserServiceApi {
         .get(Uri.parse(api.host + 'authentication/google/$tokenGoogle'),
       headers: api.mainHeader
     );
+    // STATUS 200 = OK
     if (response.statusCode == 200) {
       return jsonDecode(response.body)["success"]["token"];
     } else {
