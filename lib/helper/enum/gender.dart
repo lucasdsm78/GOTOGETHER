@@ -28,7 +28,7 @@ extension GenderExtension on Gender{
       case Gender.male:
         return "Hommes";
       default:
-        return "Hommes";
+        return "Tous";
     }
   }
 }

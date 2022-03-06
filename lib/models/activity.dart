@@ -56,9 +56,6 @@ class Activity {
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
       id: json['activityId'],
-      /*location: Location(id: json["locationId"], address: json['address'],
-        city: json['city'], country:json['country'],lat: double.parse(json['lat']),
-        lon: double.parse(json['lon'])),*/
       location: Location.fromJson(json),
 
       host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole']),
@@ -77,7 +74,7 @@ class Activity {
       updatedAt: parseStringToDateTime(json['updatedAt']! as String),
 
       public: json["public"] == null ? true : json["public"]!=0,
-      criterionGender: json["criterionGender"] == null ? Gender.male : getGenderByString(json["criterionGender"]),
+      criterionGender: json["criterionGender"] == null ? null : getGenderByString(json["criterionGender"]),
       limitByLevel: json["limitByLevel"] == null ? true : json["limitByLevel"]!=0,
     );
   }
