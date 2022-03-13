@@ -41,13 +41,8 @@ class GotogetherApp extends StatelessWidget {
           foregroundColor: Colors.black,
         ),
       ),
-      //home:UserProfile(),
-      //home:ActivityDetailsScreen(activityId: 1),
-      //home:UserList(),
-     // home:ActivityList(),
-      home:SignUp(),
-      //home:ActivityCreate(),
-      // home:Navigation(),
+      //home:SignUp(),
+      home:Navigation(),
     );
   }
 

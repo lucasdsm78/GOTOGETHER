@@ -2,10 +2,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class TopSearchBar extends StatefulWidget implements PreferredSizeWidget {
-  const TopSearchBar({Key? key, required this.customSearchBar, required this.searchbarController, this.leading}) : super(key: key);
+  const TopSearchBar({Key? key, required this.customSearchBar, this.placeholder, required this.searchbarController, this.leading}) : super(key: key);
   final Widget customSearchBar;
   final TextEditingController searchbarController;
   final Widget? leading;
+  final String? placeholder;
 
   @override
   _TopSearchBarState createState() => _TopSearchBarState();
@@ -36,7 +37,7 @@ class _TopSearchBarState extends State<TopSearchBar> {
             setState(() {
               if (customIcon.icon == Icons.search) {
                 customIcon = const Icon(Icons.cancel);
-                customSearchBar = SearchBar( searchbarController: widget.searchbarController);
+                customSearchBar = SearchBar( searchbarController: widget.searchbarController, placeholder: widget.placeholder,);
               } else {
                 customIcon = const Icon(Icons.search);
                 customSearchBar = widget.customSearchBar;

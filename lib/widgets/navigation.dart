@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
+import 'package:go_together/widgets/friendsList.dart';
 import 'package:go_together/widgets/google_maps.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/activities_list.dart';
@@ -46,6 +47,11 @@ class NavigationState extends State<Navigation> {
       "widget": MapScreen(),
       "title": "Map",
       "icon": Icon(Icons.map_outlined)
+    },
+    {
+      "widget": FriendsList(),
+      "title": "Friends",
+      "icon": Icon(Icons.favorite)
     },
   ];
 
