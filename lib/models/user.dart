@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:go_together/helper/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/models/location.dart';
+import 'package:go_together/helper/map_extension.dart';
 
 /// Availability only use for user, no need to create a model file for it
 class Availability{
@@ -66,6 +67,7 @@ class User {
   final Availability? availability;
   final Location? location;
   final DateTime? createdAt;
+  late List<int>? friendsList;
 
   User({
     this.id,
@@ -79,11 +81,16 @@ class User {
     this.availability,
     this.location,
     this.createdAt,
+    this.friendsList
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    List<String> dataListAsString = json['friends']?.isEmpty ?? true ? <String>[] : json['friends'].split(',');
+    List<int> dataListAsInt = dataListAsString.map((data) => int.parse(data)).toList();
+
     return User(
-      id: json['id'] == null ? null : json['id'] as int,
+      id: json.getFromMapFirstNotNull( ['id', 'userId']) as int,
+
       username: json['username'] as String,
       mail: json['mail'] as String,
       role: json['role'] as String,
@@ -94,7 +101,7 @@ class User {
       availability: json['monday'] == null ? null : Availability.fromJson(json),
       location: json['locationId'] == null ? null : Location.fromJson(json),
       createdAt: json['createdAt'] == null ? null : parseStringToDateTime(json['createdAt']! as String), // DateTime.parse(json['createdAt']! as String),
-
+      friendsList: dataListAsInt,
     );
   }
 
@@ -109,7 +116,8 @@ class User {
       "gender": gender == null ? null : gender!.toShortString(),
       "birthday": birthday == null ? null : birthday!.getDbDateTime(),
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
-      "location": location == null ? null :  location!.toMap()
+      "location": location == null ? null :  location!.toMap(),
+      "friends": friendsList == null ? null : friendsList!.join(",")
     };
     if(availability != null){
       ///will add into user map : monday, tuesday ...

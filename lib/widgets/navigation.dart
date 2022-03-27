@@ -4,10 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/friendsList.dart';
-import 'package:go_together/widgets/google_maps.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_set.dart';
+
+import 'addFriendsList.dart';
 
 class Navigation extends StatefulWidget {
   static const tag = "navigation";
@@ -30,6 +31,16 @@ class NavigationState extends State<Navigation> {
 
   static List<Map<String, dynamic>> drawerLinks = [
     // {"widget": ActivityList(), "title": "Liste des événements"},
+    {
+      "widget": FriendsList(),
+      "title": "Mes amis",
+      "icon": Icon(Icons.favorite)
+    },
+    {
+      "widget": AddFriendsList(),
+      "title": "Ajouté des amis",
+      "icon": Icon(Icons.favorite)
+    },
   ];
   static List<Map<String, dynamic>> bottomBarLinks = [
     {
@@ -43,11 +54,11 @@ class NavigationState extends State<Navigation> {
       "title": "Crée une activité",
       "icon": Icon(Icons.play_lesson)
     },
-    {
+    /*{
       "widget": MapScreen(),
       "title": "Map",
       "icon": Icon(Icons.map_outlined)
-    },
+    },*/
     {
       "widget": FriendsList(),
       "title": "Friends",
@@ -111,7 +122,7 @@ class NavigationState extends State<Navigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: getBody(),
-      /*drawer: Drawer(
+      drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
         // through the options in the drawer if there isn't enough vertical
         // space to fit everything.
@@ -119,7 +130,8 @@ class NavigationState extends State<Navigation> {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            //should be some user data, ex: profile picture and name
+            /*DrawerHeader(
               decoration: BoxDecoration(
                 image: DecorationImage(
                     image: NetworkImage(
@@ -137,11 +149,12 @@ class NavigationState extends State<Navigation> {
                   ),
                 ),
               ),
-            ),
+            ),*/
+            Container(),
             ...getDrawerLinks(context)
           ] ,
         ),
-      ),*/
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: getBottomBarLinks(),
         currentIndex: _selectedIndex,

@@ -55,7 +55,6 @@ class Api{
 
   List<User> parseUsers(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-
     return parsed.map<User>((json) => User.fromJson(json)).toList();
   }
 }

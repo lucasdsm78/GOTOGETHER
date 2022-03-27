@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/usecase/user.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({Key? key}) : super(key: key);
+  const UserProfile({Key? key, required this.user}) : super(key: key);
+  final User user;
 
   @override
   _UserProfileState createState() => _UserProfileState();
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final UserUseCase userUseCase = UserUseCase();
-  late Future<User> futureUser;
-
+  late User user ;
   @override
   void initState() {
     super.initState();
-    futureUser = userUseCase.getById(1);
+    user = widget.user;
   }
 
   @override
@@ -31,19 +29,7 @@ class _UserProfileState extends State<UserProfile> {
           title: const Text('Profile'),
         ),
         body: Center(
-          child: FutureBuilder<User>(
-            future: futureUser,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.username);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
+          child: Text(user.username),
         ),
       ),
     );

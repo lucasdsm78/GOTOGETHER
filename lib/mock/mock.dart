@@ -13,7 +13,8 @@ class Mock {
     role:"ADMIN",
     gender: Gender.male,
     birthday: parseStringToDateTime(DateTime.now().getDbDateTime()),
-    availability: Availability(monday: false, wednesday: false)
+    availability: Availability(monday: false, wednesday: false),
+    friendsList: [4,2,3,11,24,25,15]
   );
 
   static User user2 = User(

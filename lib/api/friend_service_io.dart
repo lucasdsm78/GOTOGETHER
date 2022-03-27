@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/models/user.dart';
@@ -28,8 +29,29 @@ class FriendsServiceApi {
     }
   }
 
+  Future<List<User>> getWaitingById(int userId) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'friends/waiting/$userId'));
+    if (response.statusCode == 200) {
+      return compute(api.parseUsers, response.body);
+    } else {
+      throw Exception('Failed to load friends user');
+    }
+  }
+
+  Future<List<User>> getWaitingAndValidateById(int userId) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'friends/all/$userId'));
+    if (response.statusCode == 200) {
+      return compute(api.parseUsers, response.body);
+    } else {
+      throw Exception('Failed to load friends user');
+    }
+  }
+
   Future<User> add(Map<String, int> map) async {
-    if(map.containsKey("userIdSender") && map.containsKey("userIdReceiver")){
+    log(map.toString());
+    if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to create a friendship.');
     }
     final response = await api.client

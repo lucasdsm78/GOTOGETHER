@@ -1,31 +1,38 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
+import 'package:go_together/usecase/user.dart';
 import 'package:go_together/widgets/components/list_view.dart';
 import 'package:go_together/widgets/user.dart';
 
 import 'components/search_bar.dart';
 
-class FriendsList extends StatefulWidget {
-  const FriendsList({Key? key}) : super(key: key);
+class AddFriendsList extends StatefulWidget {
+  const AddFriendsList({Key? key}) : super(key: key);
 
   @override
-  _FriendsListState createState() => _FriendsListState();
+  _AddFriendsListState createState() => _AddFriendsListState();
 }
 
-class _FriendsListState extends State<FriendsList> {
+class _AddFriendsListState extends State<AddFriendsList> {
   final FriendsUseCase friendsUseCase = FriendsUseCase();
+  final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   late Future<List<User>> futureUsers;
+  late List<User> futureFriends;
+  late List<int> friendsId;
   late User currentUser = Mock.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
-    futureUsers = friendsUseCase.getById(currentUser.id!);
+    _setFriends();
+    futureUsers = userUseCase.getAll();
     searchbarController.addListener(_updateKeywords);
   }
 
@@ -47,8 +54,10 @@ class _FriendsListState extends State<FriendsList> {
   /// Filter user depending on [keywords]
   _filterFriends(List<User> list){
     List<User> res = [];
+    log("friends ID FILTERs : " + friendsId.toString());
     list.forEach((user) {
-      if(_fieldContains(user)){
+      log(user.id!.toString());
+      if(_fieldContains(user) && !friendsId.contains(user.id) ){
         res.add(user);
       }
     });
@@ -71,20 +80,41 @@ class _FriendsListState extends State<FriendsList> {
     });
     return contains.where((item) => item == false).isEmpty;
   }
+
+
+  _setFriends() async{
+    List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
+    setState(() {
+      futureFriends = friendsList;
+    });
+
+
+    List<int> listId = [];
+    futureFriends.forEach((element) {
+      if(element.id != null) {
+        listId.add(element.id!);
+      }
+    });
+    setState(() {
+      friendsId = listId;
+    });
+    currentUser.friendsList = friendsId;
+  }
+
   //endregion
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopSearchBar(
-          customSearchBar: const Text('Friends List'),
-          searchbarController: searchbarController,
-          placeholder: "username",
+        customSearchBar: const Text('Friends List'),
+        searchbarController: searchbarController,
+        placeholder: "username",
       ),
       body: FutureBuilder<List<User>>(
         future: futureUsers,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && friendsId != null) {
             List<User> data = snapshot.data!;
             List<User> res = _filterFriends(data);
 
@@ -111,12 +141,27 @@ class _FriendsListState extends State<FriendsList> {
     );
   }
 
+  _addFriend(User user){
+    log("add friend");
+    friendsUseCase.add(currentUser.id!, user.id!);
+    setState(() {
+      friendsId.add(user.id!);
+    });
+    log(currentUser.friendsList!.toString());
+    currentUser.friendsList = friendsId;
+    log(currentUser.friendsList!.toString());
+
+  }
+
   Widget _buildRow(User user) {
     return ListTile(
       title: Text(
         user.username,
         style: _biggerFont,
       ),
+      trailing:IconButton(onPressed: (){
+        _addFriend(user);
+      }, icon: Icon(Icons.group_add)),
       onTap: () {
         _seeMore(user);
       },

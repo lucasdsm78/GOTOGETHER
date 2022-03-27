@@ -18,6 +18,12 @@ class FriendsUseCase {
   Future<List<User>> getById(int userId) async {
     return api.getById(userId).then((value) => value);
   }
+  Future<List<User>> getWaitingById(int userId) async {
+    return api.getWaitingById(userId).then((value) => value);
+  }
+  Future<List<User>> getWaitingAndValidateById(int userId) async {
+    return api.getWaitingAndValidateById(userId).then((value) => value);
+  }
 
   Future<User?> add(int idUserSender ,int idUserReceiver) async {
     return api.add(_mapBody(idUserSender, idUserReceiver)).then((value) => value);
