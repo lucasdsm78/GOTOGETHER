@@ -6,6 +6,8 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/signal.dart';
+
 enum Method {
   get,
   post,
@@ -57,5 +59,11 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
 
     return parsed.map<User>((json) => User.fromJson(json)).toList();
+  }
+
+  List<Signal> parseSignal(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+
+    return parsed.map<Signal>((json) => Signal.fromJson(json)).toList();
   }
 }
