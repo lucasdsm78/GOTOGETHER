@@ -16,6 +16,14 @@ class UserUseCase {
     return api.getJWTTokenByGoogleToken(tokenGoogle).then((value) => value);
   }
 
+  Future<String> getJWTTokenByLogin(Map<String, String> login) async {
+    return api.getJWTTokenByLogin(login).then((value) => value);
+  }
+
+  Future<bool> setPublicKey(String publicKey) async {
+    return api.setPublicKey(publicKey).then((value) => value);
+  }
+
   Future<User?> add(User user) async {
     return api.add(user).then((value) => value);
   }

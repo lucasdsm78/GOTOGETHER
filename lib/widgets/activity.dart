@@ -1,7 +1,3 @@
-
-
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/mock/mock.dart';

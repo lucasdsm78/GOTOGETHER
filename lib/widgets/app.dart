@@ -13,6 +13,8 @@ import 'package:go_together/widgets/signup.dart';
 
 import 'package:go_together/widgets/navigation.dart';
 
+import 'message_details.dart';
+
 class GotogetherApp extends StatelessWidget {
   GotogetherApp({Key? key}) : super(key: key);
 
