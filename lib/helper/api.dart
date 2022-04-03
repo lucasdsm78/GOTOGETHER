@@ -8,6 +8,8 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/signal.dart';
+
 enum Method {
   get,
   post,
@@ -83,6 +85,10 @@ class Api{
   List<Conversation> parseConversation(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"]["conversation"].cast<Map<String, dynamic>>();
     return parsed.map<Conversation>((json) => Conversation.fromJson(json)).toList();
+  List<Signal> parseSignal(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+
+    return parsed.map<Signal>((json) => Signal.fromJson(json)).toList();
   }
 }
 

@@ -8,6 +8,9 @@ import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_set.dart';
 import 'package:go_together/widgets/google_maps.dart';
+import 'package:go_together/widgets/activity_update.dart';
+import 'package:go_together/widgets/signal.dart';
+import 'package:go_together/widgets/user.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/signup.dart';
 
@@ -34,6 +37,7 @@ class GotogetherApp extends StatelessWidget {
         ActivityCreate.tag: (context) => const ActivityCreate(),
         MapScreen.tag: (context) => MapScreen(),
         Navigation.tag: (context) => Navigation(),
+
       },
       debugShowCheckedModeBanner: false,
       title: 'Welcome to Go Together',
@@ -45,6 +49,7 @@ class GotogetherApp extends StatelessWidget {
       ),
       //home:SignUp(),
       home:Navigation(),
+
     );
   }
 

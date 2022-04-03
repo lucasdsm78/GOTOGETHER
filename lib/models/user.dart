@@ -112,7 +112,6 @@ class User {
       "mail": mail,
       "role": role,
       "password": password,
-
       "gender": gender == null ? null : gender!.toShortString(),
       "birthday": birthday == null ? null : birthday!.getDbDateTime(),
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
