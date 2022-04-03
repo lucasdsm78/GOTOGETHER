@@ -21,7 +21,7 @@ import 'package:pointycastle/src/platform_check/platform_check.dart';
 class SignUp extends StatefulWidget {
 
   @override
-  State<SignUp> createState() => _SignUp();
+  State<SignUp> createState() => _SignUpState();
 }
 
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateRSAkeyPair( SecureRandom secureRandom, {int bitLength = 2048}) {
@@ -195,7 +195,7 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
       : output.sublist(0, outputOffset);
 }
 
-class _SignUp extends State<SignUp> {
+class _SignUpState extends State<SignUp> {
   final LocalStorage storage = LocalStorage('go_together_app');
   int yearNow = DateTime.now().year;
   int monthNow = DateTime.now().month;
