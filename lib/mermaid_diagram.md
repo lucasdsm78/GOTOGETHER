@@ -7,33 +7,42 @@ classDiagram
 
     %% region ActivityServiceApi return list of activities when future list returned
     class ActivityServiceApi{
-      +Api api
-      +getAll(Map~String, dynamic~ map) Future~List~ 
-      +getById(int id) Future<Activity>
-      +add(Activity activity) Future<Activity>
-      +updatePost(Activity activity) Future<Activity>
-      +updatePatch(Map<String, dynamic> map) Future<Activity>
-      +delete(String id) Future<Activity>
-      +joinActivityUser(Activity activity, int userId, bool hasJoin) Future<Activity>
+        +Api api
+        +getAll(Map~String, dynamic~ map) Future~List~ 
+        +getById(int id) Future<Activity>
+        +add(Activity activity) Future<Activity>
+        +updatePost(Activity activity) Future<Activity>
+        +updatePatch(Map<String, dynamic> map) Future<Activity>
+        +delete(String id) Future<Activity>
+        +joinActivityUser(Activity activity, int userId, bool hasJoin) Future<Activity>
     }
 
     class FriendsServiceApi{
-      +Api api
+        +Api api
 
-      +getAll(Map~String, dynamic~ map) Future~List~ 
-      +getById(int userId) Future<List>
-      +getWaitingById(int userId) Future<List>
-      +getWaitingAndValidateById(int userId) Future<List>
-      +add(Map<String, int> map) Future<User>
-      +validateFriendship(Map<String, int> map) Future<bool>
-      +delete(Map<String, int> map) Future<bool>
+        +getAll(Map~String, dynamic~ map) Future~List~ 
+        +getById(int userId) Future<List>
+        +getWaitingById(int userId) Future<List>
+        +getWaitingAndValidateById(int userId) Future<List>
+        +add(Map<String, int> map) Future<User>
+        +validateFriendship(Map<String, int> map) Future<bool>
+        +delete(Map<String, int> map) Future<bool>
+    }
+    
+    class MessageServiceApi {
+        +Api api
+      
+        +getAll(Map~String, dynamic~ map) Future~List~ 
+        +getById(int id) Future<List>
+        +getConversationById(int id) Future<List>
+        +add(int id, List<Message> message) Future<Message>
     }
 
     class SportServiceApi{
-      +Api api
+        +Api api
       
-      +getAll(Map~String, dynamic~ map) Future~List~ 
-      +getById(int id) Future<Sport>
+        +getAll(Map~String, dynamic~ map) Future~List~ 
+        +getById(int id) Future<Sport>
     }
             
     class UserServiceApi{
@@ -42,6 +51,8 @@ classDiagram
       +getAll(Map~String, dynamic~ map) Future~List~ 
       +getById(int id) Future<User>
       +getJWTTokenByGoogleToken(String tokenGoogle) Future<String>
+      +getJWTTokenByLogin(Map<String, String> login) Future<String>
+      +setPublicKey(String publicKey) Future<bool>
       +add(User user) Future<User>
       +updatePost(User user) Future<User>
       +updatePatch(Map<String, dynamic> map) Future<User>
@@ -74,10 +85,45 @@ classDiagram
             http.Client client
             String host
             Map~String, dynamic~ mainHeader
+            Api _instance$
+            
+            +Api()
+            +setMainHeader(keyPara, val)
+            +setToken(val)
             +handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored) String
             +parseActivities(String responseBody) List<Activity>
             +parseSports(String responseBody) List<Sport>
             +parseUsers(String responseBody) List<User>
+            +parseMessages(String responseBody) List<Message>
+            +parseConversation(String responseBody) List<Conversation>
+        }
+        class ApiErr{
+            int codeStatus;
+            String message;
+          
+            +errMsg() String
+            ApiErr(Map)
+        }
+        
+        class AsymetricKeyGenerator {
+            final LocalStorage storage = LocalStorage('go_together_app');
+            final indexPrivate = "privateKey";
+            final indexPublic = "pubKey";
+            var id = "1";
+            
+            +setId(String newId)
+            +getPubKeyFromStorage()
+            +setPubKeyFromStorage(String pubKey)
+            +getPrivateKeyFromStorage()
+            +setPrivateKeyFromStorage(String privateKey)
+            +generateKey(Map)
+        }
+        class EncryptionErr{
+            int codeStatus;
+            String message;
+          
+            errMsg() String
+            EncryptionErr(Map)
         }
         
         class Notification{
@@ -141,6 +187,31 @@ classDiagram
             final String name;
     
             +Level(Map~String, dynamic~)
+            +fromJson(Map<String, dynamic> json)
+            +toMap() Map
+            +toJson() json
+        }
+        
+        class Conversation {
+            final int? id;
+            final String name;
+            final int userId;
+            final String pubKey;
+            final DateTime? createdAt;
+    
+            +Conversation(Map~String, dynamic~)
+            +fromJson(Map<String, dynamic> json)
+            +toMap() Map
+            +toJson() json
+        }
+        class Message {
+            final int id;
+            final String bodyMessage;
+            final int idReceiver;
+            final int idSender;
+            final DateTime? createdAt;
+    
+            +Message(Map~String, dynamic~)
             +fromJson(Map<String, dynamic> json)
             +toMap() Map
             +toJson() json
@@ -232,6 +303,15 @@ classDiagram
             +validateFriendship(int idUserSender, int idUserReceiver) Future<bool>
             +delete(int idUserSender, int idUserReceiver) Future<bool>
         }
+        
+        class MessageUseCase {
+            MessageServiceApi api
+    
+            +getAll(Map<String, dynamic> map) Future<List>
+            +getById(int id) Future<List>
+            +getConversationById(int id) Future<List>
+            +add(int id, List<Message> message) Future<Message>
+        }
     
         class SportUseCase {
             SportServiceApi api
@@ -246,6 +326,8 @@ classDiagram
             +getAll(Map<String, dynamic> map) Future<List>
             +getById(int id) Future<User>
             +getJWTTokenByGoogleToken(String tokenGoogle) Future<String>
+            +getJWTTokenByLogin(Map<String, String> login) Future<String>
+            +setPublicKey(String publicKey) Future<bool>
             +add(User user) Future<User>
             +update(User user) Future<User>
             +updatePartially(Map<String, dynamic> map) Future<User>

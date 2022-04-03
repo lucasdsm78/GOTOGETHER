@@ -30,6 +30,12 @@ class Api{
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
   };
 
+  static final Api _instance = Api._internal();
+  factory Api() {
+    return _instance;
+  }
+  Api._internal();
+
   setMainHeader(keyPara, val){
     // update mainHeader
     mainHeader[keyPara]=val ;
