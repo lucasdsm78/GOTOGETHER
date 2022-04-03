@@ -1,62 +1,57 @@
 classDiagram
-@todo : 
-- virer les 'final' et 'late'
-- createState() : checker qu'on a createState() puis le type de return
-- remplacer < et > par ~
-- si un =, le supprimer et ce qui suit
 
     %% region ActivityServiceApi return list of activities when future list returned
     class ActivityServiceApi{
         +Api api
         +getAll(Map~String, dynamic~ map) Future~List~ 
-        +getById(int id) Future<Activity>
-        +add(Activity activity) Future<Activity>
-        +updatePost(Activity activity) Future<Activity>
-        +updatePatch(Map<String, dynamic> map) Future<Activity>
-        +delete(String id) Future<Activity>
-        +joinActivityUser(Activity activity, int userId, bool hasJoin) Future<Activity>
+        +getById(int id) Future~Activity~
+        +add(Activity activity) Future~Activity~
+        +updatePost(Activity activity) Future~Activity~
+        +updatePatch(Map~String, dynamic~ map) Future~Activity~
+        +delete(String id) Future~Activity~
+        +joinActivityUser(Activity activity, int userId, bool hasJoin) Future~Activity~
     }
 
     class FriendsServiceApi{
         +Api api
 
         +getAll(Map~String, dynamic~ map) Future~List~ 
-        +getById(int userId) Future<List>
-        +getWaitingById(int userId) Future<List>
-        +getWaitingAndValidateById(int userId) Future<List>
-        +add(Map<String, int> map) Future<User>
-        +validateFriendship(Map<String, int> map) Future<bool>
-        +delete(Map<String, int> map) Future<bool>
+        +getById(int userId) Future~List~
+        +getWaitingById(int userId) Future~List~
+        +getWaitingAndValidateById(int userId) Future~List~
+        +add(Map~String, int~ map) Future~User~
+        +validateFriendship(Map~String, int~ map) Future~bool~
+        +delete(Map~String, int~ map) Future~bool~
     }
     
     class MessageServiceApi {
         +Api api
       
         +getAll(Map~String, dynamic~ map) Future~List~ 
-        +getById(int id) Future<List>
-        +getConversationById(int id) Future<List>
-        +add(int id, List<Message> message) Future<Message>
+        +getById(int id) Future~List~
+        +getConversationById(int id) Future~List~
+        +add(int id, List~Message~ message) Future~Message~
     }
 
     class SportServiceApi{
         +Api api
       
         +getAll(Map~String, dynamic~ map) Future~List~ 
-        +getById(int id) Future<Sport>
+        +getById(int id) Future~Sport~
     }
             
     class UserServiceApi{
       +Api api
       
       +getAll(Map~String, dynamic~ map) Future~List~ 
-      +getById(int id) Future<User>
-      +getJWTTokenByGoogleToken(String tokenGoogle) Future<String>
-      +getJWTTokenByLogin(Map<String, String> login) Future<String>
-      +setPublicKey(String publicKey) Future<bool>
-      +add(User user) Future<User>
-      +updatePost(User user) Future<User>
-      +updatePatch(Map<String, dynamic> map) Future<User>
-      +delete(String id) Future<User>
+      +getById(int id) Future~User~
+      +getJWTTokenByGoogleToken(String tokenGoogle) Future~String~
+      +getJWTTokenByLogin(Map~String, String~ login) Future~String~
+      +setPublicKey(String publicKey) Future~bool~
+      +add(User user) Future~User~
+      +updatePost(User user) Future~User~
+      +updatePatch(Map~String, dynamic~ map) Future~User~
+      +delete(String id) Future~User~
     }
 
     %% endregion 
@@ -90,12 +85,12 @@ classDiagram
             +Api()
             +setMainHeader(keyPara, val)
             +setToken(val)
-            +handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored) String
-            +parseActivities(String responseBody) List<Activity>
-            +parseSports(String responseBody) List<Sport>
-            +parseUsers(String responseBody) List<User>
-            +parseMessages(String responseBody) List<Message>
-            +parseConversation(String responseBody) List<Conversation>
+            +handleUrlParams(bool isFirstParam, Map~String, dynamic~ map, List~String~ ignored) String
+            +parseActivities(String responseBody) List~Activity~
+            +parseSports(String responseBody) List~Sport~
+            +parseUsers(String responseBody) List~User~
+            +parseMessages(String responseBody) List~Message~
+            +parseConversation(String responseBody) List~Conversation~
         }
         class ApiErr{
             int codeStatus;
@@ -106,10 +101,10 @@ classDiagram
         }
         
         class AsymetricKeyGenerator {
-            final LocalStorage storage = LocalStorage('go_together_app');
-            final indexPrivate = "privateKey";
-            final indexPublic = "pubKey";
-            var id = "1";
+            LocalStorage storage
+            String indexPrivate
+            String indexPublic
+            String id
             
             +setId(String newId)
             +getPubKeyFromStorage()
@@ -128,7 +123,7 @@ classDiagram
         
         class Notification{
             String name
-            List<String> stateImpacted
+            List~String~ stateImpacted
     
             +Notification(Map~String, dynamic~)
         }
@@ -144,7 +139,7 @@ classDiagram
         
         %% region Mock
         class MockLevel{
-            List<Level> levelList$
+            List~Level~ levelList$
         }
     
         class Mock {
@@ -156,25 +151,25 @@ classDiagram
         %% region Models
         class Activity{
             int? id
-            final Location location;
+            Location location;
     
-            final User host;
-            final Sport sport;
+            User host;
+            Sport sport;
     
-            final DateTime dateEnd;
-            final DateTime dateStart;
-            final String description;
-            final int isCanceled;
-            final Level level;
-            final int attendeesNumber;
-            final List<String>? currentParticipants;
-            final int? nbCurrentParticipants;
-            final DateTime? createdAt;
-            final DateTime? updatedAt;
+            DateTime dateEnd;
+            DateTime dateStart;
+            String description;
+            int isCanceled;
+            Level level;
+            int attendeesNumber;
+            List~String~? currentParticipants;
+            int? nbCurrentParticipants;
+            DateTime? createdAt;
+            DateTime? updatedAt;
     
-            final bool? public;
-            final Gender? criterionGender;
-            final bool? limitByLevel;
+            bool? public;
+            Gender? criterionGender;
+            bool? limitByLevel;
     
             +Activity(Map~String, dynamic~)
             +fromJson(Map~String, dynamic~ json)
@@ -183,95 +178,95 @@ classDiagram
         }
     
         class Level {
-            final int id;
-            final String name;
+            int id;
+            String name;
     
             +Level(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
         
         class Conversation {
-            final int? id;
-            final String name;
-            final int userId;
-            final String pubKey;
-            final DateTime? createdAt;
+            int? id;
+            String name;
+            int userId;
+            String pubKey;
+            DateTime? createdAt;
     
             +Conversation(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
         class Message {
-            final int id;
-            final String bodyMessage;
-            final int idReceiver;
-            final int idSender;
-            final DateTime? createdAt;
+            int id;
+            String bodyMessage;
+            int idReceiver;
+            int idSender;
+            DateTime? createdAt;
     
             +Message(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
     
         class Location {
-            final int? id;
-            final String address;
-            final String city;
-            final String country;
-            final double lat;
-            final double lon;
+            int? id;
+            String address;
+            String city;
+            String country;
+            double lat;
+            double lon;
     
             +Location(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
     
         class Sport {
-            final int id;
-            final String name;
+            int id;
+            String name;
     
             +Sport(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
     
         class Availability{
-            final bool monday;
-            final bool tuesday;
-            final bool wednesday;
-            final bool thursday;
-            final bool friday;
-            final bool saturday;
-            final bool sunday;
+            bool monday;
+            bool tuesday;
+            bool wednesday;
+            bool thursday;
+            bool friday;
+            bool saturday;
+            bool sunday;
     
             +Availability(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         } 
     
         class User {
-            final int? id;
-            final String username;
-            final String mail;
-            final String role;
-            final String? password;
+            int? id;
+            String username;
+            String mail;
+            String role;
+            String? password;
     
-            final Gender? gender;
-            final DateTime? birthday;
-            final Availability? availability;
-            final Location? location;
-            final DateTime? createdAt;
-            late List<int>? friendsList;
+            Gender? gender;
+            DateTime? birthday;
+            Availability? availability;
+            Location? location;
+            DateTime? createdAt;
+            List~int~? friendsList;
     
             +User(Map~String, dynamic~)
-            +fromJson(Map<String, dynamic> json)
+            +fromJson(Map~String, dynamic~ json)
             +toMap() Map
             +toJson() json
         }
@@ -283,55 +278,55 @@ classDiagram
         class ActivityUseCase {
             ActivityServiceApi api
     
-            +getAll(Map<String, dynamic> map) Future<List>
-            +getById(int id) Future<Activity>
-            +add(Activity activity) Future<Activity>
-            +update(Activity activity) Future<Activity>
-            +updatePartially(Map<String, dynamic> map) Future<Activity>
-            +joinActivityUser(Activity activity, int userId, bool hasJoin) Future<Activity>
-            +delete(id) Future<Activity>
+            +getAll(Map~String, dynamic~ map) Future~List~
+            +getById(int id) Future~Activity~
+            +add(Activity activity) Future~Activity~
+            +update(Activity activity) Future~Activity~
+            +updatePartially(Map~String, dynamic~ map) Future~Activity~
+            +joinActivityUser(Activity activity, int userId, bool hasJoin) Future~Activity~
+            +delete(id) Future~Activity~
         }
     
         class FriendsUseCase {
             FriendsServiceApi api
     
             -_mapBody(int idUserSender, int idUserReceiver) Map
-            +getById(int userId) Future<List>
-            +getWaitingById(int userId) Future<List>
-            +getWaitingAndValidateById(int userId) Future<List>
-            +add(int idUserSender, int idUserReceiver) Future<User>
-            +validateFriendship(int idUserSender, int idUserReceiver) Future<bool>
-            +delete(int idUserSender, int idUserReceiver) Future<bool>
+            +getById(int userId) Future~List~
+            +getWaitingById(int userId) Future~List~
+            +getWaitingAndValidateById(int userId) Future~List~
+            +add(int idUserSender, int idUserReceiver) Future~User~
+            +validateFriendship(int idUserSender, int idUserReceiver) Future~bool~
+            +delete(int idUserSender, int idUserReceiver) Future~bool~
         }
         
         class MessageUseCase {
             MessageServiceApi api
     
-            +getAll(Map<String, dynamic> map) Future<List>
-            +getById(int id) Future<List>
-            +getConversationById(int id) Future<List>
-            +add(int id, List<Message> message) Future<Message>
+            +getAll(Map~String, dynamic~ map) Future~List~
+            +getById(int id) Future~List~
+            +getConversationById(int id) Future~List~
+            +add(int id, List~Message~ message) Future~Message~
         }
     
         class SportUseCase {
             SportServiceApi api
     
-            +getAll(Map<String, dynamic> map) Future<List>
-            +getById(int id) Future<Sport>
+            +getAll(Map~String, dynamic~ map) Future~List~
+            +getById(int id) Future~Sport~
         }
     
         class UserUseCase {
             UserServiceApi api
     
-            +getAll(Map<String, dynamic> map) Future<List>
-            +getById(int id) Future<User>
-            +getJWTTokenByGoogleToken(String tokenGoogle) Future<String>
-            +getJWTTokenByLogin(Map<String, String> login) Future<String>
-            +setPublicKey(String publicKey) Future<bool>
-            +add(User user) Future<User>
-            +update(User user) Future<User>
-            +updatePartially(Map<String, dynamic> map) Future<User>
-            +delete(id) Future<User>
+            +getAll(Map~String, dynamic~ map) Future~List~
+            +getById(int id) Future~User~
+            +getJWTTokenByGoogleToken(String tokenGoogle) Future~String~
+            +getJWTTokenByLogin(Map~String, String~ login) Future~String~
+            +setPublicKey(String publicKey) Future~bool~
+            +add(User user) Future~User~
+            +update(User user) Future~User~
+            +updatePartially(Map~String, dynamic~ map) Future~User~
+            +delete(id) Future~User~
         }
         %% endregion
         
@@ -339,17 +334,17 @@ classDiagram
         %% region components
         
         class ColumnList {
-            final String title;
-            final Icon? icon;
-            final Widget child;
+            String title;
+            Icon? icon;
+            Widget child;
     
             +ColumnList(Map)
             +build(BuildContext context) Widget
         }
     
         class CustomDatePicker {
-            final DateTime? initialDate;
-            final Function onSelected;
+            DateTime? initialDate;
+            Function onSelected;
     
             +CustomDatePicker(Map)
             +build(BuildContext context) Widget
@@ -357,10 +352,10 @@ classDiagram
         }
     
         class CustomInput {
-            final String title;
-            final String notValidError;
-            final TextEditingController controller;
-            final TextInputType type;
+            String title;
+            String notValidError;
+            TextEditingController controller;
+            TextInputType type;
     
             +CustomInput(Map)
             -createState() _CustomInputState
@@ -374,18 +369,18 @@ classDiagram
         }
     
         class CustomColumn{
-            final List<Widget> children;
+            List~Widget~ children;
     
             +CustomColumn(Map)
-            _buildWidgetList() List<Widget>
+            _buildWidgetList() List~Widget~
             +build(BuildContext context) Widget
         }
         
         class CustomRow {
-            final List<Widget> children;
+            List~Widget~ children;
     
             +CustomRow(Map)
-            -_buildWidgetList() List<Widget>
+            -_buildWidgetList() List~Widget~
             +build(BuildContext context) Widget
         }
     
@@ -396,26 +391,26 @@ classDiagram
         
         %% region Date component
         class BasicDateField {
-            final format = DateFormat("yyyy-MM-dd");
+            DateFormat format
     
             +build(BuildContext context) Widget
         }
     
         class BasicTimeField{
-            final format = DateFormat("HH:mm");
+            DateFormat format
     
             +build(BuildContext context) Widget
         }
     
         class BasicDateTimeField{
             TextEditingController dateController
-            final format = DateFormat("yyyy-MM-dd HH:mm");
+            DateFormat format
             +build(BuildContext context) Widget
         }
     
         class DateTimePickerButton{
-            final DateTime? datetime;
-            final Function onPressed;
+            DateTime? datetime;
+            Function onPressed;
     
             +DateTimePickerButton(Map)
             -createState() _DateTimePickerButtonState
@@ -428,8 +423,8 @@ classDiagram
         %% endregion
         
         class DeleteButton {
-            final Function? onPressed;
-            final bool display;
+            Function? onPressed;
+            bool display;
     
             DeleteButton(Map)
             +build(BuildContext context) Widget
@@ -437,11 +432,11 @@ classDiagram
     
         %% region dropdown
         class DropdownGender{
-            final String criterGender;
-            final Function onChange;
+            String criterGender;
+            Function onChange;
     
-            -createState() _DropdownGenderState
             DropdownGender(Map)
+            -createState() _DropdownGenderState
         }
     
         class _DropdownGenderState{
@@ -451,32 +446,32 @@ classDiagram
         }
     
         class DropdownLevel{
-            final Level level;
-            final Function onChange;
+            Level level;
+            Function onChange;
     
             +DropdownLevel(Map)
             -createState() _DropdownLevelState
         }
         class _DropdownLevelState{
-            List<Level> levelList = MockLevel.levelList;
-            late Level level = widget.level ;
+            List~Level~ levelList
+            Level level
             
             initState()
             dispose()
             +build(BuildContext context) Widget
         }
         class DropdownSports{
-            final Sport sport;
-            final Function onChange;
+            Sport sport;
+            Function onChange;
     
             +DropdownSports(Map)
             -createState() _DropdownSportsState
         }
         class _DropdownSportsState{
-            List<Sport> futureSports = [];
-            final LocalStorage storage = LocalStorage('go_together_app');
-            final SportUseCase sportUseCase = SportUseCase();
-            late Sport sport = widget.sport ;
+            List~Sport~ futureSports
+            LocalStorage storage
+            SportUseCase sportUseCase
+            Sport sport
     
             -_getSports() void
             initState()
@@ -486,30 +481,30 @@ classDiagram
         %% endregion
         
         class ListViewSeparated {
-            final dynamic data;
-            final Function buildListItem;
-            final Axis axis;
+            dynamic data;
+            Function buildListItem;
+            Axis axis;
     
             ListViewSeparated(Map)
             +build(BuildContext context) Widget
         }
     
         class FilterDialog{
-            final DateTime? selectedDate;
-            final Function onSelectDate;
+            DateTime? selectedDate;
+            Function onSelectDate;
     
-            final Sport sport;
-            final List<Sport> sportList;
-            final Function onChangeSport;
+            Sport sport;
+            List~Sport~ sportList;
+            Function onChangeSport;
     
-            -createState() _FilterDialogState
             FilterDialog(Map)
+            -createState() _FilterDialogState
         }
     
         class _FilterDialogState{
-            DateTime? selectedDate = DateTime.now();
-            late Sport sport;
-            List<Sport> sportList = [];
+            DateTime? selectedDate
+            Sport sport;
+            List~Sport~ sportList
             
             initState()
             +build(BuildContext context) Widget
@@ -520,9 +515,9 @@ classDiagram
     
     
          class RadioPrivacy {
-            final bool isRow;
-            final Function onChange;
-            final dynamic groupValue;
+            bool isRow;
+            Function onChange;
+            dynamic groupValue;
     
             RadioPrivacy(Map)
             -createState() _RadioPrivacyState
@@ -535,14 +530,14 @@ classDiagram
         }
     
         class MapDialog{
-            final Location? location;
+            Location? location;
     
-            -createState() _MapDialogState
             MapDialog(Map)
+            -createState() _MapDialogState
         }
     
         class _MapDialogState{
-            LatLng? pos ;
+            LatLng? pos
             Location? location;
             
             initState()
@@ -553,23 +548,23 @@ classDiagram
         }
     
         class CustomMap{
-            final LatLng? pos;
-            final Function onMark;
+            LatLng? pos;
+            Function onMark;
     
             +CustomMap(Map)
             -createState() _CustomMapState
         }
         class _CustomMapState{
-            late CameraPosition _initialCameraPosition; // use autorisation to initial position
+            CameraPosition _initialCameraPosition; // use autorisation to initial position
             Marker? _origin;
-            final double zoom = 11.0;
-            late GoogleMapController _mapController;
+            double zoom
+            GoogleMapController _mapController;
     
             initState()
             dispose()
             +build(BuildContext context) Widget
-            -getFirstFilled(List<dynamic> list, Map) dynamic
-            -getFirstFilledAndComplete(List<dynamic> list, Map) dynamic
+            -getFirstFilled(List~dynamic~ list, Map) dynamic
+            -getFirstFilledAndComplete(List~dynamic~ list, Map) dynamic
             -_getMoreComplete(String search, String subject) String
             -_addMarker(LatLng pos)
             -_getAddress(LatLng pos) Placemark
@@ -578,26 +573,26 @@ classDiagram
         
         
         class TopSearchBar {
-            final Widget customSearchBar;
-            final TextEditingController searchbarController;
-            final Widget? leading;
-            final String? placeholder;
+            Widget customSearchBar;
+            TextEditingController searchbarController;
+            Widget? leading;
+            String? placeholder;
     
             TopSearchBar(Map)
             -createState() _TopSearchBarState
             preferredSize() Size
         }
         class _TopSearchBarState{
-            Widget customSearchBar = const Text('');
-            Icon customIcon = const Icon(Icons.search);
+            Widget customSearchBar
+            Icon customIcon
     
             initState()
             build(BuildContext context) Widget
         }
     
         class SearchBar{
-            final String? placeholder;
-            final TextEditingController searchbarController;
+            String? placeholder;
+            TextEditingController searchbarController;
     
             build(BuildContext context) Widget
             SearchBar(Map)
@@ -605,8 +600,8 @@ classDiagram
     
     
         class TextIcon{
-            final String title;
-            final Icon? icon;
+            String title;
+            Icon? icon;
             
             TextIcon(Map)
             +build(BuildContext context) Widget
@@ -623,19 +618,19 @@ classDiagram
             -createState() _ActivityListState
         }
         class _ActivityListState{
-            final ActivityUseCase activityUseCase = ActivityUseCase();
-            final SportUseCase sportUseCase = SportUseCase();
-            final LocalStorage storage = LocalStorage('go_together_app');
+            ActivityUseCase activityUseCase
+            SportUseCase sportUseCase
+            LocalStorage storage
     
-            late Future<List<Activity>> futureActivities;
+            Future~List~Activity>> futureActivities;
     
-            late User currentUser;
-            String keywords = "";
-            late Sport sport;
-            List<Sport> futureSports = [];
-            DateTime? selectedDate;//DateTime.now();
+            User currentUser;
+            String keywords
+            Sport sport;
+            List~Sport~ futureSports
+            DateTime? selectedDate
     
-            final searchbarController = TextEditingController();
+            searchbarController
     
             initState()
             dispose()
@@ -649,22 +644,22 @@ classDiagram
             -getActivities()
             -_updateSelectedDate(DateTime date)
             -_updateSelectedSport(Sport newSport)
-            -_filterActivities(List<Activity> list) List<Activity>
+            -_filterActivities(List~Activity~ list) List~Activity~
             -_fieldContains(Activity activity) bool
             -_updateKeywords()
         }
     
         class ActivityDetailsScreen{
-            final Activity activity;
+            Activity activity;
             const tag$;
     
-            createState() _ActivityDetailsScreenState
             ActivityDetailsScreen(Map)
+            createState() _ActivityDetailsScreenState
         }
         class _ActivityDetailsScreenState{
-            final ActivityUseCase activityUseCase = ActivityUseCase();
-            late User currentUser = Mock.userGwen;
-            late Activity activity;
+            ActivityUseCase activityUseCase
+            User currentUser
+            Activity activity;
             
             initState()
             +build(BuildContext context) Widget
@@ -672,36 +667,36 @@ classDiagram
     
     
         class ActivityCreate{
-            final Activity? activity;
+            Activity? activity;
             const tag$;
     
-            createState() _ActivityCreateState
             ActivityCreate(Map)
+            createState() _ActivityCreateState
         }
     
     
         class _ActivityCreateState{
-            final ActivityUseCase activityUseCase = ActivityUseCase();
-            final LocalStorage storage = LocalStorage('go_together_app');
+            ActivityUseCase activityUseCase
+            LocalStorage storage
     
             Sport sport;
-            late User currentUser = Mock.userGwen;
+            User currentUser
     
-            final _formKey = GlobalKey<FormState>();
-            TextEditingController eventDescriptionInput = TextEditingController();
-            TextEditingController nbManquantsInput = TextEditingController();
-            TextEditingController nbTotalParticipantsInput = TextEditingController();
+            _formKey
+            TextEditingController eventDescriptionInput
+            TextEditingController nbManquantsInput
+            TextEditingController nbTotalParticipantsInput
     
-            String criterGender = 'Tous';
-            late Level eventLevel = MockLevel.levelList[0];
-            String eventDescription = "";
-            int nbTotalParticipants = 0;
-            Duration _duration = Duration(hours: 0, minutes: 0);
-            bool public = false;
+            String criterGender
+            Level eventLevel
+            String eventDescription
+            int nbTotalParticipants
+            Duration _duration
+            bool public
     
-            DateTime dateTimeEvent = DateTime.now();
-            Location? location ;
-            bool isUpdating = false;
+            DateTime dateTimeEvent
+            Location? location
+            bool isUpdating
             
             initState()
             dispose()
@@ -726,21 +721,21 @@ classDiagram
             -createState() _AddFriendsListState
         }
         class _AddFriendsListState{
-            final FriendsUseCase friendsUseCase = FriendsUseCase();
-            final UserUseCase userUseCase = UserUseCase();
-            final _biggerFont = const TextStyle(fontSize: 18.0);
-            late Future<List<User>> futureUsers;
-            late List<User> futureFriends;
-            late List<int> friendsId;
-            late User currentUser = Mock.userGwen;
-            final searchbarController = TextEditingController();
-            String keywords = "";
+            FriendsUseCase friendsUseCase
+            UserUseCase userUseCase
+            _biggerFont
+            Future~List~User>> futureUsers;
+            List~User~ futureFriends;
+            List~int~ friendsId;
+            User currentUser
+            searchbarController
+            String keywords
     
             initState()
             dispose()
             build(BuildContext context) Widget
             -_updateKeywords() 
-            -_filterFriends(List<User> list) List<User>
+            -_filterFriends(List~User~ list) List~User~
             -_fieldContains(User user) bool
             -_setFriends()
             -_seeMore(User user)
@@ -777,11 +772,11 @@ classDiagram
             -createState() _MapScreenState
         }
         class _MapScreenState{
-            Completer<GoogleMapController> _controller
+            Completer~GoogleMapController~ _controller
             CameraPosition _initialCameraPosition
             Marker? _origin;
             Marker? _destination;
-            final double zoom = 11.0;
+            double zoom
             GoogleMapController _mapController
     
             dispose()
@@ -793,33 +788,33 @@ classDiagram
         
         
         class Authentication{
-            signInWithGoogle(Map)$ Future<User?>
+            signInWithGoogle(Map)$ Future~User?~
             customSnackBar(Map)$ SnackBar
-            initializeFirebase(Map)$ Future<FirebaseApp>
+            initializeFirebase(Map)$ Future~FirebaseApp~
             signOut(Map)$ 
             +build(BuildContext context) Widget
         }
     
     
         class FriendsList{
-            createState() _FriendsListState
             FriendsList(Map)
+            createState() _FriendsListState
         }
     
     
         class _FriendsListState{
-            final FriendsUseCase friendsUseCase = FriendsUseCase();
-            final _biggerFont = const TextStyle(fontSize: 18.0);
-            late Future<List<User>> futureUsers;
-            late User currentUser = Mock.userGwen;
-            final searchbarController = TextEditingController();
-            String keywords = "";
+            FriendsUseCase friendsUseCase
+            _biggerFont
+            Future~List~User>> futureUsers;
+            User currentUser
+            searchbarController
+            String keywords
             
             initState()
             dispose()
             +build(BuildContext context) Widget
             -_updateKeywords()
-            -_filterFriends(List<User> list) List<User>
+            -_filterFriends(List~User~ list) List~User~
             -_fieldContains(User user) bool
             -_seeMore(User user)
             -_buildRow(User user) Widget
@@ -841,25 +836,26 @@ classDiagram
         
         class Navigation{
             tag$
-            createState() NavigationState
+            
             Navigation(Map)
+            createState() NavigationState
         }
     
     
         class NavigationState{
-            int _selectedIndex = 0;
-            int _drawerSelectedIndex = 0;
-            bool _isLastTappedDrawer = false;
-            late User user;
-            LocalStorage storage = LocalStorage('go_together_app');
-            List<Map> drawerLinks
-            List<Map> bottomBarLinks
+            int _selectedIndex
+            int _drawerSelectedIndex
+            bool _isLastTappedDrawer
+            User user;
+            LocalStorage storage
+            List~Map~ drawerLinks
+            List~Map~ bottomBarLinks
     
             initState()
             +build(BuildContext context) Widget
             -getBody() Widget
-            -getDrawerLinks(BuildContext context) List<Widget>
-            -getBottomBarLinks() List<BottomNavigationBarItem>
+            -getDrawerLinks(BuildContext context) List~Widget~
+            -getBottomBarLinks() List~BottomNavigationBarItem~
             -_onItemTapped(int index)
             -_onDrawerTap(int index, BuildContext context)
             -_buildDrawerLinks(String title, Function onTap)
@@ -869,10 +865,10 @@ classDiagram
         
         
         class UserProfile {
-            final User user;
+            User user;
     
-            -createState() _UserProfileState
             UserProfile(Map)
+            -createState() _UserProfileState
         }
         class _UserProfileState{
             User user
@@ -888,8 +884,8 @@ classDiagram
             -createState() _UserInfoScreenState
         }
         class _UserInfoScreenState{
-            late User _user;
-            bool _isSigningOut = false;
+            User _user;
+            bool _isSigningOut
     
             initState()
             +build(BuildContext context) Widget
