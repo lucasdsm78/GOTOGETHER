@@ -65,7 +65,7 @@ class User {
   final Availability? availability;
   final Location? location;
   final DateTime? createdAt;
-  late List<int>? friendsList;
+  late List<int> friendsList;
 
   User({
     this.id,
@@ -79,7 +79,7 @@ class User {
     this.availability,
     this.location,
     this.createdAt,
-    this.friendsList
+    this.friendsList = const [],
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -114,7 +114,7 @@ class User {
       "birthday": birthday == null ? null : birthday!.getDbDateTime(),
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
       "location": location == null ? null :  location!.toMap(),
-      "friends": friendsList == null ? null : friendsList!.join(",")
+      "friends": friendsList == null ? null : friendsList.join(",")
     };
     if(availability != null){
       ///will add into user map : monday, tuesday ...

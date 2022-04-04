@@ -23,8 +23,6 @@ class _AddFriendsListState extends State<AddFriendsList> {
   final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   late Future<List<User>> futureUsers;
-  late List<User> futureFriends;
-  late List<int> friendsId;
   late User currentUser = Mock.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
@@ -55,10 +53,8 @@ class _AddFriendsListState extends State<AddFriendsList> {
   /// Filter user depending on [keywords]
   _filterFriends(List<User> list){
     List<User> res = [];
-    log("friends ID FILTERs : " + friendsId.toString());
     list.forEach((user) {
-      log(user.id!.toString());
-      if(_fieldContains(user) && !friendsId.contains(user.id) ){
+      if(_fieldContains(user) && !currentUser.friendsList.contains(user.id) ){
         res.add(user);
       }
     });
@@ -71,13 +67,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
     List<bool> contains = [];
     keywordSplit.forEach((element) {
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
-      if(
-      (regExp.hasMatch(user.username)) ){
-        contains.add(true);
-      }
-      else{
-        contains.add(false);
-      }
+      contains.add((regExp.hasMatch(user.username)));
     });
     return contains.where((item) => item == false).isEmpty;
   }
@@ -85,21 +75,15 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
   _setFriends() async{
     List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
-    setState(() {
-      futureFriends = friendsList;
-    });
-
-
     List<int> listId = [];
-    futureFriends.forEach((element) {
+    friendsList.forEach((element) {
       if(element.id != null) {
         listId.add(element.id!);
       }
     });
     setState(() {
-      friendsId = listId;
+      currentUser.friendsList = listId;
     });
-    currentUser.friendsList = friendsId;
   }
 
   //endregion
@@ -115,7 +99,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
       body: FutureBuilder<List<User>>(
         future: futureUsers,
         builder: (context, snapshot) {
-          if (snapshot.hasData && friendsId != null) {
+          if (snapshot.hasData) {
             List<User> data = snapshot.data!;
             List<User> res = _filterFriends(data);
 
@@ -143,15 +127,8 @@ class _AddFriendsListState extends State<AddFriendsList> {
   }
 
   _addFriend(User user){
-    log("add friend");
     friendsUseCase.add(currentUser.id!, user.id!);
-    setState(() {
-      friendsId.add(user.id!);
-    });
-    log(currentUser.friendsList!.toString());
-    currentUser.friendsList = friendsId;
-    log(currentUser.friendsList!.toString());
-
+    currentUser.friendsList.add(user.id!);
   }
 
   Widget _buildRow(User user) {
