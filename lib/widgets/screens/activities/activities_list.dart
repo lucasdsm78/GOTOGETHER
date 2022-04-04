@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
@@ -40,7 +41,8 @@ class _ActivityListState extends State<ActivityList> with Observer{
 
   late User currentUser;
   String keywords = "";
-  late Sport sport;
+  late Sport sport = MockSport.sportList.first;
+
   List<Sport> futureSports = [];
   DateTime? selectedDate;//DateTime.now();
 
@@ -191,9 +193,10 @@ class _ActivityListState extends State<ActivityList> with Observer{
   }
 
   void getSports() async{
+    log("GET SPORT FROM ACTIVITIES LIST");
     String? storedSport = storage.getItem("sports");
-    log(storedSport!);
     if(storedSport != null){
+      log("ACTIVITIES LIST - GET DATA FROM STORAGE ");
       setState(() {
         futureSports = parseSports(storedSport);
         sport = futureSports[0];
@@ -201,6 +204,8 @@ class _ActivityListState extends State<ActivityList> with Observer{
     }
     else {
       List<Sport> res = await sportUseCase.getAll();
+      log("ACTIVITIES LIST - GET DATA FROM API ");
+
       log(res.toString());
       setState(() {
         futureSports = res;

@@ -25,13 +25,13 @@ class GotogetherApp extends StatefulWidget {
 class _GotogetherAppState extends State<GotogetherApp> {
   final LocalStorage storage = LocalStorage('go_together_app');
   final SportUseCase sportUseCase = SportUseCase();
-  late Future<List<Sport>> futureSports;
+  late Future<List<Sport>> futureSportsMainApp;
 
   @override
   void initState() {
-    getSports();
-    storage.setItem('user', Mock.userGwen.toJson());
     super.initState();
+    getSports();
+    storage.setItem('user', Mock.userGwen.toJson()); //simulate user connexion
   }
 
   @override
@@ -52,12 +52,12 @@ class _GotogetherAppState extends State<GotogetherApp> {
         ),
       ),
       //home:SignUp(),
+      home:Navigation(),
 
-      home: FutureBuilder<List<Sport>>(
-        future: futureSports,
+      /*home: FutureBuilder<List<Sport>>(
+        future: futureSportsMainApp,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List<Sport> data = snapshot.data!;
             return Navigation();
           } else if (snapshot.hasError) {
             return Container(
@@ -70,7 +70,7 @@ class _GotogetherAppState extends State<GotogetherApp> {
               child: CircularProgressIndicator()
           );
         },
-      ),
+      ),*/
     );
   }
 
@@ -79,7 +79,10 @@ class _GotogetherAppState extends State<GotogetherApp> {
     List<Sport> res = await sports;
     List<dynamic> list = res.map((e) => e.toJson()).toList();
     storage.setItem('sports', list.toString());
-    futureSports = sports;
+    setState(() {
+      futureSportsMainApp = sports;
+    });
+    log("SPORT SAVED IN STORAGE");
   }
   Future<List<List<Sport>>> futureWait() async {
     return Future.wait([
