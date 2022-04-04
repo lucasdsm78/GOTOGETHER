@@ -39,7 +39,7 @@ class _ActivitySetState extends State<ActivitySet> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
-  late Sport sport = Sport.fromJson({"id":2,"name":"footing"});
+  late Sport sport = Sport.fromJson({"id":1,"name":"football"});
   late User currentUser = Mock.userGwen;
 
   final _formKey = GlobalKey<FormState>();

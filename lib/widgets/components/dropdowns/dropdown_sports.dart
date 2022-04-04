@@ -1,10 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/helper/storage.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
-import 'package:localstorage/localstorage.dart';
 
 class DropdownSports extends StatefulWidget {
   const DropdownSports({Key? key, required this.sport, required this.onChange}) : super(key: key);
@@ -17,33 +16,22 @@ class DropdownSports extends StatefulWidget {
 
 class _DropdownSportsState extends State<DropdownSports> {
   List<Sport> futureSports = [];
-  final LocalStorage storage = LocalStorage('go_together_app');
   final SportUseCase sportUseCase = SportUseCase();
   late Sport sport = widget.sport ;
+  final store = Storage();
 
-  void getSports() async{
-    String? storedSport = await storage.getItem("sports");
-    if(storedSport != null){
-      log("GET DATA SPORT FROM STORAGE");
-      setState(() {
-        futureSports = parseSports(storedSport);
-        sport = futureSports[0];
-      });
-    }
-    else {
-      log("GET DATA SPORT FROM API");
-      List<Sport> res = await sportUseCase.getAll();
-      setState(() {
-        futureSports = res;
-        sport = futureSports[0];
-      });
-    }
+  _setSport(sportList){
+    setState(() {
+      futureSports = sportList as List<Sport>;
+      sport = futureSports[0];
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    getSports();
+    log("DROPDOWN INIT HERE");
+    store.getAndStoreSportsFuture(func: _setSport);
   }
 
   @override
