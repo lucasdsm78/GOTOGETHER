@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/widgets/google_authentication.dart';
+import 'package:go_together/helper/google_authentication.dart';
 
-import 'custom_colors.dart';
-import 'google_sign_in_button.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
+import 'package:go_together/widgets/components/google_sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -56,7 +56,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               FutureBuilder(
-                future: Authentication.initializeFirebase(context: context),
+                future: GoogleAuthentication.initializeFirebase(context: context),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('Error initializing Firebase');

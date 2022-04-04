@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'sign_in_screen_google.dart';
 
 void main() {
-  runApp(ConnexionGoogle());
+  runApp(LoginGoogle());
 }
 
-class ConnexionGoogle extends StatelessWidget {
+class LoginGoogle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_together/widgets/google_authentication.dart';
-import 'package:go_together/widgets/sign_in_screen_google.dart';
+import 'package:go_together/helper/google_authentication.dart';
+import 'package:go_together/widgets/screens/login/sign_in_screen_google.dart';
 
-import 'app_bar_title.dart';
-import 'custom_colors.dart';
+import 'package:go_together/widgets/components/app_bar_title.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({Key? key, required User user})
@@ -144,7 +144,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   setState(() {
                     _isSigningOut = true;
                   });
-                  await Authentication.signOut(context: context);
+                  await GoogleAuthentication.signOut(context: context);
                   setState(() {
                     _isSigningOut = false;
                   });

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/string_extension.dart';
+import 'package:go_together/helper/extensions/string_extension.dart';
 
 enum Gender {
   male,

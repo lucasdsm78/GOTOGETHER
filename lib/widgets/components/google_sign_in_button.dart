@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_together/widgets/google_authentication.dart';
-import 'package:go_together/widgets/user_info_google.dart';
+import 'package:go_together/helper/google_authentication.dart';
+import 'package:go_together/widgets/screens/login/user_info_google.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           });
 
           User? user =
-          await Authentication.signInWithGoogle(context: context);
+          await GoogleAuthentication.signInWithGoogle(context: context);
 
           setState(() {
             _isSigningIn = false;

@@ -1,5 +1,3 @@
-import 'package:http/http.dart' as http;
-
 class Notification{
   final String name;
   final List<String> stateImpacted;

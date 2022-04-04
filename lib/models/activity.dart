@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';

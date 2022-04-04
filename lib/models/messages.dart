@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../helper/date_extension.dart';
+import '../helper/extensions/date_extension.dart';
 
 class Message {
   final int id;

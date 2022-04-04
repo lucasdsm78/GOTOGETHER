@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/enum/privacy.dart';
-import 'custom_row.dart';
+import 'lists/custom_row.dart';
 
 class RadioPrivacy extends StatefulWidget {
   const RadioPrivacy({Key? key, this.isRow=true, required this.onChange, required this.groupValue}) : super(key: key);

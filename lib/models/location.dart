@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:go_together/helper/map_extension.dart';
+import 'package:go_together/helper/extensions/map_extension.dart';
 
 class Location {
   final int? id;

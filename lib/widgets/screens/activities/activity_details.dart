@@ -7,7 +7,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_observer/Observable.dart';
 
-import 'navigation.dart';
+import 'package:go_together/widgets/navigation.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);

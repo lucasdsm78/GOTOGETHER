@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_together/models/location.dart';
-import 'package:go_together/widgets/components/map.dart';
+import 'package:go_together/widgets/components/maps/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'custom_text.dart';
+import '../custom_text.dart';
 
 class MapDialog extends StatefulWidget {
   const MapDialog({Key? key, this.location}) : super(key: key);

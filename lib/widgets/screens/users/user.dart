@@ -3,7 +3,7 @@ import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/signal.dart';
 import 'package:go_together/usecase/user.dart';
-import 'package:go_together/widgets/signal.dart';
+import 'package:go_together/widgets/screens/users/signal.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({Key? key, required this.user}) : super(key: key);

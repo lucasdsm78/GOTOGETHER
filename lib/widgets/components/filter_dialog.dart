@@ -3,7 +3,7 @@ import 'package:go_together/models/sports.dart';
 
 import 'custom_datepicker.dart';
 import 'custom_text.dart';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({Key? key, required this.selectedDate, required this.onSelectDate,

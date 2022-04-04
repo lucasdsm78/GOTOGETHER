@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/usecase/message.dart';
 
 
