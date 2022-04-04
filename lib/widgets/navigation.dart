@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/widgets/friendsList.dart';
+import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:go_together/widgets/activities_list.dart';
-import 'package:go_together/widgets/activity_set.dart';
+import 'package:go_together/widgets/screens/activities/activities_list.dart';
+import 'package:go_together/widgets/screens/activities/activity_set.dart';
 
-import 'addFriendsList.dart';
+import 'package:go_together/widgets/screens/friends/add_friends_list.dart';
 
 class Navigation extends StatefulWidget {
   static const tag = "navigation";
@@ -21,7 +21,7 @@ class NavigationState extends State<Navigation> {
   int _drawerSelectedIndex = 0;
   bool _isLastTappedDrawer = false;
   late User user;
-  LocalStorage storage = LocalStorage('go_together_app');
+  final LocalStorage storage = LocalStorage('go_together_app');
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class NavigationState extends State<Navigation> {
     },
     {
       //"widget": ActivityCreate(idActivity: 42,),
-      "widget": ActivityCreate(),
+      "widget": ActivitySet(),
       "title": "Crée une activité",
       "icon": Icon(Icons.play_lesson)
     },

@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
-
-import 'custom_colors.dart';
+import '../../helper/enum/custom_colors.dart';
 
 class AppBarTitle extends StatelessWidget {
   @override

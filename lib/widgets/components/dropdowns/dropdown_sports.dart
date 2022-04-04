@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/sports.dart';
@@ -20,14 +22,16 @@ class _DropdownSportsState extends State<DropdownSports> {
   late Sport sport = widget.sport ;
 
   void getSports() async{
-    String? storedSport = storage.getItem("sports");
+    String? storedSport = await storage.getItem("sports");
     if(storedSport != null){
+      log("GET DATA SPORT FROM STORAGE");
       setState(() {
         futureSports = parseSports(storedSport);
         sport = futureSports[0];
       });
     }
     else {
+      log("GET DATA SPORT FROM API");
       List<Sport> res = await sportUseCase.getAll();
       setState(() {
         futureSports = res;

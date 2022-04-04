@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 
 class Conversation {
   final int? id;

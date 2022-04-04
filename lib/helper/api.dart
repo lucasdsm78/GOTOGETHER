@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:go_together/helper/string_extension.dart';
+import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/sports.dart';
@@ -61,7 +61,7 @@ class Api{
 
   List<Activity> parseActivities(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    log("api parse activity : " + parsed.toString());
+    //log("api parse activity : " + parsed.toString());
     return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
   }
 

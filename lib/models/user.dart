@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/models/location.dart';
-import 'package:go_together/helper/map_extension.dart';
+import 'package:go_together/helper/extensions/map_extension.dart';
 
 /// Availability only use for user, no need to create a model file for it
 class Availability{

@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:go_together/helper/enum/gender.dart';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/models/user.dart';
 
 class Mock {

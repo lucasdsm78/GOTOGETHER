@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/int_extension.dart';
+import 'package:go_together/helper/extensions/int_extension.dart';
 
 extension DateTimeExtension on DateTime{
   /// Returns day's name

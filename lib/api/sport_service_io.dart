@@ -9,7 +9,7 @@ class SportServiceApi {
 
   Future<List<Sport>> getAll({Map<String, dynamic> map = const {}}) async {
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/sports'));
+        .get(Uri.parse(api.host + 'sports'));
     if (response.statusCode == 200) {
       return compute(api.parseSports, response.body);
     } else {
@@ -19,7 +19,7 @@ class SportServiceApi {
 
   Future<Sport> getById(int id) async {
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/sport/$id'));
+        .get(Uri.parse(api.host + 'sports/$id'));
     if (response.statusCode == 200) {
       return Sport.fromJson(jsonDecode(response.body)["success"]);
     } else {

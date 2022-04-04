@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
-import 'package:go_together/helper/date_extension.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
@@ -14,32 +14,32 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
-import 'package:go_together/widgets/components/custom_row.dart';
-import 'package:go_together/widgets/components/dropdown_gender.dart';
-import 'package:go_together/widgets/components/dropdown_level.dart';
-import 'package:go_together/widgets/components/dropdown_sports.dart';
-import 'package:go_together/widgets/components/map_dialog.dart';
+import 'package:go_together/widgets/components/lists/custom_row.dart';
+import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
+import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';
+import 'package:go_together/widgets/components/dropdowns/dropdown_sports.dart';
+import 'package:go_together/widgets/components/maps/map_dialog.dart';
 import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:localstorage/localstorage.dart';
 
-import 'components/datetime_fields.dart';
+import 'package:go_together/widgets/components/datetime_fields.dart';
 
 //@todo refactor file into activity_set.dart
-class ActivityCreate extends StatefulWidget {
-  const ActivityCreate({Key? key, this.activity}) : super(key: key);
+class ActivitySet extends StatefulWidget {
+  const ActivitySet({Key? key, this.activity}) : super(key: key);
   static const tag = "activity_create";
   final Activity? activity;
 
   @override
-  _ActivityCreateState createState() => _ActivityCreateState();
+  _ActivitySetState createState() => _ActivitySetState();
 }
 
-class _ActivityCreateState extends State<ActivityCreate> {
+class _ActivitySetState extends State<ActivitySet> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
-  late Sport sport = Sport.fromJson({"id": 1, "name": "football"});
+  late Sport sport = Sport.fromJson({"id":2,"name":"footing"});
   late User currentUser = Mock.userGwen;
 
   final _formKey = GlobalKey<FormState>();
