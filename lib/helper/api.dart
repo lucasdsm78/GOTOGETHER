@@ -83,8 +83,11 @@ class Api{
   }
 
   List<Conversation> parseConversation(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"]["conversation"].cast<Map<String, dynamic>>();
-    return parsed.map<Conversation>((json) => Conversation.fromJson(json)).toList();
+    final parsed = jsonDecode(responseBody)["success"]["conversation"].cast<
+        Map<String, dynamic>>();
+    return parsed.map<Conversation>((json) => Conversation.fromJson(json))
+        .toList();
+  }
   List<Signal> parseSignal(String responseBody) {
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
 

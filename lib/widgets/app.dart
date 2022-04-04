@@ -8,7 +8,6 @@ import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/activities_list.dart';
 import 'package:go_together/widgets/activity_set.dart';
 import 'package:go_together/widgets/google_maps.dart';
-import 'package:go_together/widgets/activity_update.dart';
 import 'package:go_together/widgets/signal.dart';
 import 'package:go_together/widgets/user.dart';
 import 'package:localstorage/localstorage.dart';

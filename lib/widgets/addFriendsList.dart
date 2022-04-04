@@ -12,7 +12,7 @@ import 'components/search_bar.dart';
 
 class AddFriendsList extends StatefulWidget {
   const AddFriendsList({Key? key}) : super(key: key);
-  static tag = const "add_friend_list";
+  static const tag = "add_friend_list";
 
   @override
   _AddFriendsListState createState() => _AddFriendsListState();
