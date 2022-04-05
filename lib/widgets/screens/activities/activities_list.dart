@@ -79,11 +79,13 @@ class _ActivityListState extends State<ActivityList> with Observer{
 
     return Scaffold(
       appBar: TopSearchBar(
-          customSearchBar: const Text('Activities List'),
+          customSearchBar: const Text('Activities List',
+            style: TextStyle(color: Colors.white),
+          ),
           searchbarController: searchbarController,
           leading:IconButton(onPressed: (){
             dialogue();
-          }, icon: Icon(Icons.more_horiz))
+          }, icon: Icon(Icons.more_horiz, color:Colors.white))
       ),
       body: FutureBuilder<List<Activity>>(
         future: futureActivities,
