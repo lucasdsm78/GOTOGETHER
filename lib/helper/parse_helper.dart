@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:go_together/helper/enum/run_types.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
@@ -42,4 +43,17 @@ List<Conversation> parseConversation(String responseBody) {
 List<Signal> parseSignal(String responseBody) {
   final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
   return parsed.map<Signal>((json) => Signal.fromJson(json)).toList();
+}
+
+
+jsonParseToList(String? jsonList, RunTypes type){
+  List<String> dataListAsString = jsonList?.isEmpty ?? true ? <String>[] : jsonList!.split(',');
+  switch(type){
+    case RunTypes.int:
+      return dataListAsString.map((data) => int.parse(data)).toList();
+    case RunTypes.string:
+      return dataListAsString;
+    default:
+      return dataListAsString.map((data) => int.parse(data)).toList();
+  }
 }

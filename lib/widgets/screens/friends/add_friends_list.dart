@@ -128,7 +128,9 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
   _addFriend(User user){
     friendsUseCase.add(currentUser.id!, user.id!);
-    currentUser.friendsList.add(user.id!);
+    setState(() {
+      currentUser.friendsList.add(user.id!);
+    });
   }
 
   Widget _buildRow(User user) {

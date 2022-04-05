@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:go_together/helper/enum/run_types.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/helper/extensions/map_extension.dart';
 
@@ -82,9 +84,13 @@ class User {
     this.friendsList = const [],
   });
 
+
+
   factory User.fromJson(Map<String, dynamic> json) {
-    List<String> dataListAsString = json['friends']?.isEmpty ?? true ? <String>[] : json['friends'].split(',');
-    List<int> dataListAsInt = dataListAsString.map((data) => int.parse(data)).toList();
+    //@todo : Unhandled Exception: NoSuchMethodError: The method '[]' was called on null. tried calling: []("friends")
+    //       via return User.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
+    // maybe because of the body returned
+    List<int> dataListAsInt = jsonParseToList(json["friends"], RunTypes.int);
 
     return User(
       id: json.getFromMapFirstNotNull( ['id', 'userId']) as int,
