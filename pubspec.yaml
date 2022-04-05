@@ -53,6 +53,7 @@ dependencies:
   encrypt: ^5.0.1
   crypto_keys: ^0.3.0
   flutter_observer: ^2.0.0
+  material_design_icons_flutter: 5.0.6595
 
 
 dev_dependencies:

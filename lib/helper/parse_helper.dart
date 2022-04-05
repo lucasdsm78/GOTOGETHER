@@ -7,10 +7,14 @@ import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 
-List<Sport> parseSports(String json) {
+List<Sport> parseSportsFromJson(String json) {
   final parsed = jsonDecode(json).cast<Map<String, dynamic>>();
   //log("Api sport parsed = " + parsed.toString());
   return parsed.map<Sport>((el) => Sport.fromJson(el)).toList();
+}
+List<Sport> parseSports(String responseBody) {
+  final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+  return parsed.map<Sport>((json) => Sport.fromJson(json)).toList();
 }
 String listSportToJson(List<Sport> res){
   return  res.map((e) => e.toJson()).toList().toString();

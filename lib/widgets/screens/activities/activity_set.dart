@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/mock/levels.dart';
+import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
@@ -39,7 +40,7 @@ class _ActivitySetState extends State<ActivitySet> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
-  late Sport sport = Sport.fromJson({"id":1,"name":"football"});
+  late Sport? sport = null;
   late User currentUser = Mock.userGwen;
 
   final _formKey = GlobalKey<FormState>();
@@ -47,7 +48,7 @@ class _ActivitySetState extends State<ActivitySet> {
   TextEditingController nbManquantsInput = TextEditingController();
   TextEditingController nbTotalParticipantsInput = TextEditingController();
 
-  String criterGender = 'Tous';
+  String? criterGender = null;
   late Level eventLevel = MockLevel.levelList[0];
   String eventDescription = "";
   int nbTotalParticipants = 0;
@@ -66,7 +67,7 @@ class _ActivitySetState extends State<ActivitySet> {
     if(isUpdating){
       activityUseCase.getById(widget.activity!.id!).then((value) {
         sport = value.sport;
-        criterGender = (value.criterionGender != null ? value.criterionGender!.translate() : "Tous");
+        criterGender = (value.criterionGender != null ? value.criterionGender!.translate() : null);
         eventLevel = value.level;
         eventDescriptionInput.text = value.description;
         nbTotalParticipantsInput.text = value.attendeesNumber.toString();
@@ -224,20 +225,35 @@ class _ActivitySetState extends State<ActivitySet> {
   }
 
 
-  Activity _generateActivity(){
-    //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-     return  Activity(location: location!, host: currentUser, sport: sport, dateEnd: dateTimeEvent.add(_duration),
-         dateStart: dateTimeEvent, isCanceled: 0, description: eventDescription,  level: eventLevel,
-         attendeesNumber: nbTotalParticipants, public: public, criterionGender:  (criterGender == "Tous" ? null : getGenderByString(criterGender)),
-       limitByLevel: false, id: widget.activity!.id!);
+  Activity? _generateActivity(){
+    if(sport != null) { // check the data in Form
+      //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
+      return Activity(location: location!,
+          host: currentUser,
+          sport: sport!,
+          dateEnd: dateTimeEvent.add(_duration),
+          dateStart: dateTimeEvent,
+          isCanceled: 0,
+          description: eventDescription,
+          level: eventLevel,
+          attendeesNumber: nbTotalParticipants,
+          public: public,
+          criterionGender: (criterGender == null ? null : getGenderByString(
+              criterGender!)),
+          limitByLevel: false,
+          id: widget.activity!.id!);
+    }
   }
 
   _addEvent() async {
-    Activity activity = _generateActivity();
-    log(activity.toJson());
-    Activity? activityAdded =(isUpdating ? await activityUseCase.update(activity) :await activityUseCase.add(activity) );
-    if(activityAdded != null){
-      Navigator.of(context).popAndPushNamed(Navigation.tag);
+    Activity? activity = _generateActivity();
+    if(activity != null) {
+      log(activity.toJson());
+      Activity? activityAdded = (isUpdating ? await activityUseCase.update(
+          activity) : await activityUseCase.add(activity));
+      if (activityAdded != null) {
+        Navigator.of(context).popAndPushNamed(Navigation.tag);
+      }
     }
   }
 }

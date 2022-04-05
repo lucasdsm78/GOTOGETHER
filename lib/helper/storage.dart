@@ -31,7 +31,7 @@ class Storage{
     String? storedSport = await get("sports");
     if(storedSport != null){
       log("GET FUTURE - SPORT IN LOCAL STORAGE");
-      res = parseSports(storedSport);
+      res = parseSportsFromJson(storedSport);
     }
     else{
       List<Sport> res = await SportUseCase().getAll();
