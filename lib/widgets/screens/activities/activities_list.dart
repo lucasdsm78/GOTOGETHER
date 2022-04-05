@@ -10,6 +10,8 @@ import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
+import 'package:go_together/widgets/components/lists/custom_list.dart';
+import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
@@ -20,6 +22,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 //@todo : il faudrait un bouton qui affiche les filtres
 class ActivityList extends StatefulWidget {
@@ -135,14 +138,20 @@ class _ActivityListState extends State<ActivityList> with Observer{
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children:[
-            Text("${activity.location.address}, ${activity.location.city}"),
-            Text(activity.dateStart.getFrenchDateTime())
+            TextIcon(title: "${activity.location.address}, ${activity.location.city}", icon:Icon(MdiIcons.mapMarker, color: Colors.green,), mainAxisAlignment:MainAxisAlignment.start),
+            TextIcon(title: activity.dateStart.getFrenchDateTime(), icon:Icon(MdiIcons.calendar, color: Colors.green), mainAxisAlignment:MainAxisAlignment.start)
           ]
       ),
-      trailing:Icon(
-        hasJoin ? Icons.favorite : Icons.favorite_border,
-        color: hasJoin ? Colors.red : null,
-        semanticLabel: hasJoin ? 'i have join' : 'i have not join',
+      trailing:
+      CustomColumn(
+        children: [
+          Icon(
+            hasJoin ? Icons.favorite : Icons.favorite_border,
+            color: hasJoin ? Colors.red : null,
+            semanticLabel: hasJoin ? 'i have join' : 'i have not join',
+          ),
+          Text("${activity.nbCurrentParticipants}/${activity.attendeesNumber}")
+        ],
       ),
       onTap: () {
         setState(() {
