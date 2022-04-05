@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
+import 'package:go_together/widgets/components/delete_button.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:go_together/widgets/screens/users/user.dart';
 
@@ -81,21 +82,39 @@ class _FriendsListState extends State<FriendsList> {
           searchbarController: searchbarController,
           placeholder: "username",
       ),
-      body: FutureBuilder<List<User>>(
-        future: futureUsers,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<User> data = snapshot.data!;
-            List<User> res = _filterFriends(data);
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            TextField(
+              onChanged: (value) {
+                print(value);
+              },
+              controller: searchbarController,
+              decoration: const InputDecoration(
+                  labelText: "Rechercher",
+                  hintText: "Rechercher",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+            ),
 
-            return ListViewSeparated(data: res, buildListItem: _buildRow);
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        },
+            Expanded(child: FutureBuilder<List<User>>(
+              future: futureUsers,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<User> data = snapshot.data!;
+                  List<User> res = _filterFriends(data);
+
+                  return ListViewSeparated(data: res, buildListItem: _buildRow);
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -116,6 +135,15 @@ class _FriendsListState extends State<FriendsList> {
       title: Text(
         user.username,
         style: _biggerFont,
+      ),
+      leading: Icon(Icons.account_circle_rounded),
+      trailing: ElevatedButton(
+        onPressed:() {
+          print('HelloWorld!');
+        }
+        ,
+        child: Icon(Icons.delete_forever, color: Colors.red,),
+        style: ElevatedButton.styleFrom(primary: Colors.white),
       ),
       onTap: () {
         _seeMore(user);
