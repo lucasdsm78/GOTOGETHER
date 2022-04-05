@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/api.dart';
 
@@ -8,9 +9,9 @@ class UserServiceApi {
 
   Future<List<User>> getAll({Map<String, dynamic> map = const {}}) async {
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/users'));
+        .get(Uri.parse(api.host + 'users'));
     if (response.statusCode == 200) {
-      return compute(api.parseUsers, response.body);
+      return compute(parseUsers, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load users");
     }
@@ -18,7 +19,7 @@ class UserServiceApi {
 
   Future<User> getById(int id) async {
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/user/$id'));
+        .get(Uri.parse(api.host + 'users/$id'));
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)["success"]);
     } else {
@@ -69,7 +70,7 @@ class UserServiceApi {
   Future<User> add(User user) async {
     //ex : createUser(User(username: "flutterUser2", mail: "flutterUser2@gmail.com", password: "flutterPass"));
     final response = await api.client
-        .post(Uri.parse(api.host + 'add/user'),
+        .post(Uri.parse(api.host + 'users'),
       headers: api.mainHeader,
       body: user.toJson(),
     );
@@ -82,7 +83,7 @@ class UserServiceApi {
 
   Future<User> updatePost(User user) async {
     final response = await api.client
-        .post(Uri.parse(api.host + 'user/${user.id}'),
+        .post(Uri.parse(api.host + 'users/${user.id}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -102,7 +103,7 @@ class UserServiceApi {
     }
     else {
       final response = await api.client
-          .patch(Uri.parse(api.host + 'user/${map["id"]}'),
+          .patch(Uri.parse(api.host + 'users/${map["id"]}'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -119,7 +120,7 @@ class UserServiceApi {
 
   Future<User> delete(String id) async {
     final response = await api.client
-        .delete(Uri.parse(api.host + 'user/$id'),
+        .delete(Uri.parse(api.host + 'users/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:go_together/helper/api.dart';
@@ -13,7 +14,7 @@ class MessageServiceApi {
         headers: api.mainHeader
     );
     if (response.statusCode == 200) {
-      return compute(api.parseMessages, response.body);
+      return compute(parseMessages, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load messages");
     }
@@ -25,7 +26,7 @@ class MessageServiceApi {
         headers: api.mainHeader
     );
     if (response.statusCode == 200) {
-      return compute(api.parseMessages, response.body);
+      return compute(parseMessages, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "can't load message");
     }
@@ -37,7 +38,7 @@ class MessageServiceApi {
         headers: api.mainHeader
     );
     if (response.statusCode == 200) {
-      return compute(api.parseConversation, response.body);
+      return compute(parseConversation, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load conversations data");
     }

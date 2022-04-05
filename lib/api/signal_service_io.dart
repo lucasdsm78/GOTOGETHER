@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/signal.dart';
-import 'package:go_together/models/sports.dart';
 import 'package:go_together/helper/api.dart';
 
 class SignalServiceApi {
@@ -12,7 +11,7 @@ class SignalServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'reporting/reporter/$id'));
     if (response.statusCode == 200) {
-      return compute(api.parseSignal, response.body);
+      return compute(parseSignal, response.body);
     } else {
       throw Exception('Failed to load signals');
     }

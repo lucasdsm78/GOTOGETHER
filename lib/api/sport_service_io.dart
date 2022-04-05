@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/helper/api.dart';
 
@@ -11,7 +12,7 @@ class SportServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'sports'));
     if (response.statusCode == 200) {
-      return compute(api.parseSports, response.body);
+      return compute(parseSports, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load sports");
     }
