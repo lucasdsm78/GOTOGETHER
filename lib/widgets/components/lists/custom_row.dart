@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomRow extends StatelessWidget {
   const CustomRow({Key? key,  required this.children,
-    this.mainAlignementAxis = MainAxisAlignment.center, this.crossAlignementAxis = CrossAxisAlignment.center}) : super(key: key);
+    this.mainAlignementAxis = MainAxisAlignment.center, this.crossAlignementAxis = CrossAxisAlignment.center,
+  this.isFirstLastOnBorder = false}) : super(key: key);
   final List<Widget> children;
   final MainAxisAlignment mainAlignementAxis;
   final CrossAxisAlignment crossAlignementAxis;
+  final bool isFirstLastOnBorder;
 
   List<Widget> _buildWidgetList(){
     List<Widget> list = [];
@@ -15,14 +17,19 @@ class CustomRow extends StatelessWidget {
           flex:1,
           child: Container(
               child: element,
-              alignment: (
+              alignment:
+              (isFirstLastOnBorder
+                ? (
                   element == children.first
-                  ? Alignment.centerLeft
-                  : (element == children.last
-                    ? Alignment.centerRight
-                    : Alignment.center
+                      ? Alignment.centerLeft
+                      : (element == children.last
+                      ? Alignment.centerRight
+                      : Alignment.center
                   )
-              ),
+                )
+                : Alignment.center
+              )
+              ,
           ),
       ));
     });
