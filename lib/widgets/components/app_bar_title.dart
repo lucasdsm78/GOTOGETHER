@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../helper/enum/custom_colors.dart';
 
-class AppBarTitle extends StatelessWidget {
+class AppBarTitleGoogleAuth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
