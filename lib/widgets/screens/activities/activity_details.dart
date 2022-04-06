@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
@@ -8,6 +13,9 @@ import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_observer/Observable.dart';
 
 import 'package:go_together/widgets/navigation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../components/maps/map.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);
@@ -35,35 +43,112 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   }
 
   @override
+
   Widget build(BuildContext context) {
+    //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activity Details'),
       ),
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.spaceAround,
           //mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
                 activity.description,
-                style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.0)
-            ),
-            Text(activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants" ),
-            Text(activity.location.address + ", " + activity.location.city + ", " + activity.location.country),
-            Text(activity.dateStart.toString() + " - " + activity.dateEnd.toString()),
-            Text("Organisateur : " + activity.host.username),
-            Text("Evenement publique : " + (activity.public! ? "Oui" : "Non")),
-            Text("Destiné à : " + (activity.criterionGender != null ? activity.criterionGender!.translate() : "Tous")),
+                style:const TextStyle(
+                  fontSize: 40,
+                  color: Colors.black,
 
-            const SizedBox(height: 30),
+                ),
+                textAlign: TextAlign.center,
+                /*DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.0)*/
+            ),
+
+            Text("Organisateur : " + activity.host.username,
+                    style:const TextStyle(
+                      fontSize: 20,
+                    )
+                ),
+
+            Row(
+              children:  [
+                const Icon(Icons.date_range,
+                color :Colors.green,),
+                Text(": "+ activity.dateStart.getFrenchDateTime() + " - " + activity.dateEnd.getFrenchDateTime(),
+                style:const TextStyle(fontSize: 18)),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children:[
+                Column(
+                  children: [
+                    Row(
+                      children:[
+                        const Icon(Icons.account_circle_rounded,
+                          color :Colors.green,
+                        ),
+                        Text(": "+ activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants" ,
+                            style:const TextStyle(fontSize: 20)),
+                      ]
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text("Niveau: "+ activity.level.name,
+                      style:const TextStyle(fontSize: 20),
+                    )
+                  ],
+                )
+              ]
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children:  [
+                const Icon(Icons.location_on_rounded,
+                  color :Colors.green,),
+                Expanded(child: Text(": "+ activity.location.address + ", " + activity.location.city + ", " + activity.location.country,
+                  style:const TextStyle(fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
+                maxLines: 2,))
+
+              ],
+            ),
+            Text("Evenement publique : " + (activity.public! ? "Oui" : "Non"),
+            style: const TextStyle(fontSize: 20)
+            ),
+
+            Text("Destiné à/aux : " + (activity.criterionGender != null ? activity.criterionGender!.translate() : "Tous"),
+            style:const TextStyle(fontSize: 20)),
+
+
+            //Map
+            const Text("Localisation :",
+              style: TextStyle(
+                fontSize: 20
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height *0.3,
+              width: MediaQuery.of(context).size.width *0.6,
+              child:CustomMap(pos: LatLng(activity.location.lat,activity.location.lon),onMark: ()=>{},),
+
+            ),
+
+            const SizedBox(
+                height: 30),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
                 children: <Widget>[
                   Positioned.fill(
                     child: Container(
+
                       decoration: BoxDecoration(
                         gradient: activity.currentParticipants!.contains(currentUser.id.toString()) ? LinearGradient(
                           colors: <Color>[
@@ -81,22 +166,30 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       ),
                     ),
                   ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16.0),
-                      primary: Colors.white,
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () async {
-                      Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
-                      setState(() {
-                        activity = updatedActivity;
-                      });
-                      Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted,
-                          notifyName : NotificationCenter.userJoinActivity.name,map: {});
-                    },
-                    child: const Text('Join'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                      style: TextButton.styleFrom(
+                        //alignment: Alignment.center,
+                        padding: const EdgeInsets.all(16.0),
+                        primary: Colors.white,
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      onPressed: () async {
+                        Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
+                        setState(() {
+                          activity = updatedActivity;
+                        });
+                        Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted,
+                            notifyName : NotificationCenter.userJoinActivity.name,map: {});
+                      },
+                      child: const Text('Join', textAlign: TextAlign.center, ),
+                    )
+                    ],
                   ),
+
                 ],
               ),
             ),
