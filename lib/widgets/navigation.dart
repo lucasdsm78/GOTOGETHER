@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:localstorage/localstorage.dart';
@@ -9,6 +10,7 @@ import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 
 import 'package:go_together/widgets/screens/friends/add_friends_list.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Navigation extends StatefulWidget {
   static const tag = "navigation";
@@ -62,7 +64,7 @@ class NavigationState extends State<Navigation> {
     {
       "widget": FriendsList(),
       "title": "Friends",
-      "icon": Icon(Icons.favorite)
+      "icon": Icon(MdiIcons.handshake)
     },
   ];
 
@@ -158,7 +160,7 @@ class NavigationState extends State<Navigation> {
       bottomNavigationBar: BottomNavigationBar(
         items: getBottomBarLinks(),
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blueAccent,
+        selectedItemColor: CustomColors.goTogetherMain,
         onTap: _onItemTapped,
       ),
     );

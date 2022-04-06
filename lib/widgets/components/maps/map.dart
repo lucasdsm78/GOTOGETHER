@@ -2,14 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_together/models/location.dart' as Gt;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CustomMap extends StatefulWidget {
-  const CustomMap({Key? key, required this.pos, required this.onMark}) : super(key: key);
+  const CustomMap({Key? key, required this.pos, this.onMark}) : super(key: key);
   final LatLng? pos;
-  final Function onMark;
+  final Function? onMark;
 
   @override
   _CustomMapState createState() => _CustomMapState();
@@ -112,7 +111,9 @@ class _CustomMapState extends State<CustomMap> {
         city: getFirstFilled([placemark.locality], defaultVal: "") as String,
         country: getFirstFilled([placemark.country], defaultVal: "") as String,
         lat:pos.latitude, lon: pos.longitude);
-    widget.onMark(loc);
+    if(widget.onMark != null){
+      widget.onMark!(loc);
+    }
 
     setState(() {
       _origin = Marker(

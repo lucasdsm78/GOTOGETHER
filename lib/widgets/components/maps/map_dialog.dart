@@ -15,15 +15,17 @@ class MapDialog extends StatefulWidget {
 
 class _MapDialogState extends State<MapDialog> {
   LatLng? pos ;
-  Location? location;
+  late Location? location = widget.location;
 
   @override
   void initState() {
     super.initState();
-    location = widget.location;
-    setState(() {
-      pos = LatLng(location!.lat, location!.lon);
-    });
+    if(location == null){
+      _updatePos(LatLng(49.035617, 2.060325));
+    }
+    else{
+      _updatePos(LatLng(location!.lat, location!.lon));
+    }
   }
 
   _updatePos(LatLng newPos){
