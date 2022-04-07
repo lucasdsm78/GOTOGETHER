@@ -8,6 +8,7 @@ import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -47,6 +48,8 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   DateTime? selectedDate;//DateTime.now();
 
   final searchbarController = TextEditingController();
+  String? gender;
+  Level? level;
 
   @override
   void initState() {
@@ -183,7 +186,9 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
         context: context,
         builder: (BuildContext context){
           return FilterDialog(selectedDate: selectedDate, onSelectDate: _updateSelectedDate,
-            sport: sport, sportList: futureSports, onChangeSport: _updateSelectedSport,);
+              sport: sport, onChangeSport: _updateSelectedSport,
+              gender: gender, onChangeGender: _updateSelectedGender,
+              level: level, onChangeLevel: _updateSelectedLevel);
         }
     );
   }
@@ -234,6 +239,20 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
       sport = newSport;
     });
   }
+
+  _updateSelectedGender(String newGender){
+    setState(() {
+      gender = newGender;
+    });
+  }
+
+  _updateSelectedLevel(Level newLevel){
+    setState(() {
+      level = newLevel;
+    });
+  }
+
+
 
   /// Filter activities depending on [keywords], [selectedDate]
   _filterActivities(List<Activity> list){

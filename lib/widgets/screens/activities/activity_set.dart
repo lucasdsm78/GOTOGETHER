@@ -277,7 +277,7 @@ class _ActivitySetState extends State<ActivitySet> {
           criterionGender: (criterGender == null ? null : getGenderByString(
               criterGender!)),
           limitByLevel: false,
-          id: widget.activity!.id!);
+          id: (widget.activity == null ? null : widget.activity!.id!));
     }
   }
 

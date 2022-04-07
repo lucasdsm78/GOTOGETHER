@@ -54,6 +54,9 @@ class _GotogetherAppState extends State<GotogetherApp> {
           foregroundColor: Colors.black,
         ),
       ),
+      routes: {
+        Navigation.tag: (context) => Navigation()
+      },
       //home:SignUp(),
       //home:Navigation(),
 

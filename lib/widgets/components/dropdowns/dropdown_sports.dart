@@ -46,7 +46,7 @@ class _DropdownSportsState extends State<DropdownSports> {
   Widget build(BuildContext context) {
     return
       DropdownButtonHideUnderline(
-        DropdownButton<Sport?>(
+        child:DropdownButton<Sport?>(
           icon: Icon(Icons.sports_soccer),
           //isExpanded: true,
           value: sport,
