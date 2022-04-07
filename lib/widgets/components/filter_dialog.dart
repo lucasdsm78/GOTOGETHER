@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
+import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
+import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';
 
 import 'custom_datepicker.dart';
 import 'custom_text.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 
+import 'dropdowns/dropdown_sports.dart';
+
 class FilterDialog extends StatefulWidget {
-  const FilterDialog({Key? key, required this.selectedDate, required this.onSelectDate,
-    required this.sport, required this.sportList, required this.onChangeSport}) : super(key: key);
+  const FilterDialog({Key? key, required this.selectedDate, required this.onSelectDate, 
+    this.sport, required this.onChangeSport, this.gender, required this.onChangeGender,
+    this.level, required this.onChangeLevel}) : super(key: key);
   final DateTime? selectedDate;
   final Function onSelectDate;
 
-  final Sport sport;
-  final List<Sport> sportList;
+  final Sport? sport;
+  final String? gender ;
+  final Level? level;
+
   final Function onChangeSport;
+  final Function onChangeGender;
+  final Function onChangeLevel;
 
   @override
   _FilterDialogState createState() => _FilterDialogState();
@@ -21,16 +31,15 @@ class FilterDialog extends StatefulWidget {
 
 class _FilterDialogState extends State<FilterDialog> {
   DateTime? selectedDate = DateTime.now();
-
-  late Sport sport;
-  List<Sport> sportList = [];
+  Sport? sport;
+  String? gender ;
+  Level? level;
 
   @override
   void initState() {
     super.initState();
     selectedDate = widget.selectedDate;
     sport = widget.sport;
-    sportList = widget.sportList;
   }
 
   @override
@@ -49,47 +58,30 @@ class _FilterDialogState extends State<FilterDialog> {
             child:
             Column(
               children:[
-                Expanded(
-                  flex: 1,
-                  child:
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CustomDatePicker(
-                        initialDate: selectedDate,
-                        onSelected: (DateTime date){
-                          widget.onSelectDate(date);
-                          _updateSelectedDate(date);
-                        }
-                      ),
-                      Container(width: 10,),
-                      Expanded(
-                        flex: 1,
-                        child: Text(selectedDate == null ? "any date selected" : selectedDate!.getFrenchDateTime())
-                      )
-                    ],
-                  )
+                Container(
+                  height: 30,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CustomDatePicker(
+                          initialDate: selectedDate,
+                          onSelected: (DateTime date){
+                            widget.onSelectDate(date);
+                            _updateSelectedDate(date);
+                          }
+                        ),
+                        Container(width: 10,),
+                        Expanded(
+                          flex: 1,
+                          child: Text(selectedDate == null ? "any date selected" : selectedDate!.getFrenchDateTime())
+                        )
+                      ],
+                    )
                 ),
-
-                Expanded(
-                  flex: 1,
-                  child:DropdownButton<Sport>(
-                    value: sport,
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    onChanged: (newValue) {
-                      _updateSelectedSport(newValue as Sport);
-                      widget.onChangeSport(newValue);
-                    },
-                    items: sportList.map<DropdownMenuItem<Sport>>((Sport value) {
-                      return DropdownMenuItem<Sport>(
-                        value: value,
-                        child: Text(value.name.toString()),
-                      );
-                    }).toList(),
-                  ),
-                )
+                DropdownSports(sport: sport, onChange: _updateSelectedSport, shouldAddNullValue: true,),
+                DropdownLevel(level: level, onChange: _updateSelectedLevel, shouldAddNullValue: true,),
+                DropdownGender(criterGender: gender, onChange: _updateSelectedGender),
               ],
             )
 
@@ -97,6 +89,8 @@ class _FilterDialogState extends State<FilterDialog> {
       ],
     );
   }
+
+  //region update data
   _updateSelectedDate(DateTime date){
     setState(() {
       selectedDate = date;
@@ -106,5 +100,19 @@ class _FilterDialogState extends State<FilterDialog> {
     setState(() {
       sport = newSport;
     });
+    widget.onChangeSport(newSport);
   }
+  _updateSelectedLevel(Level newLevel){
+    setState(() {
+      level = newLevel;
+    });
+    widget.onChangeLevel(newLevel);
+  }
+  _updateSelectedGender(String newGender){
+    setState(() {
+      gender = newGender;
+    });
+    widget.onChangeGender(newGender);
+  }
+  //endregion
 }

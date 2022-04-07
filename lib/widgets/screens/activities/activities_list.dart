@@ -1,17 +1,19 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
-import 'package:go_together/helper/parse_helper.dart';
-import 'package:go_together/mock/sports.dart';
+import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/helper/storage.dart';
+import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
-import 'package:go_together/usecase/sport.dart';
+import 'package:go_together/widgets/components/lists/custom_list.dart';
+import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
@@ -22,6 +24,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 //@todo : il faudrait un bouton qui affiche les filtres
 class ActivityList extends StatefulWidget {
@@ -34,29 +37,34 @@ class ActivityList extends StatefulWidget {
 
 class _ActivityListState extends State<ActivityList> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
-  final SportUseCase sportUseCase = SportUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
 
   late Future<List<Activity>> futureActivities;
-
   late User currentUser;
-  String keywords = "";
-  late Sport sport = MockSport.sportList.first;
 
-  List<Sport> futureSports = [];
+  String keywords = "";
+  Sport? sport;
+
   DateTime? selectedDate;//DateTime.now();
+  String? gender;
+  Level? level;
 
   final searchbarController = TextEditingController();
+  CustomStorage store = CustomStorage();
 
   @override
   void initState() {
     super.initState();
-    getSports();
     getActivities();
-    currentUser = User.fromJson(jsonDecode(storage.getItem("user")));
+    currentUser = Mock.userGwen;
+    //getUser();
     searchbarController.addListener(_updateKeywords);
     Observable.instance.addObserver(this);
   }
+  getUser() async {
+    currentUser = User.fromJson(jsonDecode(await store.getUser())) ;
+  }
+
 
   @override
   void dispose() {
@@ -76,21 +84,16 @@ class _ActivityListState extends State<ActivityList> with Observer{
 
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem> dropdownItems = futureSports.map((item) {
-      //@todo maybe need a future builder
-      return DropdownMenuItem<Sport>(
-        child: Text(item.name),
-        value: item,
-      );
-    }).toList();
 
     return Scaffold(
       appBar: TopSearchBar(
-          customSearchBar: const Text('Activities List'),
+          customSearchBar: const Text('Activities List',
+            style: TextStyle(color: Colors.white),
+          ),
           searchbarController: searchbarController,
           leading:IconButton(onPressed: (){
             dialogue();
-          }, icon: Icon(Icons.more_horiz))
+          }, icon: Icon(Icons.more_horiz, color:Colors.white))
       ),
       body: FutureBuilder<List<Activity>>(
         future: futureActivities,
@@ -145,14 +148,20 @@ class _ActivityListState extends State<ActivityList> with Observer{
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children:[
-            Text("${activity.location.address}, ${activity.location.city}"),
-            Text(activity.dateStart.getFrenchDateTime())
+            TextIcon(title: "${activity.location.address}, ${activity.location.city}", icon:Icon(MdiIcons.mapMarker, color: Colors.green,), mainAxisAlignment:MainAxisAlignment.start),
+            TextIcon(title: activity.dateStart.getFrenchDateTime(), icon:Icon(MdiIcons.calendar, color: Colors.green), mainAxisAlignment:MainAxisAlignment.start)
           ]
       ),
-      trailing:Icon(
-        hasJoin ? Icons.favorite : Icons.favorite_border,
-        color: hasJoin ? Colors.red : null,
-        semanticLabel: hasJoin ? 'i have join' : 'i have not join',
+      trailing:
+      CustomColumn(
+        children: [
+          Icon(
+            hasJoin ? Icons.favorite : Icons.favorite_border,
+            color: hasJoin ? Colors.red : null,
+            semanticLabel: hasJoin ? 'i have join' : 'i have not join',
+          ),
+          Text("${activity.nbCurrentParticipants}/${activity.attendeesNumber}")
+        ],
       ),
       onTap: () {
         setState(() {
@@ -182,36 +191,15 @@ class _ActivityListState extends State<ActivityList> with Observer{
         context: context,
         builder: (BuildContext context){
           return FilterDialog(selectedDate: selectedDate, onSelectDate: _updateSelectedDate,
-            sport: sport, sportList: futureSports, onChangeSport: _updateSelectedSport,);
+            sport: sport, onChangeSport: _updateSelectedSport,
+            gender: gender, onChangeGender: _updateSelectedGender,
+            level: level, onChangeLevel: _updateSelectedLevel);
         }
     );
   }
 
-
   Map <String, dynamic> criterionMap(){
     return {"sportId":/*sport.id*/null, "keywords":keywords};
-  }
-
-  void getSports() async{
-    log("GET SPORT FROM ACTIVITIES LIST");
-    String? storedSport = storage.getItem("sports");
-    if(storedSport != null){
-      log("ACTIVITIES LIST - GET DATA FROM STORAGE ");
-      setState(() {
-        futureSports = parseSports(storedSport);
-        sport = futureSports[0];
-      });
-    }
-    else {
-      List<Sport> res = await sportUseCase.getAll();
-      log("ACTIVITIES LIST - GET DATA FROM API ");
-
-      log(res.toString());
-      setState(() {
-        futureSports = res;
-        sport = futureSports[0];
-      });
-    }
   }
 
   void getActivities(){
@@ -234,13 +222,29 @@ class _ActivityListState extends State<ActivityList> with Observer{
     });
   }
 
+  _updateSelectedGender(String newGender){
+    setState(() {
+      gender = newGender;
+    });
+  }
+
+  _updateSelectedLevel(Level newLevel){
+    setState(() {
+      level = newLevel;
+    });
+  }
+
   /// Filter activities depending on [keywords], [selectedDate]
   _filterActivities(List<Activity> list){
     List<Activity> res = [];
     list.forEach((activity) {
       if(_fieldContains(activity)
           && (selectedDate ==null || activity.dateStart.getOnlyDate() == selectedDate!.getOnlyDate())
-          && sport.id == activity.sport.id){
+          && (sport == null || sport!.id == activity.sport.id)
+          && (gender == null ||  gender == activity.criterionGender?.translate())
+          && (level == null ||level!.id == activity.level.id)
+          && (activity.public == null || (!activity.public! && activity.host.friendsList.contains(currentUser.id)) )
+      ){
         res.add(activity);
       }
     });

@@ -55,7 +55,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: CustomColors.firebaseNavy,
-        title: AppBarTitle(),
+        title: AppBarTitleGoogleAuth(),
       ),
       body: SafeArea(
         child: Padding(

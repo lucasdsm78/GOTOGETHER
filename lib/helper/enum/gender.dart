@@ -37,3 +37,6 @@ extension GenderExtension on Gender{
 Gender getGenderByString(String gender){
   return Gender.values.firstWhere((element) => element.toShortString() == gender || element.translate() == gender);
 }
+List<String> getAllGenderTranslate(){
+  return Gender.values.map((el) => el.translate()).toList();
+}

@@ -20,3 +20,11 @@ samples, guidance on mobile development, and a full API reference.
 
 
 use `flutter run --no-sound-null-safety` 
+
+##icon
+[documentation flutter icon](https://pub.dev/packages/flutter_launcher_icons)
+run Command to create icon : 
+```
+flutter pub get
+flutter pub run flutter_launcher_icons:main
+```

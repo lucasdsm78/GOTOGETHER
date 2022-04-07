@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/helper/api.dart';
 
@@ -12,7 +13,7 @@ class ActivityServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map, [])));
     if (response.statusCode == 200) {
-      return compute(api.parseActivities, response.body);
+      return compute(parseActivities, response.body);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
     }

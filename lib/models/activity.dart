@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:go_together/helper/enum/run_types.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
@@ -58,7 +60,7 @@ class Activity {
       id: json['activityId'],
       location: Location.fromJson(json),
 
-      host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole']),
+      host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole'], friendsList: jsonParseToList(json["hostFriends"], RunTypes.int)),
       sport: Sport.fromJson(json),
 
       dateEnd: parseStringToDateTime(json['dateEnd']! as String),

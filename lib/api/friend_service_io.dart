@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:ffi';
 import 'package:flutter/foundation.dart';
+import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/api.dart';
 
@@ -13,7 +14,7 @@ class FriendsServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'friends'));
     if (response.statusCode == 200) {
-      return compute(api.parseUsers, response.body);
+      return compute(parseUsers, response.body);
     } else {
       throw Exception('Failed to load all friends');
     }
@@ -23,7 +24,7 @@ class FriendsServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'friends/$userId'));
     if (response.statusCode == 200) {
-      return compute(api.parseUsers, response.body);
+      return compute(parseUsers, response.body);
     } else {
       throw Exception('Failed to load friends user');
     }
@@ -33,7 +34,7 @@ class FriendsServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'friends/waiting/$userId'));
     if (response.statusCode == 200) {
-      return compute(api.parseUsers, response.body);
+      return compute(parseUsers, response.body);
     } else {
       throw Exception('Failed to load friends user');
     }
@@ -43,7 +44,7 @@ class FriendsServiceApi {
     final response = await api.client
         .get(Uri.parse(api.host + 'friends/all/$userId'));
     if (response.statusCode == 200) {
-      return compute(api.parseUsers, response.body);
+      return compute(parseUsers, response.body);
     } else {
       throw Exception('Failed to load friends user');
     }

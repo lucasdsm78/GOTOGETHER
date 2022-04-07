@@ -1,49 +1,40 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/helper/storage.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
-import 'package:localstorage/localstorage.dart';
 
 class DropdownSports extends StatefulWidget {
-  const DropdownSports({Key? key, required this.sport, required this.onChange}) : super(key: key);
-  final Sport sport;
+  const DropdownSports({Key? key, this.sport, required this.onChange, this.shouldAddNullValue = false,}) : super(key: key);
+  final Sport? sport;
   final Function onChange;
+  final bool shouldAddNullValue;
 
   @override
   _DropdownSportsState createState() => _DropdownSportsState();
 }
 
 class _DropdownSportsState extends State<DropdownSports> {
-  List<Sport> futureSports = [];
-  final LocalStorage storage = LocalStorage('go_together_app');
+  List<Sport?> sportList = [];
   final SportUseCase sportUseCase = SportUseCase();
-  late Sport sport = widget.sport ;
+  late Sport? sport = widget.sport ;
+  final store = CustomStorage();
 
-  void getSports() async{
-    String? storedSport = await storage.getItem("sports");
-    if(storedSport != null){
-      log("GET DATA SPORT FROM STORAGE");
-      setState(() {
-        futureSports = parseSports(storedSport);
-        sport = futureSports[0];
-      });
+  _initSport(newSportList){
+    if(widget.shouldAddNullValue && !sportList.contains(null)) {
+      newSportList.insert(0, null);
     }
-    else {
-      log("GET DATA SPORT FROM API");
-      List<Sport> res = await sportUseCase.getAll();
-      setState(() {
-        futureSports = res;
-        sport = futureSports[0];
-      });
-    }
+
+    setState(() {
+      sportList = newSportList as List<Sport>;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    getSports();
+    store.getAndStoreSportsFuture(func: _initSport);
   }
 
   @override
@@ -55,28 +46,29 @@ class _DropdownSportsState extends State<DropdownSports> {
   Widget build(BuildContext context) {
     return
       DropdownButtonHideUnderline(
-          child: DropdownButton<Sport>(
-            value: sport,
-            icon: Icon(Icons.arrow_drop_down_circle),
-            iconDisabledColor: Colors.red,
-            iconEnabledColor: Colors.green,
-            isExpanded: true,
-            hint:Text("Sports"),
-            elevation: 8,
-            style: const TextStyle(color: Colors.deepPurple),
-            onChanged: (newValue) {
-              widget.onChange(newValue);
-              setState(() {
-                sport = newValue as Sport;
-              });
-            },
-            items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
-              return DropdownMenuItem<Sport>(
-                value: value,
-                child: Text(value.name.toString()),
-              );
-            }).toList(),
-          ),
+        DropdownButton<Sport?>(
+          icon: Icon(Icons.sports_soccer),
+          //isExpanded: true,
+          value: sport,
+          hint: Text("Sports"),
+          iconEnabledColor: Colors.green,
+          iconDisabledColor: Colors.red,
+          isExpanded: true,
+          elevation: 16,
+          style: const TextStyle(color: Colors.deepPurple),
+          onChanged: (newValue) {
+            widget.onChange(newValue);
+            setState(() {
+              sport = newValue as Sport;
+            });
+          },
+          items: sportList.map<DropdownMenuItem<Sport>>((Sport? value) {
+            return DropdownMenuItem<Sport>(
+              value: value,
+              child: Text((value == null ? "Tous" : value.name.toString())),
+            );
+          }).toList(),
+        ),
       );
 
   }

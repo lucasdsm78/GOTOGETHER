@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
@@ -26,12 +28,13 @@ class _GotogetherAppState extends State<GotogetherApp> {
   final LocalStorage storage = LocalStorage('go_together_app');
   final SportUseCase sportUseCase = SportUseCase();
   late Future<List<Sport>> futureSportsMainApp;
+  final store = CustomStorage();
 
   @override
   void initState() {
     super.initState();
-    getSports();
-    storage.setItem('user', Mock.userGwen.toJson()); //simulate user connexion
+    log("START APP");
+    store.storeUser(Mock.userGwen);
   }
 
   @override
@@ -52,41 +55,35 @@ class _GotogetherAppState extends State<GotogetherApp> {
         ),
       ),
       //home:SignUp(),
-      home:Navigation(),
+      //home:Navigation(),
 
-      /*home: FutureBuilder<List<Sport>>(
-        future: futureSportsMainApp,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Navigation();
-          } else if (snapshot.hasError) {
-            return Container(
-              child: Center(
-                child: Text("Une erreur est survenue"),
-              ),
+      home : StreamBuilder<List<Sport>>(
+        stream: store.getAndStoreSportsStream(),
+        builder: (
+            BuildContext context,
+            AsyncSnapshot<List<Sport>> snapshot,
+            ) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child:CircularProgressIndicator()
             );
+          } else if (snapshot.connectionState == ConnectionState.active
+              || snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return const Text('Error');
+            } else if (snapshot.hasData) {
+              return Navigation();
+            } else {
+              return const Text('Empty data');
+            }
+          } else {
+            return Text('State: ${snapshot.connectionState}');
           }
-          return const Center(
-              child: CircularProgressIndicator()
-          );
         },
-      ),*/
+        // other arguments
+      )
+
     );
   }
 
-  void getSports() async{
-    Future<List<Sport>> sports = sportUseCase.getAll();
-    List<Sport> res = await sports;
-    List<dynamic> list = res.map((e) => e.toJson()).toList();
-    storage.setItem('sports', list.toString());
-    setState(() {
-      futureSportsMainApp = sports;
-    });
-    log("SPORT SAVED IN STORAGE");
-  }
-  Future<List<List<Sport>>> futureWait() async {
-    return Future.wait([
-      sportUseCase.getAll(),
-    ]);
-  }
 }
