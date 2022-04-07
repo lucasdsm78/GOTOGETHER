@@ -47,6 +47,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
   Widget build(BuildContext context) {
     //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
+    bool isUserInActivityList = activity.currentParticipants!.contains(currentUser.id.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activity Details'),
@@ -180,25 +181,16 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         alignment: Alignment.center,
                         child: RightButton(
                           onPressed: () async {
-                            Activity updatedActivity =
-                                await activityUseCase.joinActivityUser(
-                                    activity,
-                                    currentUser.id!,
-                                    activity.currentParticipants!
-                                        .contains(currentUser.id.toString()));
+                            Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
                             setState(() {
                               activity = updatedActivity;
                             });
-                            Observable.instance.notifyObservers(
-                                NotificationCenter
-                                    .userJoinActivity.stateImpacted,
-                                notifyName:
-                                    NotificationCenter.userJoinActivity.name,
-                                map: {});
+                            Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
                           },
                           width: 5.0,
                           height: 5.0,
-                          textButton: "JE PARTICIPE",
+                          textButton: (!isUserInActivityList ? "JE PARTICIPE" : "JE NE PARTICIPE PLUS"),
+                          isRight: !isUserInActivityList,
                         )
                 )
                 )

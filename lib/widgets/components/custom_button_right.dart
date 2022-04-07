@@ -5,18 +5,20 @@ class RightButton extends StatelessWidget {
   required this.textButton,
   required this.onPressed,
   required this.height,
-  required this.width});
+  required this.width,
+  this.isRight = true});
 
   final GestureTapCallback onPressed;
   final String textButton;
   final double width;
   final double height;
+  final bool isRight;
 
   @override
   Widget build(BuildContext context) {
     return RawMaterialButton(
-      fillColor: Colors.green,
-      splashColor: Colors.greenAccent,
+      fillColor: (isRight ? Colors.green : Colors.red),
+      splashColor: (isRight ? Colors.greenAccent : Colors.redAccent),
       child: Padding(
         padding: EdgeInsets.all(10.0),
         child: Row(
