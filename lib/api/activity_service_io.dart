@@ -87,7 +87,7 @@ class ActivityServiceApi {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 204) {
       return Activity.fromJson(jsonDecode(response.body));
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to delete activity");
