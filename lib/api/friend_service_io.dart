@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
+// import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/user.dart';
