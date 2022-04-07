@@ -11,6 +11,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:go_together/widgets/components/custom_button_right.dart';
 
 import 'package:go_together/widgets/navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -56,6 +57,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
           //mainAxisAlignment: MainAxisAlignment.spaceAround,
           //mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            SizedBox(height: 20),
+
             Text(
                 activity.description,
                 style:const TextStyle(
@@ -66,12 +69,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 textAlign: TextAlign.center,
                 /*DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.0)*/
             ),
+            SizedBox(height: 20),
 
             Text("Organisateur : " + activity.host.username,
                     style:const TextStyle(
                       fontSize: 20,
                     )
                 ),
+            SizedBox(height: 20),
 
             Row(
               children:  [
@@ -81,6 +86,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 style:const TextStyle(fontSize: 18)),
               ],
             ),
+            SizedBox(height: 20),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,6 +113,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 )
               ]
             ),
+            SizedBox(height: 20),
+
             Row(
               mainAxisSize: MainAxisSize.min,
               children:  [
@@ -119,20 +127,20 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
               ],
             ),
+            SizedBox(height: 20),
+
             Text("Evenement publique : " + (activity.public! ? "Oui" : "Non"),
             style: const TextStyle(fontSize: 20)
             ),
+            SizedBox(height: 20),
+
 
             Text("Destiné à/aux : " + (activity.criterionGender != null ? activity.criterionGender!.translate() : "Tous"),
             style:const TextStyle(fontSize: 20)),
+            SizedBox(height: 20),
 
 
             //Map
-            const Text("Localisation :",
-              style: TextStyle(
-                fontSize: 20
-              ),
-            ),
             Container(
               height: MediaQuery.of(context).size.height *0.3,
               width: MediaQuery.of(context).size.width *0.6,
@@ -140,13 +148,13 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
             ),
 
-            const SizedBox(
-                height: 30),
+            const SizedBox(height: 30),
+
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
                 children: <Widget>[
-                  Positioned.fill(
+                  /*Positioned.fill(
                     child: Container(
 
                       decoration: BoxDecoration(
@@ -165,32 +173,36 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextButton(
-                      style: TextButton.styleFrom(
-                        //alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16.0),
-                        primary: Colors.white,
-                        textStyle: const TextStyle(fontSize: 20),
-                      ),
-                      onPressed: () async {
-                        Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
-                        setState(() {
-                          activity = updatedActivity;
-                        });
-                        Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted,
-                            notifyName : NotificationCenter.userJoinActivity.name,map: {});
-                      },
-                      child: const Text('Join', textAlign: TextAlign.center, ),
-                    )
-                    ],
-                  ),
-
-                ],
+                  ),*/
+                (currentUser.id == activity.host.id
+                    ? Container()
+                    : Align(
+                        alignment: Alignment.center,
+                        child: RightButton(
+                          onPressed: () async {
+                            Activity updatedActivity =
+                                await activityUseCase.joinActivityUser(
+                                    activity,
+                                    currentUser.id!,
+                                    activity.currentParticipants!
+                                        .contains(currentUser.id.toString()));
+                            setState(() {
+                              activity = updatedActivity;
+                            });
+                            Observable.instance.notifyObservers(
+                                NotificationCenter
+                                    .userJoinActivity.stateImpacted,
+                                notifyName:
+                                    NotificationCenter.userJoinActivity.name,
+                                map: {});
+                          },
+                          width: 5.0,
+                          height: 5.0,
+                          textButton: "JE PARTICIPE",
+                        )
+                )
+                )
+              ],
               ),
             ),
             (currentUser.id == activity.host.id
@@ -206,7 +218,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                     Navigator.of(context).popAndPushNamed(Navigation.tag);
 
                   },
-                  child: const Text('Annuler')
+                  child: const Text('SUPPRIMER')
                 )
                 : Container()
             ),

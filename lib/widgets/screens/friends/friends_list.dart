@@ -26,7 +26,7 @@ class _FriendsListState extends State<FriendsList> {
   @override
   void initState() {
     super.initState();
-    futureUsers = friendsUseCase.getById(currentUser.id!);
+    futureUsers = friendsUseCase.getWaitingAndValidateById(currentUser.id!);
     searchbarController.addListener(_updateKeywords);
   }
 

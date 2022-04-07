@@ -243,7 +243,9 @@ class _ActivityListState extends State<ActivityList> with Observer{
           && (sport == null || sport!.id == activity.sport.id)
           && (gender == null ||  gender == activity.criterionGender?.translate())
           && (level == null ||level!.id == activity.level.id)
-          && (activity.public == null || (!activity.public! && activity.host.friendsList.contains(currentUser.id)) )
+          && (activity.host.id == currentUser.id || activity.public == null
+              || (activity.public! || (!activity.public! && activity.host.friendsList.contains(currentUser.id)))
+          )
       ){
         res.add(activity);
       }
