@@ -68,7 +68,7 @@ class FriendsServiceApi {
   }
 
   Future<bool> validateFriendship(Map<String, int> map) async {
-    if(map.containsKey("userIdSender") && map.containsKey("userIdReceiver")){
+    if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');
     }
     else {
@@ -86,9 +86,10 @@ class FriendsServiceApi {
   }
 
   Future<bool> delete(Map<String, int> map) async {
-    if(map.containsKey("userIdSender") && map.containsKey("userIdReceiver")){
+    if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');
     }
+
     final response = await api.client
         .delete(Uri.parse(api.host + 'friends'),
       headers: api.mainHeader,

@@ -139,9 +139,12 @@ class _AddFriendsListState extends State<AddFriendsList> {
         user.username,
         style: _biggerFont,
       ),
-      trailing:IconButton(onPressed: (){
-        _addFriend(user);
-      }, icon: Icon(Icons.group_add)),
+      trailing:IconButton(
+        onPressed: (){
+          _addFriend(user);
+        },
+        icon: Icon(Icons.group_add)
+      ),
       onTap: () {
         _seeMore(user);
       },

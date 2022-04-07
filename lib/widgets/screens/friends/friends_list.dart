@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
@@ -26,8 +28,21 @@ class _FriendsListState extends State<FriendsList> {
   @override
   void initState() {
     super.initState();
+    _setFriends();
     futureUsers = friendsUseCase.getWaitingAndValidateById(currentUser.id!);
     searchbarController.addListener(_updateKeywords);
+  }
+  _setFriends() async{
+    List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
+    List<int> listId = [];
+    friendsList.forEach((element) {
+      if(element.id != null) {
+        listId.add(element.id!);
+      }
+    });
+    setState(() {
+      currentUser.friendsList = listId;
+    });
   }
 
   @override
@@ -49,7 +64,7 @@ class _FriendsListState extends State<FriendsList> {
   _filterFriends(List<User> list){
     List<User> res = [];
     list.forEach((user) {
-      if(_fieldContains(user)){
+      if(_fieldContains(user) && currentUser.friendsList.contains(user.id) ){
         res.add(user);
       }
     });
@@ -62,8 +77,7 @@ class _FriendsListState extends State<FriendsList> {
     List<bool> contains = [];
     keywordSplit.forEach((element) {
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
-      if(
-      (regExp.hasMatch(user.username)) ){
+      if((regExp.hasMatch(user.username)) ){
         contains.add(true);
       }
       else{
@@ -85,7 +99,7 @@ class _FriendsListState extends State<FriendsList> {
       body: Container(
         child: Column(
           children: <Widget>[
-            TextField(
+            /*TextField(
               onChanged: (value) {
                 print(value);
               },
@@ -96,7 +110,7 @@ class _FriendsListState extends State<FriendsList> {
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-            ),
+            ),*/
 
             Expanded(child: FutureBuilder<List<User>>(
               future: futureUsers,
@@ -130,6 +144,15 @@ class _FriendsListState extends State<FriendsList> {
     );
   }
 
+  _deleteFriend(User user) async {
+    bool isDelete = await friendsUseCase.delete(currentUser.id!, user.id!);
+    if(isDelete){
+      setState(() {
+        currentUser.friendsList.remove(user.id!);
+      });
+    }
+  }
+
   Widget _buildRow(User user) {
     return ListTile(
       title: Text(
@@ -139,9 +162,8 @@ class _FriendsListState extends State<FriendsList> {
       leading: Icon(Icons.account_circle_rounded),
       trailing: ElevatedButton(
         onPressed:() {
-          print('HelloWorld!');
-        }
-        ,
+          _deleteFriend(user);
+        },
         child: Icon(Icons.delete_forever, color: Colors.red,),
         style: ElevatedButton.styleFrom(primary: Colors.white),
       ),
