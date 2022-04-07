@@ -54,22 +54,30 @@ class _DropdownSportsState extends State<DropdownSports> {
   @override
   Widget build(BuildContext context) {
     return
-      DropdownButton<Sport>(
-        value: sport,
-        elevation: 16,
-        style: const TextStyle(color: Colors.deepPurple),
-        onChanged: (newValue) {
-          widget.onChange(newValue);
-          setState(() {
-            sport = newValue as Sport;
-          });
-        },
-        items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
-          return DropdownMenuItem<Sport>(
-            value: value,
-            child: Text(value.name.toString()),
-          );
-        }).toList(),
+      DropdownButtonHideUnderline(
+          child: DropdownButton<Sport>(
+            value: sport,
+            icon: Icon(Icons.arrow_drop_down_circle),
+            iconDisabledColor: Colors.red,
+            iconEnabledColor: Colors.green,
+            isExpanded: true,
+            hint:Text("Sports"),
+            elevation: 8,
+            style: const TextStyle(color: Colors.deepPurple),
+            onChanged: (newValue) {
+              widget.onChange(newValue);
+              setState(() {
+                sport = newValue as Sport;
+              });
+            },
+            items: futureSports.map<DropdownMenuItem<Sport>>((Sport value) {
+              return DropdownMenuItem<Sport>(
+                value: value,
+                child: Text(value.name.toString()),
+              );
+            }).toList(),
+          ),
       );
+
   }
 }

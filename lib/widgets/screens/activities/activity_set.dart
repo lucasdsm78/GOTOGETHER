@@ -13,6 +13,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:go_together/widgets/components/custom_button_right.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/widgets/components/lists/custom_row.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
@@ -132,35 +133,68 @@ class _ActivitySetState extends State<ActivitySet> {
                 controller: eventDescriptionInput
             ),
 
-            Row(
-              children: [
-                DateTimePickerButton(
-                    datetime: dateTimeEvent ,
-                    onPressed: _setEventDate),
-                Text("Date : ${dateTimeEvent.getFrenchDateTime()} "),
-              ],
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      mapDialogue();
-                    },
-                    child: const Icon(Icons.map)
+            Container(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Row(
+                  children: [
+                    DateTimePickerButton(
+                        datetime: dateTimeEvent ,
+                        onPressed: _setEventDate),
+                    Text("Date : ${dateTimeEvent.getFrenchDateTime()} "),
+                  ],
                 ),
-                Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
-              ],
+              ),
+            ),
+            Container(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          mapDialogue();
+                        },
+                        child: const Icon(Icons.map)
+                    ),
+                    Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              child: DropdownSports(sport: sport,onChange:_setEventSport),
+              width: 200,
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: Colors.blueGrey,
+                      width: 1,
+                      style: BorderStyle.solid
+                  )
+              ),
             ),
 
-            CustomRow(children: [
-              DropdownSports(sport: sport,onChange:_setEventSport),
-              DropdownLevel(level: eventLevel,onChange: _setEventLevel),
-              Column(children: [
-                Text("Accessible à "),
-                DropdownGender(criterGender: criterGender, onChange: _setEventGender),
-              ],
-              )
-            ]),
+            Container(
+              child: DropdownLevel(level: eventLevel,onChange: _setEventLevel),
+              width: 50,
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: Colors.blueGrey,
+                      width: 1,
+                      style: BorderStyle.solid
+                  )
+              ),
+            ),
+
+            Column(children: [
+              Text("Accessible à "),
+              DropdownGender(criterGender: criterGender, onChange: _setEventGender),
+            ],
+            ),
 
             CustomRow(
               children: [
@@ -189,7 +223,7 @@ class _ActivitySetState extends State<ActivitySet> {
             // Public / Entre amis
             RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
-            ElevatedButton(
+            RightButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
@@ -199,7 +233,9 @@ class _ActivitySetState extends State<ActivitySet> {
                   _addEvent();
                 }
               },
-              child: Text((isUpdating ? "Mettre à jour " : "Créer l'événement")),
+              width: 5.0,
+              height: 5.0,
+              textButton: isUpdating ? "METTRE A JOUR " : "CREER L'EVENEMENT",
             ),
           ],
         ),

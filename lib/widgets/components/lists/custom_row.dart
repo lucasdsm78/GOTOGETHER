@@ -18,6 +18,7 @@ class CustomRow extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: _buildWidgetList(),
     );
   }

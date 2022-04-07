@@ -30,7 +30,11 @@ class _CustomInputState extends State<CustomInput> {
     return
       TextFormField(
         decoration: InputDecoration(
-          border: const UnderlineInputBorder(),
+          fillColor: Colors.blueAccent,
+          border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(50)
+          ),
           labelText: widget.title,
         ),
         keyboardType: widget.type,
