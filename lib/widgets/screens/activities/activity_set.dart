@@ -193,7 +193,7 @@ class _ActivitySetState extends State<ActivitySet> {
             // Duration
             // @todo : place it in a dialog maybe, like to select date
             BaseContainer(
-              child: Text("Duration :"),
+              child: Text("Durée :"),
               useBorder: false,
             ),
             BaseContainer(

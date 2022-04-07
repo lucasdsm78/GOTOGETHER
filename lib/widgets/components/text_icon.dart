@@ -16,6 +16,7 @@ class TextIcon extends StatelessWidget {
     children.add( Expanded(
         child: Text(title, overflow: TextOverflow.ellipsis,)
     ) );
+    children.insert((iconFirst ? 0 : 1 ), Container(width: 5,));
     children.insert((iconFirst ? 0 : 1 ), icon!);
 
     return Row(
