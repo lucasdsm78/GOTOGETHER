@@ -7,14 +7,14 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:localstorage/localstorage.dart';
 
-class Storage{
+class CustomStorage{
   final db = LocalStorage('go_together_app');
-  static final Storage _instance = Storage._internal();
+  static final CustomStorage _instance = CustomStorage._internal();
 
-  factory Storage() {
+  factory CustomStorage() {
     return _instance;
   }
-  Storage._internal();
+  CustomStorage._internal();
 
   //region get stored Sports
   Stream<List<Sport>> getAndStoreSportsStream({Function? func}) {
@@ -36,7 +36,7 @@ class Storage{
     else{
       List<Sport> res = await SportUseCase().getAll();
       List<dynamic> list = res.map((e) => e.toJson()).toList();
-      set("sports", list);
+      set("sports", list.toString());
       log("MAIN FUTURE - SAVE IN LOCAL STORAGE");
     }
     if(func != null){
@@ -49,9 +49,13 @@ class Storage{
   storeUser(User user){
     set('user', user.toJson());
   }
+  Future<String> getUser() async {
+    return await db.getItem("user");
+  }
+
 
   set(String key, dynamic data){
-    db.setItem(key, data.toString());
+    db.setItem(key, data);
   }
 
   Future<String> get(String key) async {

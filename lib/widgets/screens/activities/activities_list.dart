@@ -5,6 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
+import 'package:go_together/helper/storage.dart';
+import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
@@ -48,15 +50,21 @@ class _ActivityListState extends State<ActivityList> with Observer{
   Level? level;
 
   final searchbarController = TextEditingController();
+  CustomStorage store = CustomStorage();
 
   @override
   void initState() {
     super.initState();
     getActivities();
-    currentUser = User.fromJson(jsonDecode(storage.getItem("user")));
+    currentUser = Mock.userGwen;
+    //getUser();
     searchbarController.addListener(_updateKeywords);
     Observable.instance.addObserver(this);
   }
+  getUser() async {
+    currentUser = User.fromJson(jsonDecode(await store.getUser())) ;
+  }
+
 
   @override
   void dispose() {

@@ -28,7 +28,7 @@ class _GotogetherAppState extends State<GotogetherApp> {
   final LocalStorage storage = LocalStorage('go_together_app');
   final SportUseCase sportUseCase = SportUseCase();
   late Future<List<Sport>> futureSportsMainApp;
-  final store = Storage();
+  final store = CustomStorage();
 
   @override
   void initState() {

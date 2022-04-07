@@ -19,7 +19,7 @@ class _DropdownSportsState extends State<DropdownSports> {
   List<Sport?> sportList = [];
   final SportUseCase sportUseCase = SportUseCase();
   late Sport? sport = widget.sport ;
-  final store = Storage();
+  final store = CustomStorage();
 
   _initSport(newSportList){
     if(widget.shouldAddNullValue && !sportList.contains(null)) {
