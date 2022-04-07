@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/mock/levels.dart';
-import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
@@ -14,9 +13,9 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:go_together/widgets/components/base_container.dart';
 import 'package:go_together/widgets/components/custom_button_right.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
-import 'package:go_together/widgets/components/lists/custom_row.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_sports.dart';
@@ -66,21 +65,18 @@ class _ActivitySetState extends State<ActivitySet> {
     super.initState();
     isUpdating = widget.activity !=null;
     if(isUpdating){
-      activityUseCase.getById(widget.activity!.id!).then((value) {
-        sport = value.sport;
-        criterGender = (value.criterionGender != null ? value.criterionGender!.translate() : null);
-        eventLevel = value.level;
-        eventDescriptionInput.text = value.description;
-        nbTotalParticipantsInput.text = value.attendeesNumber.toString();
-        nbTotalParticipants = value.attendeesNumber;
-        setState(() {
-          _duration = value.dateEnd.difference(value.dateStart);
-        });
-        public = value.public!;
-        dateTimeEvent = value.dateStart;
-        location = value.location;
+      Activity currentActivity = widget.activity!;
 
-      });
+      sport = currentActivity.sport;
+      criterGender = (currentActivity.criterionGender != null ? currentActivity.criterionGender!.translate() : null);
+      eventLevel = currentActivity.level;
+      eventDescriptionInput.text = currentActivity.description;
+      nbTotalParticipantsInput.text = currentActivity.attendeesNumber.toString();
+      nbTotalParticipants = currentActivity.attendeesNumber;
+      _duration = currentActivity.dateEnd.difference(currentActivity.dateStart);
+      public = currentActivity.public!;
+      dateTimeEvent = currentActivity.dateStart;
+      location = currentActivity.location;
     }
   }
 
@@ -134,7 +130,7 @@ class _ActivitySetState extends State<ActivitySet> {
                 controller: eventDescriptionInput
             ),
 
-            Container(
+            BaseContainer(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Row(
@@ -142,12 +138,17 @@ class _ActivitySetState extends State<ActivitySet> {
                     DateTimePickerButton(
                         datetime: dateTimeEvent ,
                         onPressed: _setEventDate),
-                    Text("Date : ${dateTimeEvent.getFrenchDateTime()} "),
+                    BaseContainer(
+                      child:Text("Date : ${dateTimeEvent.getFrenchDateTime()} "),
+                      margin: EdgeInsets.only(left:5, right:5),
+                      useBorder: false,
+                    ),
                   ],
                 ),
               ),
+              useBorder: false,
             ),
-            Container(
+            BaseContainer(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Row(
@@ -158,67 +159,54 @@ class _ActivitySetState extends State<ActivitySet> {
                         },
                         child: const Icon(Icons.map)
                     ),
-                    Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
+                    BaseContainer(
+                      child:Text("Lieu : " + (location != null ? "${location!.address}, ${location!.city}" : "")),
+                      margin: EdgeInsets.only(left:5, right:5),
+                      useBorder: false,
+                    ),
                   ],
                 ),
               ),
+              useBorder: false,
             ),
-            Container(
+
+            //region dropdowns
+            BaseContainer(
               child: DropdownSports(sport: sport,onChange:_setEventSport),
-              width: 200,
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: Colors.blueGrey,
-                      width: 1,
-                      style: BorderStyle.solid
-                  )
-              ),
             ),
-
-            Container(
+            BaseContainer(
               child: DropdownLevel(level: eventLevel,onChange: _setEventLevel),
-              width: 50,
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: Colors.blueGrey,
-                      width: 1,
-                      style: BorderStyle.solid
-                  )
-              ),
+            ),
+            BaseContainer(
+              child: DropdownGender(criterGender: criterGender, onChange: _setEventGender),
+            ),
+            //endregion
+
+            CustomInput(
+              title: "Nombre total de participants",
+              notValidError: "Please enter a number of participant",
+              controller: nbTotalParticipantsInput,
+              type: TextInputType.number,
             ),
 
-            Column(children: [
-              Text("Accessible à "),
-              DropdownGender(criterGender: criterGender, onChange: _setEventGender),
-            ],
-            ),
-
-            CustomRow(
-              children: [
-                CustomInput(
-                  title: "Nombre total de participants",
-                  notValidError: "Please enter a number of participant",
-                  controller: nbTotalParticipantsInput,
-                  type: TextInputType.number,
-                ),
-              ]
-            ),
 
             // Duration
             // @todo : place it in a dialog maybe, like to select date
-            Text("Duration :"),
-            DurationPicker(
-              duration: _duration,
-              baseUnit: BaseUnit.minute,
-              onChange: (val) {
-                setState(() => _duration = val);
-              },
-              snapToMins: 5.0,
-              height: 160,
+            BaseContainer(
+              child: Text("Duration :"),
+              useBorder: false,
+            ),
+            BaseContainer(
+              child: DurationPicker(
+                duration: _duration,
+                baseUnit: BaseUnit.minute,
+                onChange: (val) {
+                  setState(() => _duration = val);
+                },
+                snapToMins: 5.0,
+                height: 160,
+              ),
+              useBorder: false,
             ),
 
             // Public / Entre amis

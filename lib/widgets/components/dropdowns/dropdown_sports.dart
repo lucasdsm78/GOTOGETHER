@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/models/sports.dart';
@@ -44,12 +42,19 @@ class _DropdownSportsState extends State<DropdownSports> {
 
   @override
   Widget build(BuildContext context) {
+    Sport? theSport = null;
+    for(int i=0; i<sportList.length; i++){
+      if(sport != null && sportList[i] != null && sportList[i]!.id == sport!.id){
+        theSport = sportList[i];
+        break;
+      }
+    }
     return
       DropdownButtonHideUnderline(
         child:DropdownButton<Sport?>(
           icon: Icon(Icons.sports_soccer),
           //isExpanded: true,
-          value: sport,
+          value: theSport,
           hint: Text("Sports"),
           iconEnabledColor: Colors.green,
           iconDisabledColor: Colors.red,

@@ -31,15 +31,14 @@ class FilterDialog extends StatefulWidget {
 
 class _FilterDialogState extends State<FilterDialog> {
   DateTime? selectedDate = DateTime.now();
-  Sport? sport;
-  String? gender ;
-  Level? level;
+  late Sport? sport = widget.sport;
+  late String? gender = widget.gender;
+  late Level? level = widget.level;
 
   @override
   void initState() {
     super.initState();
     selectedDate = widget.selectedDate;
-    sport = widget.sport;
   }
 
   @override

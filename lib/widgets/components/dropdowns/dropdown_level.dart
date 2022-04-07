@@ -34,12 +34,23 @@ class _DropdownLevelState extends State<DropdownLevel> {
 
   @override
   Widget build(BuildContext context) {
+    Level? theLevel = null;
+    for(int i=0; i<levelList.length; i++){
+      if(level != null && levelList[i] != null && levelList[i]!.id == level!.id){
+        theLevel = levelList[i];
+        break;
+      }
+    }
     return
-      DropdownButton<Level?>(
-        value: level,
-        elevation: 16,
+      DropdownButtonHideUnderline(
+        child:DropdownButton<Level?>(
+        value: theLevel,
         icon : Icon(MdiIcons.podium),
         hint: Text("niveau"),
+        iconEnabledColor: Colors.green,
+        iconDisabledColor: Colors.red,
+        isExpanded: true,
+        elevation: 16,
         style: const TextStyle(color: Colors.deepPurple),
         onChanged: (newValue) {
           widget.onChange(newValue);
@@ -53,6 +64,7 @@ class _DropdownLevelState extends State<DropdownLevel> {
             child: Text((value == null ? "Tous" : value.name.toString())),
           );
         }).toList(),
+        )
       );
   }
 }

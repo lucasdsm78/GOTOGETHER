@@ -1,9 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:go_together/helper/enum/gender.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DropdownGender extends StatefulWidget {
   const DropdownGender({Key? key, this.criterGender, required this.onChange, this.shouldAddNullValue = true}) : super(key: key);
@@ -32,11 +30,24 @@ class _DropdownGenderState extends State<DropdownGender> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-        value: widget.criterGender,
-        elevation: 16,
+    String? theGender = null;
+    for(int i=0; i<genderList.length; i++){
+      log((genderList[i] != null ? genderList[i]! : "null") + "---" + (widget.criterGender !=null ? widget.criterGender! : "nulll"));
+      if(widget.criterGender != null && genderList[i] != null && genderList[i] == widget.criterGender!){
+        theGender = genderList[i];
+        break;
+      }
+    }
+    return
+      DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+        value: theGender,
         hint: Text("Réservé à"),
         icon : Icon(Icons.transgender),
+        iconEnabledColor: Colors.green,
+        iconDisabledColor: Colors.red,
+        isExpanded: true,
+        elevation: 16,
         style: const TextStyle(color: Colors.deepPurple),
         onChanged: (String? newValue) {
           widget.onChange(newValue);
@@ -47,6 +58,7 @@ class _DropdownGenderState extends State<DropdownGender> {
             child: Text((value == null ? "Tous" : value.toString())),
           );
         }).toList(),
+      )
     );
   }
 }

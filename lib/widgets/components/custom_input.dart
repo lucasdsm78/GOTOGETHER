@@ -28,7 +28,9 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
     return
-      TextFormField(
+    Container(
+      margin: const EdgeInsets.only(left: 15.0, right: 20.0, top: 15.0),
+      child: TextFormField(
         decoration: InputDecoration(
           fillColor: Colors.blueAccent,
           border: OutlineInputBorder(
@@ -45,6 +47,8 @@ class _CustomInputState extends State<CustomInput> {
           return null;
         },
         controller: widget.controller,
-      );
+      ),
+    );
+
   }
 }
