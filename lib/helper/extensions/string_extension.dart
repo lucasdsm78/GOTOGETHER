@@ -15,4 +15,8 @@ extension StringExtension on String {
   String enumValueToNormalCase(){
     return this.split('.').last.camelCaseToNormalCase();
   }
+
+  bool isEmpty(){
+    return this == "";
+  }
 }

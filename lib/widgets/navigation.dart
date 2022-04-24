@@ -26,16 +26,8 @@ class NavigationState extends State<Navigation> {
   late User user;
   CustomStorage store = CustomStorage();
 
-  @override
-  void initState() {
-    super.initState();
-    user = Mock.userGwen;
-  }
-  getUser() async {
-    user = User.fromJson(jsonDecode(await store.getUser())) ;
-  }
-
-  static List<Map<String, dynamic>> drawerLinks = [
+  //region list of links
+  List<Map<String, dynamic>> drawerLinks = [
     // {"widget": ActivityList(), "title": "Liste des événements"},
     {
       "widget": FriendsList(),
@@ -45,10 +37,11 @@ class NavigationState extends State<Navigation> {
     {
       "widget": AddFriendsList(),
       "title": "Ajouté des amis",
-      "icon": Icon(Icons.favorite)
+      "icon": Icon(Icons.group_add)
     },
+
   ];
-  static List<Map<String, dynamic>> bottomBarLinks = [
+  List<Map<String, dynamic>> bottomBarLinks = [
     {
       "widget": ActivityList(),
       "title": "Liste des Activités",
@@ -71,6 +64,29 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(MdiIcons.handshake)
     },
   ];
+  //endregion
+
+  @override
+  void initState() {
+    super.initState();
+    user = Mock.userGwen;
+    // when clicked and an activityList is open, we don't go to the new ActivityList page.
+    // surely because this is same static tagname.
+    //but reusing the same screen is probably for the best as long as they have quasi identical features
+    //@todo : find a way to navigate through activityList screen (between all activities and my activities)
+    addLinkToDrawer({
+      "widget": ActivityList(idHost: user.id,),
+      "title": "Voir mes activité",
+      "icon": Icon(Icons.list)
+    },);
+  }
+  getUser() async {
+    user = User.fromJson(jsonDecode(await store.getUser())) ;
+  }
+
+  addLinkToDrawer(Map<String, dynamic> link){
+    drawerLinks.add(link);
+  }
 
   Widget getBody() {
     if(_isLastTappedDrawer && drawerLinks.isNotEmpty){

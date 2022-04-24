@@ -28,8 +28,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 //@todo : il faudrait un bouton qui affiche les filtres
 class ActivityList extends StatefulWidget {
-  const ActivityList({Key? key}) : super(key: key);
+  const ActivityList({Key? key,  this.idHost}) : super(key: key);
   static const tag = "activity_list";
+  final int? idHost;
 
   @override
   _ActivityListState createState() => _ActivityListState();
@@ -199,7 +200,11 @@ class _ActivityListState extends State<ActivityList> with Observer{
   }
 
   Map <String, dynamic> criterionMap(){
-    return {"sportId":/*sport.id*/null, "keywords":keywords};
+    Map <String, dynamic> map = {"sportId":/*sport.id*/null, "keywords":keywords};
+    if(widget.idHost!=null){
+      map["hostId"] = widget.idHost;
+    }
+    return map;
   }
 
   void getActivities(){

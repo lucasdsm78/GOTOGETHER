@@ -32,7 +32,6 @@ class _DropdownGenderState extends State<DropdownGender> {
   Widget build(BuildContext context) {
     String? theGender = null;
     for(int i=0; i<genderList.length; i++){
-      log((genderList[i] != null ? genderList[i]! : "null") + "---" + (widget.criterGender !=null ? widget.criterGender! : "nulll"));
       if(widget.criterGender != null && genderList[i] != null && genderList[i] == widget.criterGender!){
         theGender = genderList[i];
         break;

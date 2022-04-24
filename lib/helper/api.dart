@@ -8,7 +8,9 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/signal.dart';
+import 'package:go_together/models/signal.dart';
+import 'package:go_together/helper/commonFunctions.dart';
+
 
 enum Method {
   get,
@@ -46,12 +48,13 @@ class Api{
     setMainHeader("x-access-tokens", val);
   }
 
+
   String handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored){
 
     String params = "";
     int count = 0;
     map.forEach((key, value){
-      if(!ignored.contains(key) && value != null && !(value?.isEmpty ?? true) ){
+      if(!ignored.contains(key) && value != null && !(isEmptyValue(value)) ){
         params += (isFirstParam && count ==0 ? "?" : "&") + key + "=" + value.toString();
         count ++;
       }
