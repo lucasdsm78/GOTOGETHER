@@ -7,7 +7,7 @@ import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
-import 'package:go_together/widgets/screens/activities/activity_details.dart';
+import 'package:go_together/widgets/components/dialog/yes_no_dialog.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:localstorage/localstorage.dart';
@@ -41,7 +41,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     getActivitiesAttendees();
     currentUser = Mock.userGwen;// User.fromJson(jsonDecode(storage.getItem("user")));
     searchbarController.addListener(_updateKeywords);
-    canDoAction = currentUser.id != widget.activity.host.id;
+    canDoAction = currentUser.id == widget.activity.host.id;
   }
 
   @override
@@ -83,15 +83,13 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
         //setState(() {
         //  _seeMore(activity);
         //});
-        //@todo : yes no dialog to confirm action
         if(canDoAction) {
-          activityUseCase.changeHost(
-              {"hostId": user.id, "activityId": widget.activity.id});
+          dialogue(user);
         }
         //@todo : go to activityList
       },
     );
-    if(canDoAction){
+    if(!canDoAction){
       return tile;
     }
     return
@@ -107,13 +105,25 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
       );
   }
 
-  void _seeMore(Activity activity) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          return  ActivityDetailsScreen(activity: activity);
-        },
-      ),
+  _changeHostUser(User user){
+    return activityUseCase.changeHost(
+        {"hostId": user.id, "activityId": widget.activity.id});
+  }
+
+  /// Display a dialog to delete the [user].
+  Future<Null> dialogue(User user) async{
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return YesNoDialog(
+            title: "Désigner comme nouvel organisateur?",
+            children: [
+              Text("${user.username} deviendras l'organisateur de l'événement. Vous ne pourrez plus modifier cette activité."),
+              Text("Etes-vous sûr de vouloir changer l'organisateur?"),
+            ],
+            trueFunction: ()=>_changeHostUser(user),
+          );
+        }
     );
   }
 
