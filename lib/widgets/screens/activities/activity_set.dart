@@ -22,6 +22,7 @@ import 'package:go_together/widgets/components/dropdowns/dropdown_sports.dart';
 import 'package:go_together/widgets/components/maps/map_dialog.dart';
 import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
+import 'package:go_together/widgets/screens/activities/activity_attendees.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/datetime_fields.dart';
@@ -226,8 +227,30 @@ class _ActivitySetState extends State<ActivitySet> {
               height: 5.0,
               textButton: isUpdating ? "METTRE A JOUR " : "CREER L'EVENEMENT",
             ),
+
+            (isUpdating
+                ? RightButton(
+                  onPressed: () {
+                    _changeOrganiser(widget.activity!);
+                  },
+                  width: 5.0,
+                  height: 5.0,
+                  textButton: "CHANGER ORGANISATEUR",
+                )
+                : Container()
+            )
+
           ],
         ),
+      ),
+    );
+  }
+  void _changeOrganiser(Activity activity) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return  ActivitiesAttendees(activity: activity);
+        },
       ),
     );
   }

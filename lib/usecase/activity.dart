@@ -1,5 +1,6 @@
 import 'package:go_together/api/activity_service_io.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/user.dart';
 
 class ActivityUseCase {
   ActivityServiceApi api = ActivityServiceApi();
@@ -31,6 +32,7 @@ class ActivityUseCase {
   }
 
 
+  //@todo : refacto hasJoin into wantToJoin, then invert all boolean of this call (if true, use false)
   Future<Activity> joinActivityUser(Activity activity, int userId, bool hasJoin) async {
     return api
         .joinActivityUser(activity, userId, hasJoin)
@@ -40,5 +42,16 @@ class ActivityUseCase {
 
   Future<Activity?> delete(id) async {
     api.delete(id).then((value) => value);
+  }
+
+  Future<List<User>> getAllAttendeesByIdActivity(int id) async {
+    return api.getAllAttendeesByIdActivity(id).then((value) => value);
+  }
+
+  Future<bool> changeHost(Map<String, dynamic> map) async {
+    return api
+        .changeHost(map)
+        .then((value) => value)
+        .catchError((onError) => onError);
   }
 }

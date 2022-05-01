@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/api.dart';
 
 class ActivityServiceApi {
@@ -59,7 +60,7 @@ class ActivityServiceApi {
   }
 
   Future<Activity> updatePatch(Map<String, dynamic> map) async {
-    if(map.containsKey("id")){
+    if(!map.containsKey("id")){
       throw Exception('need an id to update an activity.');
     }
     else {
@@ -109,6 +110,40 @@ class ActivityServiceApi {
       return Activity.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to join an activity");
+    }
+  }
+
+
+  Future<List<User>> getAllAttendeesByIdActivity(int id) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'participants/' + id.toString() ));
+    if (response.statusCode == 200) {
+      return compute(parseUsers, response.body);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load participants of this activity");
+    }
+  }
+  Future<bool> changeHost(Map<String, dynamic> map) async {
+    //{"hostId":And(int), "activityId":And(int)}
+    log(map.toString());
+    if(!map.containsKey("activityId")){
+      throw Exception('need an id to update an activity.');
+    }
+    else {
+      final response = await api.client
+          .patch(Uri.parse(api.host + 'activities/change_host'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(map),
+      );
+      if (jsonDecode(response.body)['success'] != null) {
+        log("change ");
+        return true;
+      } else {
+        log("on error occured");
+        throw ApiErr(codeStatus: response.statusCode, message: "failed to update activity");
+      }
     }
   }
 }
