@@ -20,6 +20,7 @@ import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:go_together/models/location.dart';
 
 import '../../components/maps/map.dart';
 
@@ -125,7 +126,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
             Container(
               height: MediaQuery.of(context).size.height *0.3,
               width: MediaQuery.of(context).size.width *0.6,
-              child:CustomMap(pos: LatLng(activity.location.lat,activity.location.lon),onMark: ()=>{},),
+              child:CustomMap(pos: LatLng(activity.location.lat,activity.location.lon),onMark: (Location newLocation)=>{},),
             ),
 
             const SizedBox(height: 30),
