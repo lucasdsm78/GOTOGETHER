@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
@@ -34,6 +35,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late User currentUser = Mock.userGwen;
+  late Session session = Session();
   late Activity activity;
 
   @override
@@ -45,6 +47,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
         currentUser = res;
       });
     });*/
+   currentUser = session.getData("user");
+
   }
 
   @override
