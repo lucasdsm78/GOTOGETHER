@@ -6,6 +6,7 @@ import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
+import 'package:go_together/widgets/screens/home.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
@@ -38,6 +39,11 @@ class NavigationState extends State<Navigation> {
       "widget": AddFriendsList(),
       "title": "Ajouté des amis",
       "icon": Icon(Icons.group_add)
+    },
+    {
+      "widget": Home(),
+      "title": "Acceuil",
+      "icon": Icon(Icons.home)
     },
 
   ];
