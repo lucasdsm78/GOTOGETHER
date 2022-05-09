@@ -107,7 +107,7 @@ class _FilterDialogState extends State<FilterDialog> {
     });
     widget.onChangeLevel(newLevel);
   }
-  _updateSelectedGender(String newGender){
+  _updateSelectedGender(String? newGender){
     setState(() {
       gender = newGender;
     });

@@ -102,9 +102,9 @@ class _ActivitySetState extends State<ActivitySet> {
       eventLevel = newLevel as Level;
     });
   }
-  _setEventGender(newValue){
+  _setEventGender(String? newValue){
     setState(() {
-      criterGender = newValue!;
+      criterGender = newValue;
     });
   }
   _setEventPrivacy(newValue){
