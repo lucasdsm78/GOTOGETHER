@@ -9,6 +9,7 @@ import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/signal.dart';
+import '../models/tournament.dart';
 
 enum Method {
   get,
@@ -63,6 +64,12 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
     //log("api parse activity : " + parsed.toString());
     return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
+  }
+
+  List<Tournament> parseTournament(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+    //log("api parse activity : " + parsed.toString());
+    return parsed.map<Tournament>((json) => Tournament.fromJson(json)).toList();
   }
 
   List<Sport> parseSports(String responseBody) {

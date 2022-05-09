@@ -8,6 +8,7 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
+import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
 import 'package:go_together/widgets/screens/users/user.dart';
 import 'package:localstorage/localstorage.dart';
@@ -58,33 +59,33 @@ class _GotogetherAppState extends State<GotogetherApp> {
         Navigation.tag: (context) => Navigation()
       },
       //home:SignUp(),
-      //home:Navigation(),
+      home:const ActivitySet(),
 
-      home : StreamBuilder<List<Sport>>(
-        stream: store.getAndStoreSportsStream(),
-        builder: (
-            BuildContext context,
-            AsyncSnapshot<List<Sport>> snapshot,
-            ) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child:CircularProgressIndicator()
-            );
-          } else if (snapshot.connectionState == ConnectionState.active
-              || snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return const Text('Error');
-            } else if (snapshot.hasData) {
-              return Navigation();
-            } else {
-              return const Text('Empty data');
-            }
-          } else {
-            return Text('State: ${snapshot.connectionState}');
-          }
-        },
-        // other arguments
-      )
+      // home : StreamBuilder<List<Sport>>(
+      //   stream: store.getAndStoreSportsStream(),
+      //   builder: (
+      //       BuildContext context,
+      //       AsyncSnapshot<List<Sport>> snapshot,
+      //       ) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(
+      //           child:CircularProgressIndicator()
+      //       );
+      //     } else if (snapshot.connectionState == ConnectionState.active
+      //         || snapshot.connectionState == ConnectionState.done) {
+      //       if (snapshot.hasError) {
+      //         return const Text('Error');
+      //       } else if (snapshot.hasData) {
+      //         return Navigation();
+      //       } else {
+      //         return const Text('Empty data');
+      //       }
+      //     } else {
+      //       return Text('State: ${snapshot.connectionState}');
+      //     }
+      //   },
+      //   // other arguments
+      // )
 
     );
   }
