@@ -34,7 +34,7 @@ void main() {
     //endregion
 
     //region get key  pair for 3 user
-    AsymetricKeyGenerator keyGenerator = AsymetricKeyGenerator();
+    AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
     //keyGenerator.generateKey();
     pubKey1 = keyGenerator.getPubKeyFromStorage();
     privateKey1 = keyGenerator.getPrivateKeyFromStorage();
