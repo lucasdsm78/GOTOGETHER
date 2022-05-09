@@ -5,6 +5,7 @@ extension IntExtension on int{
     return this.toString().padLeft(length, "0");
   }
 
+  /// Returns true if int = 0
   bool isEmpty(){
     return this == 0;
   }
