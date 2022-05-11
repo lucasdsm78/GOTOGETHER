@@ -114,6 +114,9 @@ class _ActivityListState extends State<ActivityList> with Observer{
     );
   }
 
+  /// Cette feature permet d'afficher dans une
+  /// nouvelle page le détail de l'activité
+
   void _seeMore(Activity activity) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -123,6 +126,12 @@ class _ActivityListState extends State<ActivityList> with Observer{
       ),
     );
   }
+
+  /// Cette fonction permet d'afficher le bouton Modifier
+  /// quand on slide vers la droite sur une activité
+  /// Cette fonctionnalité n'est disponible que si l'utilisateur connecté
+  /// est l'organisateur de l'activité
+
   slidableActionCurrentUserActivity(BuildContext context, Activity activity) {
     return SlidableAction(
       onPressed: (BuildContext) {
@@ -215,6 +224,8 @@ class _ActivityListState extends State<ActivityList> with Observer{
 
   /// Used in CustomDatePicker to update [selectedDate] with [date] value.
   /// Then filter lessons.
+  ///  Ces fonctions permettent de récupérer les values aux inputs du filtre
+
   _updateSelectedDate(DateTime date){
     setState(() {
       selectedDate = date;
