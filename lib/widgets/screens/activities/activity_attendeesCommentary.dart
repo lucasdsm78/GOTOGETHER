@@ -29,7 +29,6 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
   late List<Commentary> _values;
   late Future<List<User>> futureUsers;
   late User currentUser;
-  bool canDoAction = false;
   String keywords = "";
   final searchbarController = TextEditingController();
 
@@ -40,7 +39,6 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
     _values = [];
     currentUser = Mock.userGwen;
     searchbarController.addListener(_updateKeywords);
-    canDoAction = currentUser.id == widget.activity.host.id;
   }
 
   @override
@@ -124,7 +122,7 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
   }
   /// Add the current commentary in an array [_values] each time the form is updated
   void _onUpdate(int key, {int? rating, String? comment}){
-    Commentary commentary = Commentary(userIdReceiver: key,userIdSender: 11,mark: rating, commentary:comment);
+    Commentary commentary = Commentary(userIdReceiver: key,userIdSender: currentUser.id!,mark: rating, commentary:comment);
     _values.add(commentary);
   }
 
