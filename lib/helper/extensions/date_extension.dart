@@ -26,6 +26,8 @@ extension DateTimeExtension on DateTime{
   }
 
   /// Returns a color for week
+  ///
+  /// could be use for calendar features
   Color getWeekDayColor() {
     switch (this.weekday) {
       case 1:
@@ -79,9 +81,10 @@ extension DateTimeExtension on DateTime{
     }
   }
 
-  /// Returns monday date for this date.
+  /// Returns week's first day for this date.
   ///
-  ///  by default, will return the date without hour
+  /// by default, will return the date without hour
+  /// could be use for calendar features
   DateTime getWeekFirstDay({removeTime:true}){
     if(this.weekday == DateTime.monday){
       DateTime date = this;
@@ -94,13 +97,15 @@ extension DateTimeExtension on DateTime{
     return date;
   }
 
+  /// Returns the date after adding some minutes to it
   DateTime addMinutes(int nbMinutes){
     return this.add(Duration( minutes: nbMinutes));
   }
 
-  /// Returns date after adding some minutes, and return a formated date
+  /// Returns date after adding some minutes, and return a
+  /// french formatted date
   String addMinutesAndStringify(int nbMinutes){
-    return this.add(Duration( minutes: nbMinutes)).getFrenchDateTime();
+    return this.addMinutes(nbMinutes).getFrenchDateTime();
   }
 
   /// Returns 'true' if this date and [comparedDate] are in the same week.
@@ -130,31 +135,19 @@ extension DateTimeExtension on DateTime{
 
   /// Returns date and time with 'Y-m-d H:i' format
   String getDbDateTime(){
-    return "${getDbDate()} ${this.hour.left0()}:${this.minute.left0()}:00";
+    return "${getDbDate()} ${this.hour.left0()}:${this.minute.left0()}:${this.second.left0()}";
   }
 
-  ///  For Dev only, used to fake fixed date (2022-01-16)
+  ///  For Dev only, used to fake fixed date (2022-01-16), example with calendar (using for loop)
   DateTime _fakeDate(int nbDays){
     int sundayDate = 16;
     return DateTime.parse("2022-01-${sundayDate + nbDays}");
   }
-
-
-}
-
-String getMysqlDate(DateTime date){
-  return "${date.year}-${date.month}-${date.day}";
-}
-
-String getMysqlDatetime(DateTime date){
-  return getMysqlDate(date) + " ${date.hour}:${date.minute}";
 }
 
 /// handle string conversion to datetime
-/// if contains ',' this is a HttpDate
+/// if contains ',' this is probably a HttpDate
 /// else it should be a value with format Y-m-d H:i
-
-
 DateTime parseStringToDateTime(dynamic value){
   if(value.contains(",")){
     return HttpDate.parse(value as String);

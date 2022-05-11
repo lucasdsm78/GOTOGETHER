@@ -1,12 +1,19 @@
 import 'dart:developer';
 
 import 'package:go_together/helper/parse_helper.dart';
-import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:localstorage/localstorage.dart';
 
+/// This class is used to get data from local storage.
+/// Then we can get data from whenever we are in the application.
+///
+/// The main limitation is that we need an async function to get data.
+/// In lots of screen we need to do requests using data like current user or token,
+/// meaning we have to do a lot of check to avoid non initialized var.
+///
+/// We prefer using our Session singleton class instead, that don't require async
 class CustomStorage{
   final db = LocalStorage('go_together_app');
   static final CustomStorage _instance = CustomStorage._internal();

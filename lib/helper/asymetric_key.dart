@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 
 import 'package:asn1lib/asn1lib.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -15,6 +15,7 @@ import 'package:pointycastle/src/platform_check/platform_check.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/signers/rsa_signer.dart';
 
+//region Key pairs
 //region helpers keys pair / encryption
 AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateRSAkeyPair( SecureRandom secureRandom, {int bitLength = 2048}) {
   // Create an RSA key generator and initialize it
@@ -153,7 +154,7 @@ Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) {
 }
 
 Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) {
-  final decryptor = OAEPEncoding(RSAEngine())
+  final decryptor = OAEPEncoding(RSAEngine()) // cipher used to decrypt
     ..init(false, PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
 
   return _processInBlocks(decryptor, cipherText);
@@ -168,7 +169,8 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
 
   var inputOffset = 0;
   var outputOffset = 0;
-  while (inputOffset < input.length) {
+
+  while (inputOffset < input.length) { // error occur with bad key in this loop
     final chunkSize = (inputOffset + engine.inputBlockSize <= input.length)
         ? engine.inputBlockSize
         : input.length - inputOffset;
@@ -183,17 +185,23 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
       ? output
       : output.sublist(0, outputOffset);
   } on Error catch(e){
-    throw EncryptionErr(codeStatus: 1, message: "can't encrypt");
+    throw EncryptionErr(codeStatus: 1, message: "can't decrypt" + e.toString());
   }
 }
 //endregion
 
 
-class AsymetricKeyGenerator{
+class AsymmetricKeyGenerator{
   final LocalStorage storage = LocalStorage('go_together_app');
   final indexPrivate = "privateKey";
   final indexPublic = "pubKey";
   var id = "1";
+
+  static final AsymmetricKeyGenerator _instance = AsymmetricKeyGenerator._internal();
+  factory AsymmetricKeyGenerator() {
+    return _instance;
+  }
+  AsymmetricKeyGenerator._internal();
 
   setId(String newId){
     id = newId;
@@ -248,6 +256,7 @@ class AsymetricKeyGenerator{
     }
   }
 }
+//endregion
 
 class EncryptionErr implements Exception {
   int codeStatus;
@@ -275,10 +284,10 @@ Uint8List encrypt(String message, String pubKey){
 decrypt(Uint8List encryptData, String privateKey){
   try{
     final privKeyBites = parsePrivateKeyFromPem(privateKey);
-    final decryptData = rsaDecrypt(privKeyBites, encryptData);
+    final decryptData = rsaDecrypt(privKeyBites, encryptData); // error happen here when bad key
     return Utf8Decoder().convert(decryptData);
   } on Exception catch(e){
-    throw EncryptionErr(codeStatus: 1, message: "can't encrypt");
+    throw EncryptionErr(codeStatus: 1, message: "can't decrypt" + e.toString());
   }
 }
 decryptFromString(String encryptData, String privateKey){
