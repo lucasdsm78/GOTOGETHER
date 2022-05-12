@@ -90,6 +90,8 @@ class _TournamentSetState extends State<TournamentSet> {
   }
 
   //region setter
+  ///_set... function
+  /// infor the API on required value for create or update an Tournament
   _setEventDate(date){
     setState(() {
       dateTimeEvent = date as DateTime;
@@ -115,7 +117,7 @@ class _TournamentSetState extends State<TournamentSet> {
       public = newValue!;
     });
   }
-  //endregion
+  //end setter region
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +188,7 @@ class _TournamentSetState extends State<TournamentSet> {
             ),
             //endregion
 
+            /// A form field for tap the limit number team can participate an tournament
             CustomInput(
               title: "Nombre d'équipe",
               notValidError: "Please enter a number of participant",
@@ -193,6 +196,7 @@ class _TournamentSetState extends State<TournamentSet> {
               type: TextInputType.number,
             ),
 
+            ///form field for total particpant number
             CustomInput(
               title: "Nombre total de participants",
               notValidError: "Please enter a number of participant",
@@ -221,8 +225,10 @@ class _TournamentSetState extends State<TournamentSet> {
             ),
 
             // Public / Entre amis
+            ///Radio button for inform if a tournament is privacy or not
             RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
+            ///generate a button for submit the form if completed correctly for Update or Create a new Tournament.
             RightButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
@@ -230,7 +236,7 @@ class _TournamentSetState extends State<TournamentSet> {
                     eventDescription = eventDescriptionInput.text;
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
-                  _addEvent();
+                  _updateOrAddEvent();
                 }
               },
               width: 5.0,
@@ -242,7 +248,9 @@ class _TournamentSetState extends State<TournamentSet> {
       ),
     );
   }
-
+  ///For choose th tournament place,
+  ///This function open a popUp screen containing a map for select the location of tournament.
+  ///After pick a place, return the location in text text format
   mapDialogue() async{
     dynamic res = await showDialog(
         context: context,
@@ -259,7 +267,9 @@ class _TournamentSetState extends State<TournamentSet> {
     }
   }
 
-
+  ///For update an tournament This function check the data in form.
+  ///If the form is filled  return a new tournament Object with the current data
+  ///_generateTournament() .
   Tournament? _generateTournament(){
     if(sport != null) { // check the data in Form
       //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
@@ -282,7 +292,11 @@ class _TournamentSetState extends State<TournamentSet> {
     }
   }
 
-  _addEvent() async {
+  /// Add an event in DB, calling _generateTournament() function.
+  /// if all form fields are filled , then the tournament can be created.
+  /// if the tournament already exist, we update it
+  ///_updateOrAddEvent() :
+  _updateOrAddEvent() async {
     Tournament? tournament = _generateTournament();
     if(tournament != null) {
       log(tournament.toJson());
