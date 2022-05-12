@@ -18,6 +18,7 @@ import 'package:go_together/widgets/components/lists/custom_row.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 
 import 'package:go_together/widgets/navigation.dart';
+import 'package:go_together/widgets/screens/activities/activity_attendeesCommentary.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:go_together/models/location.dart';
@@ -52,6 +53,15 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
       activity = updatedActivity;
     });
     Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
+  }
+  void _checkAttendees(Activity activity) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return  ActivitiesAttendeesCommentary(activity: activity);
+        },
+      ),
+    );
   }
 
   _deleteActivity() {
@@ -118,9 +128,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
               child:CustomRow(children: [
-                TextIcon(
-                  title: activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants",
-                  icon: Icon(Icons.account_circle_rounded, color :Colors.green,),
+                GestureDetector(
+                  onTap: () {
+                    _checkAttendees(widget.activity);
+                  },
+                  child: TextIcon(
+                    title: activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants",
+                    icon: Icon(Icons.account_circle_rounded, color :Colors.green,),
+                  ),
                 ),
                 TextIcon(
                   title:  activity.level.name,
