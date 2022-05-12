@@ -150,6 +150,7 @@ class _ActivityListState extends State<ActivityList> with Observer{
     );
   }
 
+  /// A widget take in parameter an [activity] for generates as many  row as there is [aactivity]
   Widget _buildRow(Activity activity) {
     final hasJoin = activity.currentParticipants!.contains(currentUser.id.toString());
     Widget tile = ListTile(
@@ -232,6 +233,8 @@ class _ActivityListState extends State<ActivityList> with Observer{
     });
   }
 
+  /// Used in a dropdown to update [sport] with [sport] value.
+  /// Then filter lessons.
   _updateSelectedSport(Sport newSport){
     setState(() {
       sport = newSport;

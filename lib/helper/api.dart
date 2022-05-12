@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:go_together/models/signal.dart';
 import 'package:go_together/helper/commonFunctions.dart';
+import '../models/tournament.dart';
 
 
 enum Method {
@@ -66,6 +67,12 @@ class Api{
     final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
     //log("api parse activity : " + parsed.toString());
     return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
+  }
+
+  List<Tournament> parseTournament(String responseBody) {
+    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+    //log("api parse activity : " + parsed.toString());
+    return parsed.map<Tournament>((json) => Tournament.fromJson(json)).toList();
   }
 
   List<Sport> parseSports(String responseBody) {
