@@ -1,3 +1,7 @@
+enum SessionData {
+  user,
+  token,
+}
 
 enum SessionData{
   user,

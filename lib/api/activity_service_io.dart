@@ -19,6 +19,15 @@ class ActivityServiceApi {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
     }
   }
+  Future<List<Activity>> getAllProposition(int idUser) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'activities/proposition/' + idUser.toString()));
+    if (response.statusCode == 200) {
+      return compute(parseActivities, response.body);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
+    }
+  }
 
   Future<Activity> getById(int id) async {
     final response = await api.client

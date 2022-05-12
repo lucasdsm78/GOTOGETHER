@@ -9,6 +9,10 @@ class ActivityUseCase {
     return api.getAll(map: map).then((value) => value);
   }
 
+  Future<List<Activity>> getAllProposition(int idUser) async {
+    return api.getAllProposition(idUser).then((value) => value);
+  }
+
   Future<Activity> getById(int id) async {
     return api.getById(id).then((value) => value);
   }
