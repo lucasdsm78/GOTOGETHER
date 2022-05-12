@@ -51,9 +51,11 @@ class _ActivitySetState extends State<ActivitySet> {
   String? criterGender = null;
   late Level eventLevel = MockLevel.levelList[0];
   String eventDescription = "";
+  bool formIsSet = false;
   int nbTotalParticipants = 0;
   Duration _duration = Duration(hours: 0, minutes: 0);
   bool public = false;
+
 
 //  String dateTimeEvent = "";
   DateTime dateTimeEvent = DateTime.now();
@@ -122,6 +124,11 @@ class _ActivitySetState extends State<ActivitySet> {
       ),
       body: Form(
         key: _formKey,
+        onChanged: () =>{
+          if(eventDescriptionInput.text != "" &&  nbTotalParticipantsInput.text != ""){
+            formIsSet = true
+          }
+        },
         child: ListView( //@todo : use a ListView(children:[])
           children: <Widget>[
             CustomInput(
@@ -212,8 +219,8 @@ class _ActivitySetState extends State<ActivitySet> {
             // Public / Entre amis
             RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
-            RightButton(
-              onPressed: () {
+            ElevatedButton(
+              onPressed: formIsSet && location != null && sport != null && (_duration.inMinutes > 0 || _duration.inHours > 0) ?() {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
                     eventDescription = eventDescriptionInput.text;
@@ -221,10 +228,8 @@ class _ActivitySetState extends State<ActivitySet> {
                   });
                   _addEvent();
                 }
-              },
-              width: 5.0,
-              height: 5.0,
-              textButton: isUpdating ? "METTRE A JOUR " : "CREER L'EVENEMENT",
+              } : null,
+              child: isUpdating ? Text("METTRE A JOUR ") : Text("CREER L'EVENEMENT"),
             ),
           ],
         ),
