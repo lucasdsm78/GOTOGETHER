@@ -5,7 +5,7 @@ import 'package:go_together/mock/mock.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
 import 'package:go_together/widgets/components/buttons/top_button.dart';
-import 'package:go_together/widgets/components/delete_button.dart';
+import 'package:go_together/widgets/components/buttons/delete_button.dart';
 import 'package:go_together/widgets/components/lists/column_list.dart';
 import 'package:go_together/widgets/components/lists/custom_list.dart';
 import 'package:go_together/widgets/components/lists/custom_row.dart';

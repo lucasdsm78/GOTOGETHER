@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/google_authentication.dart';
 
 import 'package:go_together/helper/enum/custom_colors.dart';
-import 'package:go_together/widgets/components/google_sign_in_button.dart';
+import 'package:go_together/widgets/components/buttons/google_sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
   @override

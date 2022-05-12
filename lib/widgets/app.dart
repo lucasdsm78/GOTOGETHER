@@ -37,7 +37,7 @@ class _GotogetherAppState extends State<GotogetherApp> {
     super.initState();
     log("START APP");
     store.storeUser(Mock.userGwen);
-    session.setData("user", Mock.userGwen);
+    session.setData(SessionData.user, Mock.userGwen);
   }
 
   @override
@@ -61,7 +61,7 @@ class _GotogetherAppState extends State<GotogetherApp> {
         Navigation.tag: (context) => Navigation()
       },
       //home:SignUp(),
-      home:const ActivitySet(),
+      home: Navigation(),
 
       // home : StreamBuilder<List<Sport>>(
       //   stream: store.getAndStoreSportsStream(),

@@ -27,8 +27,8 @@ void main() {
 
     test('store a user and retrieve its data', () {
       User user = Mock.userGwen;
-      session.setData("user", user);
-      User userGet = session.getData("user") as User;
+      session.setData(SessionData.user, user);
+      User userGet = session.getData(SessionData.user) as User;
       expect(userGet, user);
     });
   });

@@ -23,7 +23,7 @@ class Activity {
   final int isCanceled;
   final Level level;
   final int attendeesNumber;
-  final List<String>? currentParticipants;
+  final List<String>? currentAttendees;
   final int? nbCurrentParticipants;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -45,7 +45,7 @@ class Activity {
     required this.isCanceled,
     required this.level,
     required this.attendeesNumber,
-    this.currentParticipants,
+    this.currentAttendees,
     this.nbCurrentParticipants,
     this.createdAt,
     this.updatedAt,
@@ -70,7 +70,7 @@ class Activity {
       level: Level.fromJson(json),
       attendeesNumber: json['attendeesNumber'],
 
-      currentParticipants: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
+      currentAttendees: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
       nbCurrentParticipants: json['nbCurrentParticipants'] == null ? 0 : json['nbCurrentParticipants'] as int,
       createdAt: parseStringToDateTime(json['createdAt']! as String),
       updatedAt: parseStringToDateTime(json['updatedAt']! as String),
@@ -96,7 +96,7 @@ class Activity {
       "level": level.toMap(),
       "attendeesNumber": attendeesNumber,
 
-      "currentParticipants": currentParticipants == null ? null : currentParticipants,
+      "currentParticipants": currentAttendees == null ? null : currentAttendees,
       "nbCurrentParticipants": nbCurrentParticipants == null ? null : nbCurrentParticipants,
       "createdAt": createdAt == null ? null : createdAt!.getDbDateTime(),
       "updatedAt": updatedAt == null ? null : updatedAt!.getDbDateTime(),

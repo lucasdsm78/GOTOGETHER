@@ -4,11 +4,11 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';
 
-import 'custom_datepicker.dart';
-import 'custom_text.dart';
+import '../custom_datepicker.dart';
+import '../custom_text.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 
-import 'dropdowns/dropdown_sports.dart';
+import '../dropdowns/dropdown_sports.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({Key? key, required this.selectedDate, required this.onSelectDate, 

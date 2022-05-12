@@ -16,7 +16,7 @@ import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
-import 'package:go_together/widgets/components/filter_dialog.dart';
+import 'package:go_together/widgets/components/dialog/filter_dialog.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -142,7 +142,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   }
 
   Widget _buildRow(Activity activity) {
-    final hasJoin = activity.currentParticipants!.contains(currentUser.id.toString());
+    final hasJoin = activity.currentAttendees!.contains(currentUser.id.toString());
     Widget tile = ListTile(
       title: CustomText(activity.description + " - " + activity.host.username),
       subtitle: Column(
@@ -260,7 +260,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     list.forEach((activity) {
       if(_fieldContains(activity)
           && (selectedDate ==null || activity.dateStart.getOnlyDate() == selectedDate!.getOnlyDate())
-          && sport.id == activity.sport.id && activity.currentParticipants!.contains(currentUser.id.toString()) ){
+          && sport.id == activity.sport.id && activity.currentAttendees!.contains(currentUser.id.toString()) ){
         res.add(activity);
       }
     });

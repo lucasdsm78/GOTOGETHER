@@ -14,7 +14,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:go_together/widgets/components/base_container.dart';
-import 'package:go_together/widgets/components/custom_button_right.dart';
+import 'package:go_together/widgets/components/buttons/custom_button_right.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';

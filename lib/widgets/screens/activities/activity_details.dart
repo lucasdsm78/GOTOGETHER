@@ -13,7 +13,7 @@ import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:go_together/widgets/components/base_container.dart';
-import 'package:go_together/widgets/components/custom_button_right.dart';
+import 'package:go_together/widgets/components/buttons/custom_button_right.dart';
 import 'package:go_together/widgets/components/lists/custom_row.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 
@@ -44,11 +44,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   void initState() {
     super.initState();
     activity = widget.activity;
-    currentUser = session.getData("user");
+    currentUser = session.getData(SessionData.user);
   }
 
   _joinActivity () async {
-    Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
+    Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentAttendees!.contains(currentUser.id.toString()));
     setState(() {
       activity = updatedActivity;
     });
@@ -74,7 +74,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
-    bool isUserInActivityList = activity.currentParticipants!.contains(currentUser.id.toString());
+    bool isUserInActivityList = activity.currentAttendees!.contains(currentUser.id.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activity Details'),
