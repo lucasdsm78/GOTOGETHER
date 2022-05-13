@@ -5,7 +5,7 @@ import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/models/user.dart';
 
-class Mock {
+class MockUser {
   static User userGwen = User(
     id:1,
     username:"gwenael95",

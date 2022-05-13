@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
 import 'package:go_together/widgets/components/buttons/top_button.dart';
-import 'package:go_together/widgets/components/delete_button.dart';
+import 'package:go_together/widgets/components/buttons/delete_button.dart';
 import 'package:go_together/widgets/components/lists/column_list.dart';
 import 'package:go_together/widgets/components/lists/custom_list.dart';
 import 'package:go_together/widgets/components/lists/custom_row.dart';
@@ -28,7 +28,7 @@ class _FriendsListState extends State<FriendsList> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   List<User>? futureFriends;
   List<User>? futureFriendsWaiting;
-  late User currentUser = Mock.userGwen;
+  late User currentUser = MockUser.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
   int colID = 0;
@@ -41,7 +41,22 @@ class _FriendsListState extends State<FriendsList> {
     _setFriendsWaitingList();
     searchbarController.addListener(_updateKeywords);
   }
+
+  getFriends(){
+    if(colID==0){
+      return futureFriends;
+    }
+    else{
+      return futureFriendsWaiting;
+    }
+  }
+
   //region set friends
+  _setColID(int newId){
+    setState(() {
+      colID = newId;
+    });
+  }
   _setFiendsList() async {
     List<User> friends = await friendsUseCase.getById(currentUser.id!);
     setState(() {
@@ -114,27 +129,14 @@ class _FriendsListState extends State<FriendsList> {
   }
   //endregion
 
-  getFriends(){
-    if(colID==0){
-      return futureFriends;
-    }
-    else{
-      return futureFriendsWaiting;
-    }
-  }
 
-  _setColID(int newId){
-    setState(() {
-      colID = newId;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     List<User> displayedFriends = (getFriends() != null ? _filterFriends(getFriends()!) : []);
     return Scaffold(
       appBar: TopSearchBar(
-          customSearchBar: const Text('Friends List'),
+          customSearchBar: const Text('Liste des amis'),
           searchbarController: searchbarController,
           placeholder: "username",
       ),

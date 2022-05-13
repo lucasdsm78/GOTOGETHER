@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:go_together/models/activity.dart';
 import 'dart:convert';
 import 'package:go_together/helper/enum/run_types.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
@@ -10,54 +11,53 @@ import 'package:go_together/models/user.dart';
 
 import 'level.dart';
 
-class Activity {
-  final int? id;
-  final Location location;
+class Tournament extends Activity {
+  final int nbEquip;
+  final int? nbByEquip;
 
-  final User host;
-  final Sport sport;
+  Tournament(
+      {id,
+      required location,
+      required host,
+      required sport,
+      required dateEnd,
+      required dateStart,
+      required description,
+      required isCanceled,
+      required level,
+      required attendeesNumber,
+      currentParticipants,
+      nbCurrentParticipants,
+      createdAt,
+      updatedAt,
+      public,
+      criterionGender,
+      limitByLevel,
+      required this.nbEquip,
+      this.nbByEquip})
+      : super(
+          id: id,
+          location: location,
+          host: host,
+          sport: sport,
+          dateEnd: dateEnd,
+          dateStart: dateStart,
+          description: description,
+          isCanceled: isCanceled,
+          level: level,
+          attendeesNumber: attendeesNumber,
+          currentAttendees: currentParticipants,
+          nbCurrentParticipants: nbCurrentParticipants,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          public: public,
+          criterionGender: criterionGender,
+          limitByLevel: limitByLevel,
+        );
 
-  final DateTime dateEnd;
-  final DateTime dateStart;
-  final String description;
-  final int isCanceled;
-  final Level level;
-  final int attendeesNumber;
-  final List<String>? currentAttendees;
-  final int? nbCurrentParticipants;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
-  final bool? public;
-  final Gender? criterionGender;
-  final bool? limitByLevel;
-
-  Activity({
-    this.id,
-    required this.location,
-
-    required this.host,
-    required this.sport,
-
-    required this.dateEnd,
-    required this.dateStart,
-    required this.description,
-    required this.isCanceled,
-    required this.level,
-    required this.attendeesNumber,
-    this.currentAttendees,
-    this.nbCurrentParticipants,
-    this.createdAt,
-    this.updatedAt,
-
-    this.public,
-    this.criterionGender,
-    this.limitByLevel,
-  });
-
-  factory Activity.fromJson(Map<String, dynamic> json) {
-    return Activity(
-      id: json['activityId'],
+  factory Tournament.fromJson(Map<String, dynamic> json) {
+    return Tournament(
+      id: json['tournamentId'],
       location: Location.fromJson(json),
 
       host: User(id:json['hostId'], username: json['hostName'], mail: json['hostMail'], role: json['hostRole'], friendsList: jsonParseToList(json["hostFriends"], RunTypes.int)),
@@ -70,7 +70,7 @@ class Activity {
       level: Level.fromJson(json),
       attendeesNumber: json['attendeesNumber'],
 
-      currentAttendees: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
+      currentParticipants: json['participantsIdConcat']?.isEmpty ?? true ? <String>[] : json['participantsIdConcat'].split(','),
       nbCurrentParticipants: json['nbCurrentParticipants'] == null ? 0 : json['nbCurrentParticipants'] as int,
       createdAt: parseStringToDateTime(json['createdAt']! as String),
       updatedAt: parseStringToDateTime(json['updatedAt']! as String),
@@ -78,6 +78,8 @@ class Activity {
       public: json["public"] == null ? true : json["public"]!=0,
       criterionGender: json["criterionGender"] == null ? null : getGenderByString(json["criterionGender"]),
       limitByLevel: json["limitByLevel"] == null ? true : json["limitByLevel"]!=0,
+      nbEquip: json["nbEquip"],
+      nbByEquip: json["nbParticipantTeam"],
     );
   }
 
@@ -87,25 +89,23 @@ class Activity {
     Map<String, Object?> map = {
       "id": id,
       "location": location.toMap(),
-
       "host": host.toMap(),
       "sport": sport.toMap(),
-
       "dateEnd": dateEnd.getDbDateTime(),
       "dateStart": dateStart.getDbDateTime(),
       "description": description,
       "isCanceled": isCanceled,
       "level": level.toMap(),
       "attendeesNumber": attendeesNumber,
-
       "currentParticipants": currentAttendees == null ? null : currentAttendees,
       "nbCurrentParticipants": nbCurrentParticipants == null ? null : nbCurrentParticipants,
       "createdAt": createdAt == null ? null : createdAt!.getDbDateTime(),
       "updatedAt": updatedAt == null ? null : updatedAt!.getDbDateTime(),
-
       "public": public,
       "criterionGender": criterionGender == null ? null : criterionGender!.toShortString(),
       "limitByLevel": limitByLevel,
+      "nbEquip": nbEquip,
+      "nbParticipantTeam":nbByEquip,
     };
     return map;
   }

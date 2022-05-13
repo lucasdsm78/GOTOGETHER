@@ -84,9 +84,7 @@ class UserServiceApi {
   Future<User> updatePost(User user) async {
     final response = await api.client
         .post(Uri.parse(api.host + 'users/${user.id}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
       body: user.toJson(),
     );
     print(jsonDecode(response.body));
@@ -104,9 +102,7 @@ class UserServiceApi {
     else {
       final response = await api.client
           .patch(Uri.parse(api.host + 'users/${map["id"]}'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: api.mainHeader,
         body: jsonEncode(map),
       );
       print(jsonDecode(response.body));
@@ -121,9 +117,7 @@ class UserServiceApi {
   Future<User> delete(String id) async {
     final response = await api.client
         .delete(Uri.parse(api.host + 'users/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
     );
 
     if (response.statusCode == 200) {

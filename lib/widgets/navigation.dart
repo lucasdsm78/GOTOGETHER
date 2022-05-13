@@ -3,9 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/storage.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
+import 'package:go_together/widgets/screens/home.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
@@ -39,13 +40,19 @@ class NavigationState extends State<Navigation> {
       "title": "Ajouté des amis",
       "icon": Icon(Icons.group_add)
     },
-
-  ];
-  List<Map<String, dynamic>> bottomBarLinks = [
     {
       "widget": ActivityList(),
       "title": "Liste des Activités",
       "icon": Icon(Icons.list)
+    },
+
+  ];
+  List<Map<String, dynamic>> bottomBarLinks = [
+
+    {
+      "widget": Home(),
+      "title": "Acceuil",
+      "icon": Icon(Icons.home)
     },
     {
       //"widget": ActivityCreate(idActivity: 42,),
@@ -69,7 +76,7 @@ class NavigationState extends State<Navigation> {
   @override
   void initState() {
     super.initState();
-    user = Mock.userGwen;
+    user = MockUser.userGwen;
     // when clicked and an activityList is open, we don't go to the new ActivityList page.
     // surely because this is same static tagname.
     //but reusing the same screen is probably for the best as long as they have quasi identical features

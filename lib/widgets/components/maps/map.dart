@@ -53,6 +53,9 @@ class _CustomMapState extends State<CustomMap> {
     );
   }
 
+  //region helpers
+  /// This will get the first element of the [list] that isn't empty.
+  /// if nothing is find, we return null.
   getFirstFilled(List<dynamic> list, {dynamic defaultVal}){
     dynamic val;
     for(int i=0; i< list.length; i++){
@@ -67,6 +70,10 @@ class _CustomMapState extends State<CustomMap> {
     return val ?? defaultVal;
   }
 
+  /// This will get the first element of the [list] that isn't empty.
+  /// + it will try to find the more complete address get from google maps.
+  ///
+  /// if nothing is find, we return null.
   getFirstFilledAndComplete(List<dynamic> list, {dynamic defaultVal}){
     dynamic val = "";
     for(int i=0; i< list.length; i++){
@@ -80,7 +87,10 @@ class _CustomMapState extends State<CustomMap> {
     }
     return val ?? defaultVal;
   }
+  //endregion
 
+  /// This is supposed to get the the element with much information,
+  /// or merge them if they don't have common word
   _getMoreComplete(String search, String subject){
     RegExp regExpSearch = RegExp(
       r"" + search + "",
@@ -102,6 +112,11 @@ class _CustomMapState extends State<CustomMap> {
         : (regExpSubject.hasMatch(search) || regExpSearchSplit.hasMatch(subject) ? search : search + " " + subject) ;
   }
 
+  /// try to add a marker on the place [pos] provided.
+  /// the data provided by google maps are not always the same.
+  ///
+  /// sometime, the address don't include the street number, So there need
+  /// to filter the data we will store in DB
   _addMarker(LatLng pos) async {
     Placemark placemark = await _getAddress(pos);
     log(placemark.toString());

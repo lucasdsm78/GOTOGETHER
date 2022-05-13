@@ -5,6 +5,12 @@ import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/level.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+/// this dropdown is used to have access of this everywhere, and
+/// avoiding some setup on several screen.
+///
+/// [level] is the level value,
+/// [onChange] is the action to execute after selection of level.
+/// [shouldAddNullValue] can be set to false if we don't want to use null value in the dropdown
 class DropdownLevel extends StatefulWidget {
   const DropdownLevel({Key? key, this.level, required this.onChange, this.shouldAddNullValue = false}) : super(key: key);
   final Level? level;

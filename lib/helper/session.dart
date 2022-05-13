@@ -1,3 +1,7 @@
+enum SessionData {
+  user,
+  token,
+}
 
 class Session{
   var sessionData = {};
@@ -18,4 +22,5 @@ class Session{
     }
     return defaultVal;
   }
+
 }

@@ -6,13 +6,26 @@ import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/api.dart';
 
+/// This class is used to call our API for all that concern activities
 class ActivityServiceApi {
   final api = Api();
 
+  /// get all activities corresponding to filter given by [map].
+  /// the [map] keys are the params used in api to filter the activities
   Future<List<Activity>> getAll({Map<String, dynamic> map = const {}}) async {
-    log("activity service api : " + api.handleUrlParams(true, map, []));
+    log("activity service api : " + api.handleUrlParams(true, map));
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map, [])));
+        .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map)));
+    if (response.statusCode == 200) {
+      return compute(parseActivities, response.body);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
+    }
+  }
+
+  Future<List<Activity>> getAllProposition(int idUser) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'activities/proposition/' + idUser.toString()));
     if (response.statusCode == 200) {
       return compute(parseActivities, response.body);
     } else {
@@ -46,9 +59,7 @@ class ActivityServiceApi {
   Future<Activity> updatePost(Activity activity) async {
     final response = await api.client
         .put(Uri.parse(api.host + '/update/activity/${activity.id}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
       body: activity.toJson(),
     );
     print(jsonDecode(response.body));
@@ -59,6 +70,8 @@ class ActivityServiceApi {
     }
   }
 
+  /// update partially an activity.
+  /// the [id] field in [map] should exist and is the activity id.
   Future<Activity> updatePatch(Map<String, dynamic> map) async {
     if(!map.containsKey("id")){
       throw Exception('need an id to update an activity.');
@@ -66,9 +79,7 @@ class ActivityServiceApi {
     else {
       final response = await api.client
           .patch(Uri.parse(api.host + 'activity/${map["id"]}'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: api.mainHeader,
         body: jsonEncode(map),
       );
       print(jsonDecode(response.body));
@@ -83,9 +94,7 @@ class ActivityServiceApi {
   Future<Activity> delete(String id) async {
     final response = await api.client
         .delete(Uri.parse(api.host + 'delete/activity/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
     );
 
     if (response.statusCode == 204) {
@@ -113,7 +122,6 @@ class ActivityServiceApi {
     }
   }
 
-
   Future<List<User>> getAllAttendeesByIdActivity(int id) async {
     final response = await api.client
         .get(Uri.parse(api.host + 'participants/' + id.toString() ));
@@ -123,6 +131,10 @@ class ActivityServiceApi {
       throw ApiErr(codeStatus: response.statusCode, message: "failed to load participants of this activity");
     }
   }
+
+  /// use to change the activity host.
+  /// the user won't be able to update after this.
+  /// it's used to avoid a cancellation that may be annoying for attendees.
   Future<bool> changeHost(Map<String, dynamic> map) async {
     //{"hostId":And(int), "activityId":And(int)}
     log(map.toString());
@@ -132,9 +144,7 @@ class ActivityServiceApi {
     else {
       final response = await api.client
           .patch(Uri.parse(api.host + 'activities/change_host'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: api.mainHeader,
         body: jsonEncode(map),
       );
       if (jsonDecode(response.body)['success'] != null) {

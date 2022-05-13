@@ -1,17 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
-import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/levels.dart';
-import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:go_together/widgets/components/base_container.dart';
@@ -23,43 +19,43 @@ import 'package:go_together/widgets/components/dropdowns/dropdown_sports.dart';
 import 'package:go_together/widgets/components/maps/map_dialog.dart';
 import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
-import 'package:go_together/widgets/screens/activities/activity_attendees.dart';
+import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/datetime_fields.dart';
 
+import '../../../models/tournament.dart';
+import '../../../usecase/tournament.dart';
 
-/// This screen is the one to create an activity.
-/// If [activity] is provided, then this page is used to update the activity
-/// instead of create.
-class ActivitySet extends StatefulWidget {
-  const ActivitySet({Key? key, this.activity}) : super(key: key);
-  static const tag = "activity_create";
-  final Activity? activity;
+//@todo refactor file into activity_set.dart
+class TournamentSet extends StatefulWidget {
+  const TournamentSet({Key? key, this.tournament}) : super(key: key);
+  static const tag = "tournament_create";
+  final Tournament? tournament;
 
   @override
-  _ActivitySetState createState() => _ActivitySetState();
+  _TournamentSetState createState() => _TournamentSetState();
 }
 
-class _ActivitySetState extends State<ActivitySet> {
-  final ActivityUseCase activityUseCase = ActivityUseCase();
-  final Session session = Session();
+class _TournamentSetState extends State<TournamentSet> {
+  final TournamentUseCase tournamentUseCase = TournamentUseCase();
+  final LocalStorage storage = LocalStorage('go_together_app');
 
   late Sport? sport = null;
-  late User currentUser = Session().getData(SessionData.user);
+  late User currentUser = MockUser.userGwen;
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController eventDescriptionInput = TextEditingController();
   TextEditingController nbManquantsInput = TextEditingController();
   TextEditingController nbTotalParticipantsInput = TextEditingController();
+  TextEditingController nbEquipInput = TextEditingController();
 
   String? criterGender = null;
   late Level eventLevel = MockLevel.levelList[0];
   String eventDescription = "";
-  bool formIsSet = false;
   int nbTotalParticipants = 0;
+  int nbEquip= 0;
   Duration _duration = Duration(hours: 0, minutes: 0);
   bool public = false;
-
 
 //  String dateTimeEvent = "";
   DateTime dateTimeEvent = DateTime.now();
@@ -69,20 +65,22 @@ class _ActivitySetState extends State<ActivitySet> {
   @override
   void initState() {
     super.initState();
-    isUpdating = widget.activity !=null;
+    isUpdating = widget.tournament !=null;
     if(isUpdating){
-      Activity currentActivity = widget.activity!;
+      Tournament currentTournament = widget.tournament!;
 
-      sport = currentActivity.sport;
-      criterGender = (currentActivity.criterionGender != null ? currentActivity.criterionGender!.translate() : null);
-      eventLevel = currentActivity.level;
-      eventDescriptionInput.text = currentActivity.description;
-      nbTotalParticipantsInput.text = currentActivity.attendeesNumber.toString();
-      nbTotalParticipants = currentActivity.attendeesNumber;
-      _duration = currentActivity.dateEnd.difference(currentActivity.dateStart);
-      public = currentActivity.public!;
-      dateTimeEvent = currentActivity.dateStart;
-      location = currentActivity.location;
+      sport = currentTournament.sport;
+      criterGender = (currentTournament.criterionGender != null ? currentTournament.criterionGender!.translate() : null);
+      eventLevel = currentTournament.level;
+      eventDescriptionInput.text = currentTournament.description;
+      nbTotalParticipantsInput.text = currentTournament.attendeesNumber.toString();
+      nbTotalParticipants = currentTournament.attendeesNumber;
+      nbEquipInput.text= currentTournament.nbEquip.toString();
+      nbEquip= currentTournament.nbEquip;
+      _duration = currentTournament.dateEnd.difference(currentTournament.dateStart);
+      public = currentTournament.public!;
+      dateTimeEvent = currentTournament.dateStart;
+      location = currentTournament.location;
     }
   }
 
@@ -92,10 +90,12 @@ class _ActivitySetState extends State<ActivitySet> {
   }
 
   //region setter
+  ///_set... function
+  /// infor the API on required value for create or update an Tournament
   _setEventDate(date){
-      setState(() {
-        dateTimeEvent = date as DateTime;
-      });
+    setState(() {
+      dateTimeEvent = date as DateTime;
+    });
   }
   _setEventSport(newSport) {
     setState(() {
@@ -107,9 +107,9 @@ class _ActivitySetState extends State<ActivitySet> {
       eventLevel = newLevel as Level;
     });
   }
-  _setEventGender(String? newValue){
+  _setEventGender(newValue){
     setState(() {
-      criterGender = newValue;
+      criterGender = newValue!;
     });
   }
   _setEventPrivacy(newValue){
@@ -117,22 +117,17 @@ class _ActivitySetState extends State<ActivitySet> {
       public = newValue!;
     });
   }
-  //endregion
+  //end setter region
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
-        title:  isUpdating ? Text("Mis à jour de l'événement") : Text("Créer un évènement"),
+        title: const Text("Créer un tournoi"),
       ),
       body: Form(
         key: _formKey,
-        onChanged: () =>{
-          if(eventDescriptionInput.text != "" &&  nbTotalParticipantsInput.text != ""){
-            formIsSet = true
-          }
-        },
         child: ListView( //@todo : use a ListView(children:[])
           children: <Widget>[
             CustomInput(
@@ -193,6 +188,15 @@ class _ActivitySetState extends State<ActivitySet> {
             ),
             //endregion
 
+            /// A form field for tap the limit number team can participate an tournament
+            CustomInput(
+              title: "Nombre d'équipe",
+              notValidError: "Please enter a number of participant",
+              controller: nbEquipInput,
+              type: TextInputType.number,
+            ),
+
+            ///form field for total particpant number
             CustomInput(
               title: "Nombre total de participants",
               notValidError: "Please enter a number of participant",
@@ -221,42 +225,32 @@ class _ActivitySetState extends State<ActivitySet> {
             ),
 
             // Public / Entre amis
+            ///Radio button for inform if a tournament is privacy or not
             RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
-            ElevatedButton(
-              onPressed: formIsSet && location != null && sport != null && (_duration.inMinutes > 0 || _duration.inHours > 0) ?() {
+            ///generate a button for submit the form if completed correctly for Update or Create a new Tournament.
+            RightWrongButton(
+              onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
                     eventDescription = eventDescriptionInput.text;
                     nbTotalParticipants = int.parse(nbTotalParticipantsInput.text);
                   });
-                  _addEvent();
+                  _updateOrAddEvent();
                 }
-              } : null,
-              child: isUpdating ? Text("METTRE A JOUR ") : Text("CREER L'EVENEMENT"),
+              },
+              width: 5.0,
+              height: 5.0,
+              textButton: isUpdating ? "METTRE A JOUR " : "CREER L'EVENEMENT",
             ),
-
-            (isUpdating
-                ? RightWrongButton(
-                  onPressed: () {
-                    _changeOrganiser(widget.activity!);
-                  },
-                  width: 5.0,
-                  height: 5.0,
-                  textButton: "CHANGER ORGANISATEUR",
-                )
-                : Container()
-            )
-
           ],
         ),
       ),
     );
   }
-
-  /// Create a map dialog that is displayed on screen.
-  /// then, we should select a position and confirm the location.
-  /// location data should be displayed after we close the dialog.
+  ///For choose th tournament place,
+  ///This function open a popUp screen containing a map for select the location of tournament.
+  ///After pick a place, return the location in text text format
   mapDialogue() async{
     dynamic res = await showDialog(
         context: context,
@@ -273,22 +267,15 @@ class _ActivitySetState extends State<ActivitySet> {
     }
   }
 
-  /// redirect to a page with all the attendees of this event displayed
-  /// to select the next host.
-  void _changeOrganiser(Activity activity) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          return  ActivitiesAttendees(activity: activity);
-        },
-      ),
-    );
-  }
-
-  Activity? _generateActivity(){
+  ///For update an tournament This function check the data in form.
+  ///If the form is filled  return a new tournament Object with the current data
+  ///_generateTournament() .
+  Tournament? _generateTournament(){
     if(sport != null) { // check the data in Form
       //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-      return Activity(location: location!,
+      return Tournament(
+          id: (widget.tournament == null ? null : widget.tournament!.id!),
+          location: location!,
           host: currentUser,
           sport: sport!,
           dateEnd: dateTimeEvent.add(_duration),
@@ -298,20 +285,23 @@ class _ActivitySetState extends State<ActivitySet> {
           level: eventLevel,
           attendeesNumber: nbTotalParticipants,
           public: public,
-          criterionGender: (criterGender == null ? null : getGenderByString(
-              criterGender!)),
+          criterionGender: (criterGender == null ? null : getGenderByString(criterGender!)),
           limitByLevel: false,
-          id: (widget.activity == null ? null : widget.activity!.id!));
+          nbEquip: nbEquip,
+          );
     }
   }
 
-  _addEvent() async {
-    Activity? activity = _generateActivity();
-    if(activity != null) {
-      log(activity.toJson());
-      Activity? activityAdded = (isUpdating ? await activityUseCase.update(
-          activity) : await activityUseCase.add(activity));
-      if (activityAdded != null) {
+  /// Add an event in DB, calling _generateTournament() function.
+  /// if all form fields are filled , then the tournament can be created.
+  /// if the tournament already exist, we update it
+  ///_updateOrAddEvent() :
+  _updateOrAddEvent() async {
+    Tournament? tournament = _generateTournament();
+    if(tournament != null) {
+      log(tournament.toJson());
+      Tournament? tournamentAdded = (isUpdating ? await tournamentUseCase.update(tournament) : await tournamentUseCase.add(tournament));
+      if (tournamentAdded != null) {
         Navigator.of(context).popAndPushNamed(Navigation.tag);
       }
     }

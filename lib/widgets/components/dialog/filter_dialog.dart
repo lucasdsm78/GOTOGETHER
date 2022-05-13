@@ -4,12 +4,15 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_gender.dart';
 import 'package:go_together/widgets/components/dropdowns/dropdown_level.dart';
 
-import 'custom_datepicker.dart';
-import 'custom_text.dart';
+import '../custom_datepicker.dart';
+import '../custom_text.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 
-import 'dropdowns/dropdown_sports.dart';
+import '../dropdowns/dropdown_sports.dart';
 
+/// This is a Modal used for filter usage.
+/// There need to be a function to update data on the screen calling the modal,
+/// 1 per data.
 class FilterDialog extends StatefulWidget {
   const FilterDialog({Key? key, required this.selectedDate, required this.onSelectDate, 
     this.sport, required this.onChangeSport, this.gender, required this.onChangeGender,

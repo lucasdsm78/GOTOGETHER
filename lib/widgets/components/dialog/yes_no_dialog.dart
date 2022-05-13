@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_together/widgets/components/buttons/confirm_deletion_button.dart';
+import 'package:go_together/widgets/components/buttons/confirmation_button.dart';
 
+/// this is a yes no dialog.
+/// there you could define the modal [title], some content with [children],
+/// and an action for yes, and another for no response.
 class YesNoDialog extends StatelessWidget {
   const YesNoDialog({Key? key, required this.title, this.children, this.trueFunction, this.falseFunction}) : super(key: key);
   final String title;
@@ -35,15 +38,15 @@ class YesNoDialog extends StatelessWidget {
   _getConfirmButton(bool isYes, BuildContext context){
     if(isYes){
       if(trueFunction!=null){
-        return ConfirmDeletionButton(isYes, context, trueFunction: trueFunction,);
+        return ConfirmationButton(isYes, context, trueFunction: trueFunction,);
       }
     }
     else{
       if(falseFunction!=null) {
-        return ConfirmDeletionButton(
+        return ConfirmationButton(
           isYes, context, falseFunction: falseFunction,);
       }
     }
-    return ConfirmDeletionButton(isYes, context);
+    return ConfirmationButton(isYes, context);
   }
 }

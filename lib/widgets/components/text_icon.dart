@@ -17,7 +17,9 @@ class TextIcon extends StatelessWidget {
         child: Text(title, overflow: TextOverflow.ellipsis,)
     ) );
     children.insert((iconFirst ? 0 : 1 ), Container(width: 5,));
-    children.insert((iconFirst ? 0 : 1 ), icon!);
+    if(icon != null){
+      children.insert((iconFirst ? 0 : 1 ), icon!);
+    }
 
     return Row(
         mainAxisAlignment: mainAxisAlignment,

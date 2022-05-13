@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -14,7 +14,7 @@ import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
 
-
+/// This screen is used to see all attendes related to the provided activity
 class ActivitiesAttendees extends StatefulWidget {
   const ActivitiesAttendees({Key? key, required this.activity}) : super(key: key);
   static const tag = "activity_attendees";
@@ -39,7 +39,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
   void initState() {
     super.initState();
     getActivitiesAttendees();
-    currentUser = Mock.userGwen;// User.fromJson(jsonDecode(storage.getItem("user")));
+    currentUser = MockUser.userGwen;// User.fromJson(jsonDecode(storage.getItem("user")));
     searchbarController.addListener(_updateKeywords);
     canDoAction = currentUser.id == widget.activity.host.id;
   }

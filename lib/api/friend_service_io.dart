@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-// import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/user.dart';
@@ -9,7 +8,6 @@ import 'package:go_together/helper/api.dart';
 class FriendsServiceApi {
   final api = Api();
 
-  //probably won't be used (at least for now)
   Future<List<User>> getAll({Map<String, dynamic> map = const {}}) async {
     final response = await api.client
         .get(Uri.parse(api.host + 'friends'));
@@ -50,6 +48,10 @@ class FriendsServiceApi {
     }
   }
 
+  /// use to add a new friend to user's invited friend list.
+  /// [map] should contain 'userIdSender' & 'userIdReceiver' to work.
+  /// userIdSender is the current user id, userIdReceiver is the user id to
+  /// invite as friend.
   Future<User> add(Map<String, int> map) async {
     log(map.toString());
     if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
@@ -67,6 +69,9 @@ class FriendsServiceApi {
     }
   }
 
+
+  /// use to validate friendship between 2 users.
+  /// [map] should contain 'userIdSender' & 'userIdReceiver' to work.
   Future<bool> validateFriendship(Map<String, int> map) async {
     if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');
@@ -85,6 +90,8 @@ class FriendsServiceApi {
     }
   }
 
+  /// use to delete friendship between 2 users.
+  /// [map] should contain 'userIdSender' & 'userIdReceiver' to work.
   Future<bool> delete(Map<String, int> map) async {
     if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');

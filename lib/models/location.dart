@@ -30,6 +30,8 @@ class Location {
     );
   }
 
+  ///convert this class into a map that can be use for DB purpose.
+  ///all keys are the same used in our API
   Map<String, Object?> toMap() {
     return {
       'id': id,

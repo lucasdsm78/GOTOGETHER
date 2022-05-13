@@ -7,6 +7,11 @@ import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 
+import '../models/tournament.dart';
+
+// all there are used to parse the data get from our api, when
+// the api return a list of entity (like user, or activity)
+
 List<Sport> parseSportsFromJson(String json) {
   final parsed = jsonDecode(json).cast<Map<String, dynamic>>();
   //log("Api sport parsed = " + parsed.toString());
@@ -31,6 +36,12 @@ List<Activity> parseActivities(String responseBody) {
   final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
   //log("api parse activity : " + parsed.toString());
   return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
+}
+
+List<Tournament> parseTournament(String responseBody) {
+  final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
+  //log("api parse activity : " + parsed.toString());
+  return parsed.map<Tournament>((json) => Tournament.fromJson(json)).toList();
 }
 
 List<Message> parseMessages(String responseBody) {

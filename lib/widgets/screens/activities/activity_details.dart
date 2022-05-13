@@ -6,24 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:go_together/widgets/components/base_container.dart';
-import 'package:go_together/widgets/components/custom_button_right.dart';
+import 'package:go_together/widgets/components/buttons/custom_button_right.dart';
 import 'package:go_together/widgets/components/lists/custom_row.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 
 import 'package:go_together/widgets/navigation.dart';
+import 'package:go_together/widgets/screens/activities/activity_attendeesCommentary.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:go_together/models/location.dart';
 
 import '../../components/maps/map.dart';
 
+/// This is the screen where you can see activity details.
+/// It's also here we can join / quit an activity
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);
   final Activity activity;
@@ -35,7 +38,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
-  late User currentUser = Mock.userGwen;
+  late User currentUser = MockUser.userGwen;
   late Session session = Session();
   late Activity activity;
 
@@ -43,15 +46,25 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   void initState() {
     super.initState();
     activity = widget.activity;
-    currentUser = session.getData("user");
+    currentUser = session.getData(SessionData.user);
   }
 
   _joinActivity () async {
-    Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentParticipants!.contains(currentUser.id.toString()));
+    Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentAttendees!.contains(currentUser.id.toString()));
     setState(() {
       activity = updatedActivity;
     });
     Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
+  }
+
+  void _checkAttendeesCommentary(Activity activity) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return  ActivitiesAttendeesCommentary(activity: activity);
+        },
+      ),
+    );
   }
 
   _deleteActivity() {
@@ -64,10 +77,10 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
-    bool isUserInActivityList = activity.currentParticipants!.contains(currentUser.id.toString());
+    bool isUserInActivityList = activity.currentAttendees!.contains(currentUser.id.toString());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity Details'),
+        title: const Text('Détails de l\'activité'),
       ),
       body: Center(
         child:
@@ -118,9 +131,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
               child:CustomRow(children: [
-                TextIcon(
-                  title: activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants",
-                  icon: Icon(Icons.account_circle_rounded, color :Colors.green,),
+                GestureDetector(
+                  onTap: () {
+                    _checkAttendeesCommentary(widget.activity);
+                  },
+                  child: TextIcon(
+                    title: activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants",
+                    icon: Icon(Icons.account_circle_rounded, color :Colors.green,),
+                  ),
                 ),
                 TextIcon(
                   title:  activity.level.name,
@@ -169,7 +187,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               child: (currentUser.id == activity.host.id
                 ? Container()
                 : Center(
-                  child: RightButton(
+                  child: RightWrongButton(
                     onPressed: _joinActivity,
                     width: 5.0,
                     height: 5.0,
