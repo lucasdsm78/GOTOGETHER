@@ -5,6 +5,8 @@ import 'package:go_together/widgets/components/maps/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../custom_text.dart';
 
+/// this is a dialog that contain a google map.
+/// define the location to see a marker on the map, else there isn't any marker
 class MapDialog extends StatefulWidget {
   const MapDialog({Key? key, this.location}) : super(key: key);
   final Location? location;

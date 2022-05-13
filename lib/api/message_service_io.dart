@@ -44,13 +44,13 @@ class MessageServiceApi {
     }
   }
 
-  // we add a copy of one encrypted message for each user in conversation
+  /// we add a copy of one encrypted message for each user in conversation
   Future<Message> add(int id, List<Message> message) async {
-    List<Map<String, dynamic>> t = [];
+    List<Map<String, dynamic>> messageListAsDict = [];
     message.forEach((element) {
-      t.add(element.toMap());
+      messageListAsDict.add(element.toMap());
     });
-    String body = jsonEncode(t);
+    String body = jsonEncode(messageListAsDict);
     final response = await api.client
         .post(Uri.parse(api.host + 'messages/$id'),
       headers: api.mainHeader,

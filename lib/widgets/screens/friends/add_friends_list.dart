@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
 import 'package:go_together/usecase/user.dart';
@@ -23,7 +23,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
   final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   late Future<List<User>> futureUsers;
-  late User currentUser = Mock.userGwen;
+  late User currentUser = MockUser.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
 
@@ -115,6 +115,27 @@ class _AddFriendsListState extends State<AddFriendsList> {
     );
   }
 
+  /// build a listView item widget, taking an [User] in parameters
+  /// in order to display some valuable data like the host name, or the
+  /// activity location.
+  Widget _buildRow(User user) {
+    return ListTile(
+      title: Text(
+        user.username,
+        style: _biggerFont,
+      ),
+      trailing:IconButton(
+          onPressed: (){
+            _addFriend(user);
+          },
+          icon: Icon(Icons.group_add)
+      ),
+      onTap: () {
+        _seeMore(user);
+      },
+    );
+  }
+
   void _seeMore(User user) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -133,21 +154,4 @@ class _AddFriendsListState extends State<AddFriendsList> {
     });
   }
 
-  Widget _buildRow(User user) {
-    return ListTile(
-      title: Text(
-        user.username,
-        style: _biggerFont,
-      ),
-      trailing:IconButton(
-        onPressed: (){
-          _addFriend(user);
-        },
-        icon: Icon(Icons.group_add)
-      ),
-      onTap: () {
-        _seeMore(user);
-      },
-    );
-  }
 }

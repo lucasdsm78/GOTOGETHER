@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RightButton extends StatelessWidget {
-  RightButton({
+///This is a button colored depending if it represent a right action (green),
+///or wrong action (red)
+class RightWrongButton extends StatelessWidget {
+  RightWrongButton({
   required this.textButton,
   required this.onPressed,
   required this.height,

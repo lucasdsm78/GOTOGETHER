@@ -12,11 +12,11 @@ Widget buildListView(data, Function _buildRow) {
       });
 }
 
+/// Creates a ListView with each elements separated by Divider().
+/// [data] is a List of Object.
+/// [buildListItem] is a Function using one o this object to render a Widget.
+/// [axis] is the listView axis (vertical by default)
 class ListViewSeparated extends StatelessWidget {
-  /// Creates a ListView with each elements separated by Divider().
-  /// [data] is a List of Object.
-  /// [buildListItem] is a Function using one o this object to render a Widget.
-  /// [axis] is the listView axis (vertical by default)
   const ListViewSeparated({Key? key, required this.data, required this.buildListItem, this.axis:Axis.vertical, this.itemWidth}) : super(key: key);
   final dynamic data;
   final Function buildListItem;

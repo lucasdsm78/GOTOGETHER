@@ -6,6 +6,9 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:localstorage/localstorage.dart';
 
+/// @deprecated.<br>
+/// It's more like a prototype, but should be replaced one day.<br>
+///
 /// This class is used to get data from local storage.
 /// Then we can get data from whenever we are in the application.
 ///
@@ -24,15 +27,21 @@ class CustomStorage{
   CustomStorage._internal();
 
   //region get stored Sports
+  ///generate a stream to send data when the storage get the value required
   Stream<List<Sport>> getAndStoreSportsStream({Function? func}) {
     return (() async* {
       List<Sport> res = await _getAndStoreSport(func: func);
       yield res;
     })();
   }
+
+  ///generate a Future to send data when the storage get the value required
   Future<List<Sport>> getAndStoreSportsFuture({Function? func}) async {
       return await _getAndStoreSport(func: func);
   }
+
+  /// This will get sport list from storage to provide it where needed in the app.
+  /// if the storage doesn't found it, we do an API call to store them.
   Future<List<Sport>> _getAndStoreSport({Function? func}) async {
     List<Sport> res = [];
     String? storedSport = await get("sports");

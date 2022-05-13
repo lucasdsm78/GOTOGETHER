@@ -6,7 +6,7 @@ import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:duration_picker/duration_picker.dart';
@@ -41,7 +41,7 @@ class _TournamentSetState extends State<TournamentSet> {
   final LocalStorage storage = LocalStorage('go_together_app');
 
   late Sport? sport = null;
-  late User currentUser = Mock.userGwen;
+  late User currentUser = MockUser.userGwen;
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController eventDescriptionInput = TextEditingController();
@@ -229,7 +229,7 @@ class _TournamentSetState extends State<TournamentSet> {
             RadioPrivacy(onChange: _setEventPrivacy, groupValue: public),
 
             ///generate a button for submit the form if completed correctly for Update or Create a new Tournament.
-            RightButton(
+            RightWrongButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   setState(() {

@@ -1,17 +1,6 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:go_together/helper/extensions/string_extension.dart';
-import 'package:go_together/models/activity.dart';
-import 'package:go_together/models/conversation.dart';
-import 'package:go_together/models/sports.dart';
-import 'package:go_together/models/user.dart';
-import 'package:go_together/models/messages.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:go_together/models/signal.dart';
 import 'package:go_together/helper/commonFunctions.dart';
-import '../models/tournament.dart';
-
 
 enum Method {
   get,
@@ -26,6 +15,9 @@ extension MethodExtension on Method {
   }
 }
 
+/// used to make API call in each api services.
+/// [host] is our online server.
+//@todo : save and use the token to execute request requiring user id
 class Api{
   final http.Client client = http.Client();
   final host = "http://51.255.51.106:5000/";
@@ -50,8 +42,14 @@ class Api{
   }
 
 
-  String handleUrlParams(bool isFirstParam, Map<String, dynamic> map, List<String> ignored){
-
+  /// Prepare the params in url (ex : https://api/activities?hostId=1&city=Cergy).
+  /// [isFirstParam] should be true if we require to add a '?' char in first place.
+  /// [map] contains all the data to convert as url params.
+  /// The keys are used as param name (ex : {hostId:1, city:Cergy}).
+  ///
+  /// [ignored] is the list of keys we may want to ignore in the map provided.
+  /// let it empty if nothing is to ignore.
+  String handleUrlParams(bool isFirstParam, Map<String, dynamic> map,  {List<String>  ignored:const []}){
     String params = "";
     int count = 0;
     map.forEach((key, value){
@@ -63,52 +61,11 @@ class Api{
     return params;
   }
 
-  List<Activity> parseActivities(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    //log("api parse activity : " + parsed.toString());
-    return parsed.map<Activity>((json) => Activity.fromJson(json)).toList();
-  }
-
-  List<Tournament> parseTournament(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    //log("api parse activity : " + parsed.toString());
-    return parsed.map<Tournament>((json) => Tournament.fromJson(json)).toList();
-  }
-
-  List<Sport> parseSports(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    log("Api sport parsed = " + parsed.toString());
-    return parsed.map<Sport>((json) => Sport.fromJson(json)).toList();
-  }
-
-  List<User> parseUsers(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-    return parsed.map<User>((json) => User.fromJson(json)).toList();
-  }
-
-  List<Message> parseMessages(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-
-    return parsed.map<Message>((json) => Message.fromJson(json)).toList();
-  }
-
-  List<Conversation> parseConversation(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"]["conversation"].cast<
-        Map<String, dynamic>>();
-    return parsed.map<Conversation>((json) => Conversation.fromJson(json))
-        .toList();
-  }
-  List<Signal> parseSignal(String responseBody) {
-    final parsed = jsonDecode(responseBody)["success"].cast<Map<String, dynamic>>();
-
-    return parsed.map<Signal>((json) => Signal.fromJson(json)).toList();
-  }
 }
 
 class ApiErr implements Exception {
   int codeStatus;
   String message;
-
   String errMsg() => 'an error occured with status code - $codeStatus - , $message';
 
   ApiErr({required this.codeStatus, required this.message});

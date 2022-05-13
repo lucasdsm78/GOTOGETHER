@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/commentary.dart';
 import 'package:go_together/models/user.dart';
@@ -12,7 +12,8 @@ import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
 
-
+/// this class will display all attendees of an activity.
+/// Shouldn't be available before the activity is finished.
 class ActivitiesAttendeesCommentary extends StatefulWidget {
   const ActivitiesAttendeesCommentary({Key? key, required this.activity}) : super(key: key);
   static const tag = "activity_attendeesCommentary";
@@ -37,7 +38,7 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
     super.initState();
     getActivitiesAttendees();
     _values = [];
-    currentUser = Mock.userGwen;
+    currentUser = MockUser.userGwen;
     searchbarController.addListener(_updateKeywords);
   }
 
@@ -158,6 +159,10 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
     return res;
   }
 
+  /// Check if some user contain the keywords in searchbar.
+  /// it could be the username.
+  ///
+  /// we could use multi keywords using ',' to separate each keyword
   bool _fieldContains(User user){
     List<String> keywordSplit = keywords.split(",");
     List<bool> contains = [];

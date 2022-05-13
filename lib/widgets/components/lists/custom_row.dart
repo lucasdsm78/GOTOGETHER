@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// This is a row that contains [children] we automatically will
+/// nested into Expanded widget.
+/// This avoid error when we don't provide a size to one children
 class CustomRow extends StatelessWidget {
   const CustomRow({Key? key,  required this.children,
     this.mainAlignementAxis = MainAxisAlignment.center, this.crossAlignementAxis = CrossAxisAlignment.center,

@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -21,7 +20,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
-  static const tag = "activity_list";
+  static const tag = "home";
 
   @override
   _HomeState createState() => _HomeState();
@@ -44,7 +43,7 @@ class _HomeState extends State<Home> with Observer{
   @override
   void initState() {
     super.initState();
-    currentUser = session.getData(SessionData.user,defaultVal: Mock.userGwen);
+    currentUser = session.getData(SessionData.user,defaultVal: MockUser.userGwen);
     getActivities();
     Observable.instance.addObserver(this);
   }
@@ -65,7 +64,7 @@ class _HomeState extends State<Home> with Observer{
 
   @override
   Widget build(BuildContext context) {
-
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accueil'),
@@ -82,7 +81,7 @@ class _HomeState extends State<Home> with Observer{
               child : Image.asset(
                 'assets/football.jpg',
                 height: 160,
-                width:  MediaQuery.of(context).size.width,
+                width: screenWidth,
                 fit:BoxFit.fitWidth
               ),
             ),
@@ -99,7 +98,7 @@ class _HomeState extends State<Home> with Observer{
                     );
                   }
                   return Container(
-                    width: 500,
+                    width: screenWidth*85,
                     height: 120,
                     child:ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted, axis: Axis.horizontal,)
                   );
@@ -126,7 +125,7 @@ class _HomeState extends State<Home> with Observer{
                     );
                   }
                   return Container(
-                      width: 500,
+                      width: screenWidth*85,
                       height: 120,
                       child:ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition, axis: Axis.horizontal,)
                   );
@@ -156,17 +155,22 @@ class _HomeState extends State<Home> with Observer{
     );
   }
 
-  void _goToUpadteActivity(Activity activity) {
+  void _goToUpdateActivity(Activity activity) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return  ActivitySet(activity: activity);
+          return ActivitySet(activity: activity);
         },
       ),
     );
   }
   //endregion
 
+  //region build items for list
+  /// The item to add in list.
+  /// We don't use it directly in listview because we need to define the action.
+  /// For host activity we want to go to update activity, and for other to see
+  /// activity details screen
   Widget _buildItemActivity(Activity activity, Function onTap) {
     final hasJoin = activity.currentAttendees!.contains(currentUser.id.toString());
     return ListTile(
@@ -207,8 +211,9 @@ class _HomeState extends State<Home> with Observer{
     return _buildItemActivity(activity, _seeMore);
   }
   Widget _buildItemActivityUserHosted(Activity activity) {
-    return _buildItemActivity(activity, _goToUpadteActivity);
+    return _buildItemActivity(activity, _goToUpdateActivity);
   }
+  //endregion
 
 
 

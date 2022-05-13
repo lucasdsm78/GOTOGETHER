@@ -3,12 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
 import 'package:go_together/models/sports.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/helper/enum/gender.dart';
@@ -23,11 +24,13 @@ import 'package:go_together/widgets/components/maps/map_dialog.dart';
 import 'package:go_together/widgets/components/radio_privacy.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/widgets/screens/activities/activity_attendees.dart';
-import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/datetime_fields.dart';
 
-//@todo refactor file into activity_set.dart
+
+/// This screen is the one to create an activity.
+/// If [activity] is provided, then this page is used to update the activity
+/// instead of create.
 class ActivitySet extends StatefulWidget {
   const ActivitySet({Key? key, this.activity}) : super(key: key);
   static const tag = "activity_create";
@@ -39,10 +42,10 @@ class ActivitySet extends StatefulWidget {
 
 class _ActivitySetState extends State<ActivitySet> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
-  final LocalStorage storage = LocalStorage('go_together_app');
+  final Session session = Session();
 
   late Sport? sport = null;
-  late User currentUser = Mock.userGwen;
+  late User currentUser = Session().getData(SessionData.user);
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController eventDescriptionInput = TextEditingController();
@@ -121,7 +124,7 @@ class _ActivitySetState extends State<ActivitySet> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Créer un évènement"),
+        title:  isUpdating ? Text("Mis à jour de l'événement") : Text("Créer un évènement"),
       ),
       body: Form(
         key: _formKey,
@@ -234,7 +237,7 @@ class _ActivitySetState extends State<ActivitySet> {
             ),
 
             (isUpdating
-                ? RightButton(
+                ? RightWrongButton(
                   onPressed: () {
                     _changeOrganiser(widget.activity!);
                   },
@@ -250,16 +253,10 @@ class _ActivitySetState extends State<ActivitySet> {
       ),
     );
   }
-  void _changeOrganiser(Activity activity) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          return  ActivitiesAttendees(activity: activity);
-        },
-      ),
-    );
-  }
 
+  /// Create a map dialog that is displayed on screen.
+  /// then, we should select a position and confirm the location.
+  /// location data should be displayed after we close the dialog.
   mapDialogue() async{
     dynamic res = await showDialog(
         context: context,
@@ -276,6 +273,17 @@ class _ActivitySetState extends State<ActivitySet> {
     }
   }
 
+  /// redirect to a page with all the attendees of this event displayed
+  /// to select the next host.
+  void _changeOrganiser(Activity activity) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return  ActivitiesAttendees(activity: activity);
+        },
+      ),
+    );
+  }
 
   Activity? _generateActivity(){
     if(sport != null) { // check the data in Form

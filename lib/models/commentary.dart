@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import '../helper/extensions/date_extension.dart';
 
-
+/// Commentary correspond to commentary made on user
 class Commentary {
   final int? id;
   final int userIdReceiver;
@@ -31,6 +31,8 @@ class Commentary {
     );
   }
 
+  ///convert this class into a map that can be use for DB purpose.
+  ///all keys are the same used in our API
   Map<String, Object?> toMap() {
     return {
       'userIdReceiver': userIdReceiver,

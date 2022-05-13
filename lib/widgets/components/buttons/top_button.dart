@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// this is button used on top of a list, like using browser tabs.
 class TopButton extends StatefulWidget {
   const TopButton({Key? key, required this.child, required this.onPress, this.hasFocus = true}) : super(key: key);
   final Widget child;

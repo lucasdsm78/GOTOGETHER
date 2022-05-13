@@ -9,9 +9,9 @@ class TournamentServiceApi {
   final api = Api();
 
   Future<List<Tournament>> getAll({Map<String, dynamic> map = const {}}) async {
-    log("tournament service api : " + api.handleUrlParams(true, map, []));
+    log("tournament service api : " + api.handleUrlParams(true, map));
     final response = await api.client
-        .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map, [])));
+        .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map)));
     if (response.statusCode == 200) {
       return compute(parseTournament, response.body);
     } else {
@@ -45,9 +45,7 @@ class TournamentServiceApi {
   Future<Tournament> updatePost(Tournament tournament) async {
     final response = await api.client
         .put(Uri.parse(api.host + '/update/tournament/${tournament.id}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
       body: tournament.toJson(),
     );
     print(jsonDecode(response.body));
@@ -65,9 +63,7 @@ class TournamentServiceApi {
     else {
       final response = await api.client
           .patch(Uri.parse(api.host + 'tournament/${map["id"]}'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: api.mainHeader,
         body: jsonEncode(map),
       );
       print(jsonDecode(response.body));
@@ -82,9 +78,7 @@ class TournamentServiceApi {
   Future<Tournament> delete(String id) async {
     final response = await api.client
         .delete(Uri.parse(api.host + 'delete/tournament/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: api.mainHeader,
     );
 
     if (response.statusCode == 204) {

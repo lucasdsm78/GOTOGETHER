@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// This button is used when wanted to delete an item.
 class DeleteButton extends StatelessWidget {
   const DeleteButton({Key? key, this.onPressed, required this.display}) : super(key: key);
   final Function? onPressed;

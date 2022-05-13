@@ -9,6 +9,9 @@ import 'package:go_together/models/user.dart';
 
 import '../models/tournament.dart';
 
+// all there are used to parse the data get from our api, when
+// the api return a list of entity (like user, or activity)
+
 List<Sport> parseSportsFromJson(String json) {
   final parsed = jsonDecode(json).cast<Map<String, dynamic>>();
   //log("Api sport parsed = " + parsed.toString());

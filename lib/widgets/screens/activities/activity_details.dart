@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -25,6 +25,8 @@ import 'package:go_together/models/location.dart';
 
 import '../../components/maps/map.dart';
 
+/// This is the screen where you can see activity details.
+/// It's also here we can join / quit an activity
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);
   final Activity activity;
@@ -36,7 +38,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
-  late User currentUser = Mock.userGwen;
+  late User currentUser = MockUser.userGwen;
   late Session session = Session();
   late Activity activity;
 
@@ -54,7 +56,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     });
     Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
   }
-  void _checkAttendees(Activity activity) {
+
+  void _checkAttendeesCommentary(Activity activity) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
@@ -130,7 +133,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               child:CustomRow(children: [
                 GestureDetector(
                   onTap: () {
-                    _checkAttendees(widget.activity);
+                    _checkAttendeesCommentary(widget.activity);
                   },
                   child: TextIcon(
                     title: activity.nbCurrentParticipants.toString() + "/" + activity.attendeesNumber.toString() + " participants",
@@ -184,7 +187,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               child: (currentUser.id == activity.host.id
                 ? Container()
                 : Center(
-                  child: RightButton(
+                  child: RightWrongButton(
                     onPressed: _joinActivity,
                     width: 5.0,
                     height: 5.0,

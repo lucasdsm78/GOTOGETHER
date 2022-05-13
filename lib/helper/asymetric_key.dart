@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:asn1lib/asn1lib.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';

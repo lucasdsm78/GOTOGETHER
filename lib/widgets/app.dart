@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
@@ -36,8 +36,8 @@ class _GotogetherAppState extends State<GotogetherApp> {
   void initState() {
     super.initState();
     log("START APP");
-    store.storeUser(Mock.userGwen);
-    session.setData(SessionData.user, Mock.userGwen);
+    store.storeUser(MockUser.userGwen);
+    session.setData(SessionData.user, MockUser.userGwen);
   }
 
   @override

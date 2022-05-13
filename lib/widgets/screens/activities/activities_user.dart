@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
@@ -24,10 +25,9 @@ import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 
-//@todo : il faudrait un bouton qui affiche les filtres
 class ActivitiesUser extends StatefulWidget {
   const ActivitiesUser({Key? key}) : super(key: key);
-  static const tag = "activity_list";
+  static const tag = "user_list";
 
   @override
   _ActivitiesUserState createState() => _ActivitiesUserState();
@@ -51,12 +51,50 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   String? gender;
   Level? level;
 
+  //region getter
+  /// Used to set params used in the getActivity API call.
+  /// Since we want to avoid too many request for each filter changes, we only
+  /// use it when we want to get current user's activities.
+  Map <String, dynamic> criterionMap(){
+    return {"sportId":/*sport.id*/null, "keywords":keywords};
+  }
+
+  void getSports() async{
+    log("GET SPORT FROM ACTIVITIES LIST");
+    String? storedSport = storage.getItem("sports");
+    if(storedSport != null){
+      log("ACTIVITIES LIST - GET DATA FROM STORAGE ");
+      setState(() {
+        futureSports = parseSports(storedSport);
+        sport = futureSports[0];
+      });
+    }
+    else {
+      List<Sport> res = await sportUseCase.getAll();
+      log("ACTIVITIES LIST - GET DATA FROM API ");
+
+      log(res.toString());
+      setState(() {
+        futureSports = res;
+        sport = futureSports[0];
+      });
+    }
+  }
+
+  void getActivities(){
+    setState(() {
+      futureActivities = activityUseCase.getAll(map: criterionMap());
+    });
+  }
+  //endregion
+
   @override
   void initState() {
     super.initState();
     getSports();
     getActivities();
-    currentUser = User.fromJson(jsonDecode(storage.getItem("user")));
+
+    currentUser = Session().getData(SessionData.user);
     print(currentUser.id);
     searchbarController.addListener(_updateKeywords);
     Observable.instance.addObserver(this);
@@ -123,6 +161,10 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
       ),
     );
   }
+
+  /// This function build a Slidable item used to update the activity.
+  /// Slide to the right of a list item to see it appear.
+  /// Only available for the activity's host
   slidableActionCurrentUserActivity(BuildContext context, Activity activity) {
     return SlidableAction(
       onPressed: (BuildContext) {
@@ -141,6 +183,15 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     );
   }
 
+  /// build a listView item widget, taking an [activity] in parameters
+  /// in order to display some valuable data like the host name, or the
+  /// activity location.
+  ///
+  /// Everybody could see activity details when clicking this item.
+  ///
+  /// If the current user is the activity's host, he can access to a slidable
+  /// action to update the activity.
+  /// But he still can see what other user's see of his activity.
   Widget _buildRow(Activity activity) {
     final hasJoin = activity.currentAttendees!.contains(currentUser.id.toString());
     Widget tile = ListTile(
@@ -179,8 +230,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
           child: tile
       );
   }
-
-  /// Display a dialog containing a listView of all leasons for the day
+  /// Display a dialog containing some filters to apply on the list.
   Future<Null> dialogue() async{
     return showDialog(
         context: context,
@@ -194,40 +244,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   }
 
 
-  Map <String, dynamic> criterionMap(){
-    return {"sportId":/*sport.id*/null, "keywords":keywords};
-  }
-
-  void getSports() async{
-    log("GET SPORT FROM ACTIVITIES LIST");
-    String? storedSport = storage.getItem("sports");
-    if(storedSport != null){
-      log("ACTIVITIES LIST - GET DATA FROM STORAGE ");
-      setState(() {
-        futureSports = parseSports(storedSport);
-        sport = futureSports[0];
-      });
-    }
-    else {
-      List<Sport> res = await sportUseCase.getAll();
-      log("ACTIVITIES LIST - GET DATA FROM API ");
-
-      log(res.toString());
-      setState(() {
-        futureSports = res;
-        sport = futureSports[0];
-      });
-    }
-  }
-
-  void getActivities(){
-    setState(() {
-      futureActivities = activityUseCase.getAll(map: criterionMap());
-    });
-  }
-
-  /// Used in CustomDatePicker to update [selectedDate] with [date] value.
-  /// Then filter lessons.
+  //region updates
   _updateSelectedDate(DateTime date){
     setState(() {
       selectedDate = date;
@@ -252,9 +269,19 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     });
   }
 
+  /// Update [keywords], used in searchbar controller
+  void _updateKeywords() {
+    setState(() {
+      keywords = searchbarController.text;
+    });
+    //getActivities(); //could filter on the total list, or make a call to api each time keywords change (not optimized)
+  }
+  //endregion
 
 
-  /// Filter activities depending on [keywords], [selectedDate]
+  //region filter
+  /// Filter activities depending on [keywords], [selectedDate],
+  /// [sport], and activity attendees.
   _filterActivities(List<Activity> list){
     List<Activity> res = [];
     list.forEach((activity) {
@@ -267,10 +294,16 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     return res;
   }
 
-  /// Check if some activity fields contain the keywords in searchbar
+  /// Check if some activity fields contain the keywords in searchbar.
+  /// it could be the activity descrition, city, host name, or sport.
+  ///
+  /// we could use multi keywords using ',' to separate each keyword
   bool _fieldContains(Activity activity){
     List<String> keywordSplit = keywords.split(",");
     List<bool> contains = [];
+
+    /// foreach of keyword, we create a regex to check if one of
+    /// activity's data has a match.
     keywordSplit.forEach((element) {
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
       if(
@@ -285,14 +318,8 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     });
     return contains.where((item) => item == false).isEmpty;
   }
+  //endregion
 
-  /// Update [keywords], used in searchbar controller
-  void _updateKeywords() {
-    setState(() {
-      keywords = searchbarController.text;
-    });
-    //getActivities(); //could filter on the total list, or make a call to api each time keywords change (not optimized)
-  }
 
 
 }

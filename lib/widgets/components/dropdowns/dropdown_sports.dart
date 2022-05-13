@@ -3,6 +3,13 @@ import 'package:go_together/helper/storage.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
 
+
+/// this dropdown is used to have access of this everywhere, and
+/// avoiding some setup on several screen.
+///
+/// [sport] is the sport value,
+/// [onChange] is the action to execute after selection of sport.
+/// [shouldAddNullValue] can be set to false if we don't want to use null value in the dropdown
 class DropdownSports extends StatefulWidget {
   const DropdownSports({Key? key, this.sport, required this.onChange, this.shouldAddNullValue = false,}) : super(key: key);
   final Sport? sport;

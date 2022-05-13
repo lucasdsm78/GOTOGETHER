@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/storage.dart';
-import 'package:go_together/mock/mock.dart';
+import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
@@ -76,7 +76,7 @@ class NavigationState extends State<Navigation> {
   @override
   void initState() {
     super.initState();
-    user = Mock.userGwen;
+    user = MockUser.userGwen;
     // when clicked and an activityList is open, we don't go to the new ActivityList page.
     // surely because this is same static tagname.
     //but reusing the same screen is probably for the best as long as they have quasi identical features
