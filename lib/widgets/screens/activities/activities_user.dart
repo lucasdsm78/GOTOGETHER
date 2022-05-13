@@ -305,6 +305,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     /// foreach of keyword, we create a regex to check if one of
     /// activity's data has a match.
     keywordSplit.forEach((element) {
+      element = element.trim();
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
       if(
       (regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)

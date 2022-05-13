@@ -161,6 +161,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     List<String> keywordSplit = keywords.split(",");
     List<bool> contains = [];
     keywordSplit.forEach((element) {
+      element = element.trim();
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
       if (regExp.hasMatch(user.username)){
         contains.add(true);
