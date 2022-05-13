@@ -77,7 +77,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     bool isUserInActivityList = activity.currentAttendees!.contains(currentUser.id.toString());
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity Details'),
+        title: const Text('Détails de l\'activité'),
       ),
       body: Center(
         child:

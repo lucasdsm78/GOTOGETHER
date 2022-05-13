@@ -34,7 +34,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity Details'),
+        title: const Text('Détails du message'),
       ),
       body: Center(
         child: FutureBuilder<List<Message>>(

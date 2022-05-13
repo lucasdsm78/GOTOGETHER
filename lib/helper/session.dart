@@ -3,11 +3,6 @@ enum SessionData {
   token,
 }
 
-enum SessionData{
-  user,
-  token
-}
-
 class Session{
   var sessionData = {};
 

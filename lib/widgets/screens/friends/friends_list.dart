@@ -134,7 +134,7 @@ class _FriendsListState extends State<FriendsList> {
     List<User> displayedFriends = (getFriends() != null ? _filterFriends(getFriends()!) : []);
     return Scaffold(
       appBar: TopSearchBar(
-          customSearchBar: const Text('Friends List'),
+          customSearchBar: const Text('Liste des amis'),
           searchbarController: searchbarController,
           placeholder: "username",
       ),

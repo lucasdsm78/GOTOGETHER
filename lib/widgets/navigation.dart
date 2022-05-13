@@ -41,17 +41,18 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.group_add)
     },
     {
-      "widget": Home(),
-      "title": "Acceuil",
-      "icon": Icon(Icons.home)
+      "widget": ActivityList(),
+      "title": "Liste des Activités",
+      "icon": Icon(Icons.list)
     },
 
   ];
   List<Map<String, dynamic>> bottomBarLinks = [
+
     {
-      "widget": ActivityList(),
-      "title": "Liste des Activités",
-      "icon": Icon(Icons.list)
+      "widget": Home(),
+      "title": "Acceuil",
+      "icon": Icon(Icons.home)
     },
     {
       //"widget": ActivityCreate(idActivity: 42,),

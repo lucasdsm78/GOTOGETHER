@@ -92,7 +92,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopSearchBar(
-        customSearchBar: const Text('Friends List'),
+        customSearchBar: const Text('Ajouter des amis'),
         searchbarController: searchbarController,
         placeholder: "username",
       ),
