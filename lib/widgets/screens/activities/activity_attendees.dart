@@ -62,7 +62,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<User> data = snapshot.data!;
-            List<User> res = _filterActivities(data);
+            List<User> res = _filterUsers(data);
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -146,11 +146,11 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     });
   }
 
-  /// Filter activities depending on [keywords], [selectedDate]
-  _filterActivities(List<User> list){
+  /// Filter users depending on [keywords], [selectedDate]
+  _filterUsers(List<User> list){
     List<User> res = [];
     list.forEach((user) {
-      if(_fieldContains(user)){
+      if(_fieldContains(user) && user.id! != currentUser.id){
         res.add(user);
       }
     });
