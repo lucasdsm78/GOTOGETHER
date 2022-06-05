@@ -2,11 +2,15 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/user.dart';
+import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
+import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
+import 'package:go_together/widgets/screens/users/signal.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
@@ -23,6 +27,7 @@ class Navigation extends StatefulWidget {
 class NavigationState extends State<Navigation> {
   int _selectedIndex = 0;
   int _drawerSelectedIndex = 0;
+  Session session = Session();
   bool _isLastTappedDrawer = false;
   late User user;
   CustomStorage store = CustomStorage();
@@ -45,6 +50,12 @@ class NavigationState extends State<Navigation> {
       "title": "Liste des Activités",
       "icon": Icon(Icons.list)
     },
+    {
+      "widget": TournamentSet(),
+      "title": "Créer un tournoi",
+      "icon": Icon(Icons.list)
+    },
+
 
   ];
   List<Map<String, dynamic>> bottomBarLinks = [
@@ -85,6 +96,11 @@ class NavigationState extends State<Navigation> {
       "widget": ActivityList(idHost: user.id,),
       "title": "Voir mes activité",
       "icon": Icon(Icons.list)
+    },);
+    addLinkToDrawer(    {
+      "widget": SignalProfile(userId: user.id!),
+      "title": "Signaler",
+      "icon": Icon(Icons.warning)
     },);
   }
   getUser() async {

@@ -77,5 +77,6 @@ class _SignalProfileState extends State<SignalProfile> {
     Signal signal = _generateSignal();
     log(signal.toJson());
     await signalUseCase.add(signal);
+    log(signal.reason!);
   }
 }
