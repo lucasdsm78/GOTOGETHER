@@ -7,7 +7,7 @@ import 'package:go_together/helper/api.dart';
 class SignalServiceApi {
   final api = Api();
 
-  Future<List<Signal>> getAll({Map<String, dynamic> map = const {}, required int id}) async {
+  Future<List<Signal>> getAll({Map<String, dynamic> map = const {}, required int? id}) async {
     final response = await api.client
         .get(Uri.parse(api.host + 'reporting/reporter/$id'));
     if (response.statusCode == 200) {
