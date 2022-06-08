@@ -29,6 +29,8 @@ jobs:
         run: flutter clean
       - name : upgrade flutter
         run: flutter upgrade
+      - name : flutter pub 
+        run: flutter pub upgrade
         
         
 
