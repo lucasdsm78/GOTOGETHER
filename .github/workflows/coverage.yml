@@ -27,6 +27,8 @@ jobs:
         # Runs a single command using the runners shell
       - name: clean cache
         run: flutter clean
+      - name : upgrade flutter
+        run: flutter upgrade
         
         
 
