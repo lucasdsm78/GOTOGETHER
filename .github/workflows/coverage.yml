@@ -40,6 +40,12 @@ jobs:
         run : flutter test --coverage
       - name: Gen test coverage
         run : genhtml coverage/lcov.info -o coverage/html
+        
+      - name : coverage report
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          lcov-file: ./coverage/lcov.info
+      
           #- uses: codecov/codecov-action@v2
 
           #with:
