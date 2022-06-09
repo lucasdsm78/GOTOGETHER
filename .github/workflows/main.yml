@@ -19,6 +19,9 @@ jobs:
         
       - name: GET Flutter
         run: flutter pub get
+        
+      - name: Lint code Flutter
+        run: flutter analyze
       
       - name : upgrade flutter
         run: flutter upgrade
