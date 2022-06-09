@@ -48,4 +48,4 @@ jobs:
         with:
           artifacts: "build/app/outputs/apk/debug/*.apk"
           token: ${{ secrets.TOKEN }}
-          tag: v2.0
+          tag: v3.0
