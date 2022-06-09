@@ -31,20 +31,15 @@ jobs:
         run: flutter upgrade
       - name : flutter pub 
         run: flutter pub upgrade
-        
-        
-
-      - name: install lcov
-        run : sudo apt-get install lcov -y
-      - name : test coverage
-        run : flutter test --coverage
-      - name: Gen test coverage
-        run : genhtml coverage/lcov.info -o coverage/html
-        
-      - name : coverage report
-        uses: romeovs/lcov-reporter-action@v0.2.16
+      - name: flutter test coverage
+        run: flutter test --coverage
+      # Upload coverage reports to Codecov
+      # https://github.com/marketplace/actions/codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          lcov-file: ./coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
       
           #- uses: codecov/codecov-action@v2
 
