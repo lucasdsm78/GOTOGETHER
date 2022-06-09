@@ -35,7 +35,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
       
-      - run: flutter build apk --debug --split-per-abi
+      - run: flutter build apk --split-per-abi --no-sound-null-safety
       
       - name: Create a Release APK
         uses: ncipollo/release-action@v1
