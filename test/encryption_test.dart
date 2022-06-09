@@ -25,7 +25,7 @@ void main() {
       expect(message, decryptedMsg);
     });
 
-    test('try to crypt and sign a message, then decrypt and check signature of message with Good key', () async{
+    /*test('try to crypt and sign a message, then decrypt and check signature of message with Good key', () async{
       String message = "this is test message from flutter";
       String privateKey = keyGenerator.getPrivateKeyFromStorage();
       String pubKey = keyGenerator.getPubKeyFromStorage();
@@ -41,7 +41,7 @@ void main() {
       expect(message, decryptedMsg);
       expect(signature.toString(), map["signature"]!);
     });
-
+*/
     /*test('try to crypt and sign a message, then decrypt and check signature of message with bad key', () async{
       String message = "this is test message from flutter";
       String privateKey = keyGenerator.getPrivateKeyFromStorage();
