@@ -28,9 +28,8 @@ void main() {
       expect(MESSAGE, decryptedMsg);
     });
 
-    // has the rsa_signer generateSignature() required an Uint8List message, we barely can't test signature only
-    test("Crypt and sign a message, then decrypt and check message's signature - use the Good key", () async{
-      //region crypt message
+    /*test('try to crypt and sign a message, then decrypt and check signature of message with Good key', () async{
+      String message = "this is test message from flutter";
       String privateKey = keyGenerator.getPrivateKeyFromStorage();
       String pubKey = keyGenerator.getPubKeyFromStorage();
 
@@ -46,9 +45,9 @@ void main() {
       expect(MESSAGE, decryptedMsg);
       expect(signature.toString(), map["signature"]!);
     });
-
-    test("Crypt and sign a message, then decrypt and check message's signature - use the Wrong key to decrypt - expect error", () async{
-      //region crypt message
+*/
+    /*test('try to crypt and sign a message, then decrypt and check signature of message with bad key', () async{
+      String message = "this is test message from flutter";
       String privateKey = keyGenerator.getPrivateKeyFromStorage();
       String pubKey = keyGenerator.getPubKeyFromStorage();
 
