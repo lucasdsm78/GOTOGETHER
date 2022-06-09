@@ -25,12 +25,6 @@ jobs:
       
       - name: FLutter Lint
         uses: zgosalvez/github-actions-analyze-dart@v1
-      
-      - name: Analyze with SonarCloud
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             
       - name : upgrade flutter
         run: flutter upgrade
@@ -40,12 +34,18 @@ jobs:
         
       - name: flutter test coverage
         run: flutter test --coverage
+        
+      - name: Analyze with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage/lcov.info
+   #   - name: Upload coverage to Codecov
+ #       uses: codecov/codecov-action@v1
+     #   with:
+     #     token: ${{ secrets.CODECOV_TOKEN }}
+     #     file: coverage/lcov.info
 
       - run: flutter build apk --debug --split-per-abi --no-sound-null-safety
 
