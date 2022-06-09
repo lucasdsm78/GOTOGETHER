@@ -20,8 +20,11 @@ jobs:
       - name: GET Flutter
         run: flutter pub get
         
-      - name: Lint code Flutter
-        run: flutter analyze
+      #- name: Lint code Flutter
+      #  run: flutter analyze
+      
+      - name: FLutter Lint
+        uses: zgosalvez/github-actions-analyze-dart@v1
       
       - name : upgrade flutter
         run: flutter upgrade
