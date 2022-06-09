@@ -66,7 +66,7 @@ void main() {
       expect(() => decryptFromString(map["encryptedMsg"]!, privateKey2), throwsA(isA<EncryptionErr>()));
       //expect an error because trying to decrypt msg with a bad keys, causing error in rsaDecrypt
     });
-
+*/
   });
 }
 
