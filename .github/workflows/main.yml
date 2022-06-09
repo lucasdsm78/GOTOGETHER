@@ -1,4 +1,4 @@
-name: Test, Coverage, Build and Release apk
+name: Test, Coverage, Build and Release apks
 on: push
 jobs:
   build:
