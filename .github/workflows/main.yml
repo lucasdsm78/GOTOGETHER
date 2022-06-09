@@ -9,11 +9,16 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
+          
+      - name: Install Flutter
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
       - run: flutter pub get
-      - run: flutter test
+      
+      - name: Run unit test
+        run: flutter test      
+      
       - run: flutter build apk --debug --split-per-abi
       - name: Create a Release APK
         uses: ncipollo/release-action@v1
