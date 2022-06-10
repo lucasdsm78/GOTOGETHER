@@ -50,9 +50,10 @@ jobs:
           token: ${{ secrets.TOKEN }}
           tag: v5.0
           
-      - name: Build Web 
-      - run: flutter config --enable-web
-      - run: flutter build web
+      - name: Config for Web 
+        run: flutter config --enable-web
+      - name: Build for Web
+        run: flutter build web
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
