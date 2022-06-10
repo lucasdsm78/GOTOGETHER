@@ -123,6 +123,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Install Firebase tools
+    - run: npm install -g firebase-tools
+    # - run: npm install -g n
+   # - run: n 14.18.0
     - name: Download Artifact
       uses: actions/download-artifact@master
       with:
