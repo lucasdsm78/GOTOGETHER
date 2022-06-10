@@ -61,6 +61,6 @@ jobs:
         env: 
           WEB_DEPLOY_TOKEN: ${{ secrets.FIREBASE_TOKEN }} 
           if: github.ref == ‘refs/heads/main’ 
-          run: | 
-            curl -sL https://firebase.tools | bash 
-            firebase deploy — token $WEB_DEPLOY_TOKEN
+        run: | 
+          curl -sL https://firebase.tools | bash 
+          firebase deploy — token $WEB_DEPLOY_TOKEN
