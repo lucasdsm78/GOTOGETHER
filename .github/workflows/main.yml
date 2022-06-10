@@ -85,8 +85,6 @@ jobs:
 #     - run: flutter build apk --target-platform android-arm,android-arm64 --split-per-abi
 #     - run: flutter build appbundle --target-platform android-arm,android-arm64
 #    - run: flutter build appbundle
-    - run: npm install -g n
-    - run: n 14.18.0
     - name: Upload APK
       uses: actions/upload-artifact@master
       with:
