@@ -51,6 +51,7 @@ jobs:
           tag: v6.0
           
   build-web:
+    name: Build Web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
