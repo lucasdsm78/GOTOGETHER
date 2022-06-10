@@ -81,9 +81,10 @@ jobs:
     - run: flutter pub get
     - run: flutter upgrade     
     - run: flutter pub upgrade
+    - run: flutter build apk --debug --split-per-abi --no-sound-null-safety
 #     - run: flutter build apk --target-platform android-arm,android-arm64 --split-per-abi
 #     - run: flutter build appbundle --target-platform android-arm,android-arm64
-    - run: flutter build appbundle
+#    - run: flutter build appbundle
     - name: Upload APK
       uses: actions/upload-artifact@master
       with:
@@ -130,4 +131,4 @@ jobs:
         appId: ${{secrets.FIREBASE_ANDROID_APPID}}
         token: ${{secrets.FIREBASE_TOKEN}}
         group: testers
-        file: app-release.aap
+        file: app/build/outputs/apk/release/app-release-unsigned.apk
