@@ -48,7 +48,7 @@ jobs:
         with:
           artifacts: "build/app/outputs/apk/debug/*.apk"
           token: ${{ secrets.TOKEN }}
-          tag: v5.0
+          tag: v6.0
           
       - name: Config for Web 
         run: flutter config --enable-web
