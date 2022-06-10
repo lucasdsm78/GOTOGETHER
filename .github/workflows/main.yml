@@ -50,20 +50,24 @@ jobs:
           token: ${{ secrets.TOKEN }}
           tag: v6.0
           
-      - name: Config for Web 
-        run: flutter config --enable-web
-      - name: Build for Web
-        run: flutter build web
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
         with:
-          name: web-build
-          path: build/web
-
-      - name: Deploy to Firebase (Web)
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting --public web-build
-        env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-            PROJECT_ID: default
+          flutter-version: '2.5.0'
+      - name: Build web
+        run: |
+          flutter pub get
+          flutter format --set-exit-if-changed .
+          flutter analyze
+          flutter test
+          flutter build web
+      - name: Deploy web 
+        env: 
+          WEB_DEPLOY_TOKEN: ${{ secrets.FIREBASE_TOKEN }} 
+          if: github.ref == ‘refs/heads/main’ 
+          run: | 
+            curl -sL https://firebase.tools | bash 
+            firebase deploy — token $WEB_DEPLOY_TOKEN
