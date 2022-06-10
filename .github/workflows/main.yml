@@ -48,7 +48,7 @@ jobs:
         with:
           artifacts: "build/app/outputs/apk/debug/*.apk"
           token: ${{ secrets.TOKEN }}
-          tag: v4.0
+          tag: v5.0
           
       - name: Upgrade NPM
         run: sudo n latest
