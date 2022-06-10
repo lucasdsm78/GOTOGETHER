@@ -50,6 +50,9 @@ jobs:
           token: ${{ secrets.TOKEN }}
           tag: v4.0
           
+      - name: Upgrade NPM
+        run: sudo n latest
+          
       - name: Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
         with:
