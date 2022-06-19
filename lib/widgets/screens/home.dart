@@ -7,7 +7,9 @@ import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
+import 'package:go_together/widgets/components/buttons/header_tabs.dart';
 import 'package:go_together/widgets/components/lists/custom_list.dart';
+import 'package:go_together/widgets/components/lists/tabs_element.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
@@ -32,6 +34,8 @@ class _HomeState extends State<Home> with Observer{
   late Future<List<Activity>> futureActivities;
   late Future<List<Activity>> futureActivitiesProposition;
   late User currentUser;
+  int colID = 0;
+
 
   void getActivities(){
     setState(() {
@@ -62,6 +66,12 @@ class _HomeState extends State<Home> with Observer{
     //throw UnimplementedError();
   }
 
+  _setColID(int newId){
+    setState(() {
+      colID = newId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -71,76 +81,81 @@ class _HomeState extends State<Home> with Observer{
       ),
       body:
       Container(
-        margin: const EdgeInsets.only(left: 5, right: 5),
-
-        child: ListView(
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(bottom: 20.0),
-
-              child : Image.asset(
-                'assets/football.jpg',
-                height: 160,
-                width: screenWidth,
-                fit:BoxFit.fitWidth
+          child:Column(
+            children: [
+              HeaderTabs(
+                  tabsWidget: const [
+                    TextIcon(title:"Mes activité", icon: Icon(MdiIcons.handshake)),
+                    TextIcon(title:"Propositions", icon: Icon(Icons.access_time))
+                  ],
+                  onPress: _setColID
               ),
-            ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 20.0),
 
-            TextIcon(title: 'Mes activités organisées'),
-            FutureBuilder<List<Activity>>(
-              future: futureActivities,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Activity> data = snapshot.data!;
-                  if(data.isEmpty){
-                    return const  Center(
-                      child: Text("Vous n'avez pas créer d'événement récement"),
-                    );
-                  }
-                  return Container(
-                    width: screenWidth*85,
-                    height: 120,
-                    child:ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted, axis: Axis.horizontal,)
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return const Center(
-                    child: CircularProgressIndicator()
-                );
-              },
-            ),
+                child : Image.asset(
+                    'assets/football.jpg',
+                    height: 160,
+                    width: screenWidth,
+                    fit:BoxFit.fitWidth
+                ),
+              ),
 
-            const Divider(),
-            TextIcon(title: 'Evènements proposés'),
-            FutureBuilder<List<Activity>>(
-              future: futureActivitiesProposition,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Activity> data = snapshot.data!;
+              TabsElement(
+                  children:[
+                    FutureBuilder<List<Activity>>(
+                      future: futureActivities,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Activity> data = snapshot.data!;
+                          if(data.isEmpty){
+                            return const  Center(
+                              child: Text("Vous n'avez pas créer d'événement récement"),
+                            );
+                          }
+                          return Container(
+                              width: screenWidth*85,
+                              height: 120,
+                              child:ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted)
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return const Center(
+                            child: CircularProgressIndicator()
+                        );
+                      },
+                    ),
+                    FutureBuilder<List<Activity>>(
+                      future: futureActivitiesProposition,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Activity> data = snapshot.data!;
 
-                  if(data.isEmpty){
-                    return const  Center(
-                      child: Text("Aucune proposition actuellement"),
-                    );
-                  }
-                  return Container(
-                      width: screenWidth*85,
-                      height: 120,
-                      child:ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition, axis: Axis.horizontal,)
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return const Center(
-                    child: CircularProgressIndicator()
-                );
-              },
-            ),
-
-          ],
-        ),
-      )
+                          if(data.isEmpty){
+                            return const  Center(
+                              child: Text("Aucune proposition actuellement"),
+                            );
+                          }
+                          return Container(
+                              width: screenWidth*85,
+                              height: 120,
+                              child:ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition)
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return const Center(
+                            child: CircularProgressIndicator()
+                        );
+                      },
+                    ),
+                  ],
+                  colID : colID
+              ),
+            ],
+          )
+      ),
     );
   }
 
