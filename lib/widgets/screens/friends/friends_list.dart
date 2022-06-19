@@ -4,12 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
-import 'package:go_together/widgets/components/buttons/top_button.dart';
-import 'package:go_together/widgets/components/buttons/delete_button.dart';
-import 'package:go_together/widgets/components/lists/column_list.dart';
-import 'package:go_together/widgets/components/lists/custom_list.dart';
-import 'package:go_together/widgets/components/lists/custom_row.dart';
+import 'package:go_together/widgets/components/buttons/header_tabs.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
+import 'package:go_together/widgets/components/lists/tabs_element.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/users/user.dart';
 
@@ -133,24 +130,17 @@ class _FriendsListState extends State<FriendsList> {
       body: Container(
         child:Column(
           children: [
-            CustomRow(
-                children: [
-                  TopButton(
-                      child: TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
-                      onPress: (){_setColID(0);},
-                      hasFocus: colID==0,
-                  ),
-                  TopButton(
-                    child: TextIcon(title:"Waiting", icon: Icon(Icons.access_time)),
-                    onPress: (){_setColID(1);},
-                    hasFocus: colID==1,
-                  ),
-                ]
+            HeaderTabs(
+                tabsWidget: const [
+                  TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
+                  TextIcon(title:"Waiting", icon: Icon(Icons.access_time))
+                ],
+                onPress: _setColID
             ),
-            Flexible(
-                  child : Container(height: colID==0 ? MediaQuery.of(context).size.height : 0 ,
-                    child:  Visibility(
-                child: FutureBuilder<List<User>>(
+
+            TabsElement(
+                children:[
+                  FutureBuilder<List<User>>(
                     future: futureFriends2,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -165,14 +155,7 @@ class _FriendsListState extends State<FriendsList> {
                       );
                     },
                   ),
-                  visible: colID == 0,
-                ),
-            ),
-            ),
-              Flexible(
-                child : Container(height: colID==1 ? MediaQuery.of(context).size.height : 0 ,
-                    child:Visibility(
-                  child: FutureBuilder<List<User>>(
+                  FutureBuilder<List<User>>(
                     future: futureFriendsWaiting2,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -187,10 +170,10 @@ class _FriendsListState extends State<FriendsList> {
                       );
                     },
                   ),
-                  visible: colID == 1,
-                ),
+                ],
+              colID : colID
             ),
-            )
+
           ],
         )
       ),
