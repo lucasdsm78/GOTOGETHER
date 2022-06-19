@@ -33,6 +33,7 @@ class _HomeState extends State<Home> with Observer{
   final session = Session();
   late Future<List<Activity>> futureActivities;
   late Future<List<Activity>> futureActivitiesProposition;
+  late Future<List<Activity>> futureActivitiesUser;
   late User currentUser;
   int colID = 0;
 
@@ -41,6 +42,7 @@ class _HomeState extends State<Home> with Observer{
     setState(() {
       futureActivities = activityUseCase.getAll(map: {"hostId":currentUser.id});
       futureActivitiesProposition = activityUseCase.getAllProposition(currentUser.id!);
+      futureActivitiesUser = activityUseCase.getByUserId(currentUser.id!);
     });
   }
 
@@ -74,23 +76,22 @@ class _HomeState extends State<Home> with Observer{
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accueil'),
       ),
-      body:
-      Container(
+      body: Container(
           child:Column(
             children: [
               HeaderTabs(
                   tabsWidget: const [
                     TextIcon(title:"Mes activité", icon: Icon(MdiIcons.handshake)),
-                    TextIcon(title:"Propositions", icon: Icon(Icons.access_time))
+                    TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
+                    TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
                   ],
                   onPress: _setColID
               ),
-              Container(
+              /*Container(
                 margin: const EdgeInsets.only(bottom: 20.0),
 
                 child : Image.asset(
@@ -99,7 +100,7 @@ class _HomeState extends State<Home> with Observer{
                     width: screenWidth,
                     fit:BoxFit.fitWidth
                 ),
-              ),
+              ),*/
 
               TabsElement(
                   children:[
@@ -113,11 +114,7 @@ class _HomeState extends State<Home> with Observer{
                               child: Text("Vous n'avez pas créer d'événement récement"),
                             );
                           }
-                          return Container(
-                              width: screenWidth*85,
-                              height: 120,
-                              child:ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted)
-                          );
+                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
                         } else if (snapshot.hasError) {
                           return Text("${snapshot.error}");
                         }
@@ -137,11 +134,27 @@ class _HomeState extends State<Home> with Observer{
                               child: Text("Aucune proposition actuellement"),
                             );
                           }
-                          return Container(
-                              width: screenWidth*85,
-                              height: 120,
-                              child:ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition)
-                          );
+                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return const Center(
+                            child: CircularProgressIndicator()
+                        );
+                      },
+                    ),
+                    FutureBuilder<List<Activity>>(
+                      future: futureActivitiesUser,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Activity> data = snapshot.data!;
+
+                          if(data.isEmpty){
+                            return const  Center(
+                              child: Text("Vous ne participez à aucun événements actuellement"),
+                            );
+                          }
+                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
                         } else if (snapshot.hasError) {
                           return Text("${snapshot.error}");
                         }

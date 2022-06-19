@@ -62,13 +62,13 @@ class NavigationState extends State<Navigation> {
 
     {
       "widget": Home(),
-      "title": "Acceuil",
+      "title": "Accueil",
       "icon": Icon(Icons.home)
     },
     {
       //"widget": ActivityCreate(idActivity: 42,),
       "widget": ActivitySet(),
-      "title": "Crée une activité",
+      "title": "Créer une activité",
       "icon": Icon(Icons.play_lesson)
     },
     /*{
@@ -78,7 +78,7 @@ class NavigationState extends State<Navigation> {
     },*/
     {
       "widget": FriendsList(),
-      "title": "Friends",
+      "title": "Amis",
       "icon": Icon(MdiIcons.handshake)
     },
   ];
