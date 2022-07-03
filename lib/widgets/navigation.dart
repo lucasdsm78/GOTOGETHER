@@ -9,6 +9,7 @@ import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
+import 'package:go_together/widgets/screens/tchat/tchat.dart';
 import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
 import 'package:localstorage/localstorage.dart';
@@ -54,6 +55,11 @@ class NavigationState extends State<Navigation> {
       "widget": TournamentSet(),
       "title": "Créer un tournoi",
       "icon": Icon(Icons.list)
+    },
+    {
+      "widget": Tchat(),
+      "title": "Tchater",
+      "icon": Icon(Icons.message)
     },
 
 
