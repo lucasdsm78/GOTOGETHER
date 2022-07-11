@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:go_together/models/messages.dart';
 import 'package:go_together/usecase/message.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:go_together/models/user.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -159,7 +161,7 @@ class _TchatState extends State<Tchat> {
   handleMessage(dynamic data){
     Map<String, dynamic> res = data;
 
-    if(res["room"] == conversationId){
+    if(res["room"] == conversationId && res["receiver"] == currentUser.id){
       receiveMessage( Message.fromJson(json.decode(res["msg"])));
     }
   }
@@ -218,18 +220,20 @@ class _TchatState extends State<Tchat> {
                   Column(
                     crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
                     children: [
+                      //username if not the current user
                       (!amISender(message)
-                          ? Card(
-                      color: Colors.greenAccent,
-                      elevation: 8,
-                      child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Text( message.senderName,
-                            style: TextStyle(color: Colors.black ),
-                          )
-                      ),
-                    )
-                    : Container()
+                        ? Card(
+                    color: Colors.greenAccent,
+                    elevation: 8,
+                    child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Text( message.senderName,
+                              style: TextStyle(color: Colors.black ),
+                        ),
+
+                    ),
+                  )
+                        : Container()
                       ),
 
                     Card(
@@ -239,9 +243,22 @@ class _TchatState extends State<Tchat> {
                       ),
                       elevation: 8,
                       child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(  message.bodyMessage,
-                            style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
+                          padding: const EdgeInsets.only(top:12 , left:12, right:12, bottom:4),
+                          child: Column(
+                              crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+                              children: [
+                                Text(  message.bodyMessage,
+                                  style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
+                                ),
+                                Padding(
+                                padding: const EdgeInsets.only(top:4),
+                                child:Text(
+                                  message.createdAt!.getHourTime(),
+                                  style: TextStyle(color: Colors.black ),
+                                  textScaleFactor: .7,
+                                  )
+                                )
+                              ]
                           )
                       ),
                     ),

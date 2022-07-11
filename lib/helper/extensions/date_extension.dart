@@ -128,6 +128,11 @@ extension DateTimeExtension on DateTime{
     return  "${getFrenchDate()} ${this.hour.left0()}:${this.minute.left0()}";
   }
 
+  /// Returns date and time with 'd/m/Y H:i' format
+  String getHourTime(){
+    return  "${this.hour.left0()}:${this.minute.left0()}";
+  }
+
   /// Returns date only with 'Y-m-d' format
   String getDbDate(){
     return "${this.year}-${this.month.left0()}-${this.day.left0()}";
