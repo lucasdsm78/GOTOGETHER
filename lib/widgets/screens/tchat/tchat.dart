@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -8,13 +7,11 @@ import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
-import 'package:go_together/models/messages.dart';
-import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/usecase/message.dart';
-import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:go_together/models/user.dart';
 import 'package:intl/intl.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 
 class Tchat extends StatefulWidget {
@@ -38,6 +35,7 @@ class _TchatState extends State<Tchat> {
 
   late String pubKey1;
   late String privateKey1;
+  late IO.Socket socket;
 
   @override
   void initState() {
@@ -55,6 +53,48 @@ class _TchatState extends State<Tchat> {
     getConversationList();
     getMessagesList();
 
+    connectToSocket();
+  }
+
+  @override
+  void dispose() {
+    messageTextController.dispose();
+    socket.close();
+    super.dispose();
+  }
+
+  //region init
+  ///Connect to socket server to update tchat message in real time.
+  ///
+  ///Should have used namespace to avoid sending message for all existing users.
+  ///But after many hours testing different lib for socket and search how
+  ///to dispatch on severall namespace / room and nothing responding to our needs,
+  ///we won't use namespaces.
+  void connectToSocket() {
+    try {
+
+      // Configure socket transports must be sepecified
+      socket = IO.io('http://51.255.51.106:5000', <String, dynamic>{
+        //'transports': ['polling'],
+        'transports': ['websocket'],
+        'autoConnect': false,
+      });
+
+
+      // Connect to websocket
+      socket.connect();
+
+      //socket.nsp = "groupe1"; // looks like namespace, but when used can't connect to socket server.
+
+      // Handle socket events
+      socket.on('connect', (_) => print('connect: ${socket.id}'));
+      socket.on('messageTchat', handleMessage);
+      socket.on('disconnect', (_) => print('disconnect'));
+      socket.on('fromServer', (_) => print(_));
+
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   getConversationList() async {
@@ -71,19 +111,15 @@ class _TchatState extends State<Tchat> {
     });
   }
 
-  @override
-  void dispose() {
-    messageTextController.dispose();
-    super.dispose();
-  }
-
   void _updateKeywords() {
     setState(() {
       messageText = messageTextController.text;
     });
   }
+  //endregion
 
 
+  //region handle messages
   sendMessage(String text) async {
     //region generate crypted message for all user in conversation
     List<Message> listMessage = [];
@@ -110,11 +146,23 @@ class _TchatState extends State<Tchat> {
     // check signature
     //rsaVerifyFromKeyStringAndStringBytes(pubKey1, messageBody, map["signature"]!);
 
-    final Message finalMessage = Message(id: message.id, bodyMessage: decryptedMsg, idReceiver: message.idReceiver, idSender: message.idReceiver, createdAt: message.createdAt);
+    final Message finalMessage = Message(id: message.id, bodyMessage: decryptedMsg, idReceiver: message.idReceiver, idSender: message.idSender, createdAt: message.createdAt);
     setState(() {
       messages.add(finalMessage);
     });
   }
+
+  handleMessage(dynamic data){
+    Map<String, dynamic> res = data;
+
+    if(res["room"] == "groupe1"){
+      final Message finalMessage = Message(id: -1, bodyMessage: res["data"]["message"], idReceiver: 1, idSender: 1, createdAt: DateTime.now());
+      setState(() {
+        messages.add(finalMessage);
+      });
+    }
+  }
+  //endregion
 
   @override
   Widget build(BuildContext context) {
