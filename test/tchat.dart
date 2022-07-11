@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/asymetric_key.dart';
+import 'package:go_together/mock/user.dart';
 
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/messages.dart';
@@ -129,7 +130,7 @@ void main() {
         Uint8List encryptData = encrypt(message, element.pubKey);
         Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
         String cryptedMessageSigned = addSignature(encryptData.toString(), signature.toString());
-        listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+        listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now(), senderName: MockUser.userGwen.username));
       });
       //endregion
 
@@ -168,7 +169,7 @@ void main() {
       List<Message> listMessage = [];
       conversation.forEach((element) {
         Uint8List encryptData = encrypt(message, element.pubKey);
-        listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+        listMessage.add(Message(id: 0, bodyMessage: encryptData.toString(), idReceiver: element.userId, idSender: 0, createdAt: DateTime.now(), senderName: MockUser.user2.username));
       });
 
       expect(() async => await messageUseCase.add(idMainConversation, listMessage), throwsA(

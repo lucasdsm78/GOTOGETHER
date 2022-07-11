@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -120,6 +121,9 @@ class _TchatState extends State<Tchat> {
 
 
   //region handle messages
+  /// Encrypt message for all user in conversation, to send it to API
+  /// and save it on DB.
+  /// Then reset Text input value.
   sendMessage(String text) async {
     //region generate crypted message for all user in conversation
     List<Message> listMessage = [];
@@ -127,7 +131,7 @@ class _TchatState extends State<Tchat> {
       Uint8List encryptData = encrypt(text, element.pubKey);
       Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
       String cryptedMessageSigned = addSignature(encryptData.toString(), signature.toString());
-      listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now()));
+      listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now(), senderName: currentUser.username));
     });
     //endregion
 
@@ -137,32 +141,33 @@ class _TchatState extends State<Tchat> {
     messageTextController.text = "";
   }
 
+  /// Decrypt received message and add the result in messageList to display
   receiveMessage(Message message){
-    // socket here
-
     Map<String,String> map = splitSignedAndCryptedMessage(message.bodyMessage);
     String messageBody = map["encryptedMsg"]!;
     String decryptedMsg = decryptFromString(messageBody, privateKey1);
     // check signature
     //rsaVerifyFromKeyStringAndStringBytes(pubKey1, messageBody, map["signature"]!);
 
-    final Message finalMessage = Message(id: message.id, bodyMessage: decryptedMsg, idReceiver: message.idReceiver, idSender: message.idSender, createdAt: message.createdAt);
+    final Message finalMessage = Message(id: message.id, bodyMessage: decryptedMsg, idReceiver: message.idReceiver, idSender: message.idSender, createdAt: message.createdAt, senderName: message.senderName);
     setState(() {
       messages.add(finalMessage);
     });
   }
 
+  /// Used by socket
   handleMessage(dynamic data){
     Map<String, dynamic> res = data;
 
-    if(res["room"] == "groupe1"){
-      final Message finalMessage = Message(id: -1, bodyMessage: res["data"]["message"], idReceiver: 1, idSender: 1, createdAt: DateTime.now());
-      setState(() {
-        messages.add(finalMessage);
-      });
+    if(res["room"] == conversationId){
+      receiveMessage( Message.fromJson(json.decode(res["msg"])));
     }
   }
   //endregion
+
+  amISender(Message message){
+    return currentUser.id != null && message.idSender == currentUser.id;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,6 +179,7 @@ class _TchatState extends State<Tchat> {
         children: [
           Expanded(
             child: Container(
+              alignment: Alignment.topCenter,
               child: GroupedListView<Message, DateTime>(
                 padding: const EdgeInsets.all(8),
                 reverse: true,
@@ -204,21 +210,43 @@ class _TchatState extends State<Tchat> {
                   )
                 ),
                 itemBuilder: (context, Message message)=> Align(
-                  alignment: (currentUser.id != null && message.idSender == currentUser.id 
+                  alignment: (amISender(message)
                       ? Alignment.centerRight
                       : Alignment.centerLeft
                   ),
-                  child: Card(
-                    color: (currentUser.id != null && message.idSender == currentUser.id
-                        ? CustomColors.goTogetherMain
-                        : Colors.white
+                  child:
+                  Column(
+                    crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+                    children: [
+                      (!amISender(message)
+                          ? Card(
+                      color: Colors.greenAccent,
+                      elevation: 8,
+                      child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Text( message.senderName,
+                            style: TextStyle(color: Colors.black ),
+                          )
+                      ),
+                    )
+                    : Container()
+                      ),
+
+                    Card(
+                      color: (amISender(message)
+                          ? CustomColors.goTogetherMain
+                          : Colors.white
+                      ),
+                      elevation: 8,
+                      child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(  message.bodyMessage,
+                            style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
+                          )
+                      ),
                     ),
-                    elevation: 8,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(message.bodyMessage),
-                    ),
-                  ),
+                  ],)
+
                 )
               ),
             ),
