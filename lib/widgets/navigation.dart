@@ -5,14 +5,12 @@ import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/user.dart';
-import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
-import 'package:go_together/widgets/screens/tchat/tchat.dart';
+import 'package:go_together/widgets/screens/tchat/conversation_list.dart';
 import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 
@@ -57,8 +55,8 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.list)
     },
     {
-      "widget": Tchat(),
-      "title": "Tchater",
+      "widget": ConversationList(),
+      "title": "Mes conversations",
       "icon": Icon(Icons.message)
     },
 

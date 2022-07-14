@@ -17,6 +17,10 @@ Future<List<Conversation>> getConversationById(int id) async {
   return api.getConversationById(id).then((value) => value);
 }
 
+Future<List<Conversation>> getAllConversationCurrentUser() async {
+  return api.getAllConversationCurrentUser().then((value) => value);
+}
+
 Future<Message> add(int id, List<Message> message) async {
   return api.add(id, message).then((value) => value);
 }

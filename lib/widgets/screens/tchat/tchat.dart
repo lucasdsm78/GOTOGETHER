@@ -19,7 +19,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Tchat extends StatefulWidget {
   //const Tchat({Key? key, conversation}) : super(key: key);
-  const Tchat({Key? key}) : super(key: key);
+  const Tchat({Key? key, required this.conversation}) : super(key: key);
+  final Conversation conversation;
 
   @override
   State<Tchat> createState() => _TchatState();
@@ -34,7 +35,6 @@ class _TchatState extends State<Tchat> {
 
   final List<Message> messages = [];
   List<Conversation> conversationList = [];
-  int conversationId = 1;
 
   late String pubKey1;
   late String privateKey1;
@@ -101,14 +101,14 @@ class _TchatState extends State<Tchat> {
   }
 
   getConversationList() async {
-    List<Conversation> convList = await messageUseCase.getConversationById(conversationId);
+    List<Conversation> convList = await messageUseCase.getConversationById(widget.conversation.id!);
     setState(() {
       conversationList = convList;
     });
   }
 
   getMessagesList() async {
-    List<Message> convList = await messageUseCase.getById(conversationId);
+    List<Message> convList = await messageUseCase.getById(widget.conversation.id!);
     convList.forEach((element) {
       receiveMessage(element);
     });
@@ -137,7 +137,7 @@ class _TchatState extends State<Tchat> {
     });
     //endregion
 
-    final messageSend = await messageUseCase.add(conversationId, listMessage);
+    final messageSend = await messageUseCase.add(widget.conversation.id!, listMessage);
 
     //reset text input content
     messageTextController.text = "";
@@ -161,7 +161,7 @@ class _TchatState extends State<Tchat> {
   handleMessage(dynamic data){
     Map<String, dynamic> res = data;
 
-    if(res["room"] == conversationId && res["receiver"] == currentUser.id){
+    if(res["room"] == widget.conversation.id! && res["receiver"] == currentUser.id){
       receiveMessage( Message.fromJson(json.decode(res["msg"])));
     }
   }
@@ -175,7 +175,7 @@ class _TchatState extends State<Tchat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tchat'),
+        title: Text(widget.conversation.name),
       ),
       body: Column(
         children: [
