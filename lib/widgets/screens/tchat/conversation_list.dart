@@ -1,21 +1,15 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/asymetric_key.dart';
+import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/user.dart';
-import 'package:go_together/usecase/friends.dart';
 import 'package:go_together/usecase/message.dart';
-import 'package:go_together/usecase/message.dart';
-import 'package:go_together/widgets/components/buttons/header_tabs.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
-import 'package:go_together/widgets/components/lists/tabs_element.dart';
-import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/tchat/tchat.dart';
-import 'package:go_together/widgets/screens/users/user.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:go_together/helper/extensions/date_extension.dart';
 
 class ConversationList extends StatefulWidget {
   const ConversationList({Key? key}) : super(key: key);
@@ -32,12 +26,23 @@ class _ConversationListState extends State<ConversationList> {
   late User currentUser = MockUser.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
+  List<int> removedConversation = [];
+
+  late String pubKey1;
+  late String privateKey1;
 
   @override
   void initState() {
     super.initState();
     _setConversationList();
     searchbarController.addListener(_updateKeywords);
+
+    //region get key  pair for 3 user
+    AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
+    //keyGenerator.generateKey();
+    pubKey1 = keyGenerator.getPubKeyFromStorage();
+    privateKey1 = keyGenerator.getPrivateKeyFromStorage();
+    //endregion
   }
 
   //region set friends
@@ -81,7 +86,7 @@ class _ConversationListState extends State<ConversationList> {
     keywordSplit.forEach((element) {
       element = element.trim();
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
-      if((regExp.hasMatch(conversation.name)) ){
+      if((regExp.hasMatch(conversation.name)) && !removedConversation.contains(conversation.id!)){
         contains.add(true);
       }
       else{
@@ -134,31 +139,39 @@ class _ConversationListState extends State<ConversationList> {
     );
   }
 
-  _deleteConversation(Conversation conversation) async {
-    //@todo : maybe a 'quitConv' function, to not delete it but just user not in it anymore
-    // + update interface when quiting
+  _quitConversation(Conversation conversation) async {
+    // @todo : maybe a 'quitConv' function, to not delete it but just user not in it anymore
     // @todo : could have a list of conversation where we are invited. then can accept or ignore it
 
-    /*bool isDelete = await messageUseCase.delete(currentUser.id!, user.id!);
+    bool isDelete = await messageUseCase.quitConversation(conversation.id!);
     if(isDelete){
       setState(() {
-        currentUser.friendsList.remove(user.id!);
+        removedConversation.add(conversation.id!);
       });
-    }*/
+    }
   }
   //endregion
 
 
   Widget _buildRowConversation(Conversation conversation) {
+    String decryptedMsg = "";
+    String dateMsg = "";
+    if(conversation.lastMessage != null){
+      Map<String,String> map = splitSignedAndCryptedMessage(conversation.lastMessage!);
+      String messageBody = map["encryptedMsg"]!;
+      decryptedMsg = decryptFromString(messageBody, privateKey1);
+      dateMsg = conversation.lastMessageDate!.getHourTime();
+    }
+
     return ListTile(
       title: Text(
-        conversation.name,
+        conversation.name + "\n\n" + decryptedMsg.elipis() + "\n" + dateMsg,
         style: _biggerFont,
       ),
       leading: Icon(Icons.account_circle_rounded),
       trailing: ElevatedButton(
         onPressed:() {
-          _deleteConversation(conversation);
+          _quitConversation(conversation);
         },
         child: Icon(Icons.remove, color: Colors.red,),
         style: ElevatedButton.styleFrom(primary: Colors.white),

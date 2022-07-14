@@ -74,4 +74,16 @@ class MessageServiceApi {
       throw ApiErr(codeStatus: response.statusCode, message: "can't add message in this conversation");
     }
   }
+
+  Future<bool> quit(int id) async {
+    final response = await api.client
+        .delete(Uri.parse(api.host + 'conversations/quit/$id'),
+      headers: api.mainHeader
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "can't add message in this conversation");
+    }
+  }
 }
