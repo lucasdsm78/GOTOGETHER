@@ -16,23 +16,22 @@ class _TabsElementState extends State<TabsElement> {
   Widget build(BuildContext context) {
     List<Widget> children = [];
     for (var i = 0; i < widget.children.length; i++) {
-      children.add(
-        Flexible(
-          child : Container(height: widget.colID == i ? MediaQuery.of(context).size.height : 0 ,
-            child:  Visibility(
-              child: widget.children[i],
-              visible: widget.colID == i,
-            ),
+      if(i==widget.colID) {
+        children.add(
+          Flexible(
+            child: widget.children[i]
           ),
-        ),
-      );
+        );
+      }
     }
 
     return Expanded(
-      child: Column(
+        flex: 1,
+        child:Column(
         children: children
-      )
+    )
     );
+    //return Container(color:Colors.green);
   }
 }
 

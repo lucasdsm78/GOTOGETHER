@@ -131,49 +131,48 @@ class _FriendsListState extends State<FriendsList> {
         child:Column(
           children: [
             HeaderTabs(
-                tabsWidget: const [
-                  TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
-                  TextIcon(title:"Waiting", icon: Icon(Icons.access_time))
-                ],
-                onPress: _setColID
+              tabsWidget: const [
+                TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Waiting", icon: Icon(Icons.access_time))
+              ],
+              onPress: _setColID
             ),
 
             TabsElement(
-                children:[
-                  FutureBuilder<List<User>>(
-                    future: futureFriends2,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<User> data = snapshot.data!;
-                        List<User> res = _filterFriends(data);
-                        return ListViewSeparated(data: res, buildListItem: _buildRowFriends);
-                      } else if (snapshot.hasError) {
-                        return Text("${snapshot.error}");
-                      }
-                      return const Center(
-                          child: CircularProgressIndicator()
-                      );
-                    },
-                  ),
-                  FutureBuilder<List<User>>(
-                    future: futureFriendsWaiting2,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<User> data = snapshot.data!;
-                        List<User> res = _filterFriends(data);
-                        return ListViewSeparated(data: res, buildListItem: _buildRowFriendsWaiting);
-                      } else if (snapshot.hasError) {
-                        return Text("${snapshot.error}");
-                      }
-                      return const Center(
-                          child: CircularProgressIndicator()
-                      );
-                    },
-                  ),
-                ],
+              children:[
+                FutureBuilder<List<User>>(
+                  future: futureFriends2,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<User> data = snapshot.data!;
+                      List<User> res = _filterFriends(data);
+                      return ListViewSeparated(data: res, buildListItem: _buildRowFriends);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return const Center(
+                        child: CircularProgressIndicator()
+                    );
+                  },
+                ),
+                FutureBuilder<List<User>>(
+                  future: futureFriendsWaiting2,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<User> data = snapshot.data!;
+                      List<User> res = _filterFriends(data);
+                      return ListViewSeparated(data: res, buildListItem: _buildRowFriendsWaiting);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return const Center(
+                        child: CircularProgressIndicator()
+                    );
+                  },
+                ),
+              ],
               colID : colID
             ),
-
           ],
         )
       ),

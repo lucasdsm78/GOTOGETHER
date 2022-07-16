@@ -80,94 +80,92 @@ class _HomeState extends State<Home> with Observer{
       appBar: AppBar(
         title: const Text('Accueil'),
       ),
-      body: Container(
-          child:Column(
-            children: [
-              HeaderTabs(
-                  tabsWidget: const [
-                    TextIcon(title:"Mes activité", icon: Icon(MdiIcons.handshake)),
-                    TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
-                    TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
-                  ],
-                  onPress: _setColID
+      body: Column(
+        children: [
+          HeaderTabs(
+              tabsWidget: const [
+                TextIcon(title:"Mes activité", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
+                TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
+              ],
+              onPress: _setColID
+          ),
+          /*Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
+
+            child : Image.asset(
+                'assets/football.jpg',
+                height: 160,
+                width: screenWidth,
+                fit:BoxFit.fitWidth
+            ),
+          ),*/
+
+          TabsElement(
+            children:[
+              FutureBuilder<List<Activity>>(
+                future: futureActivities,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Vous n'avez pas créer d'événement récement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(
+                      child: CircularProgressIndicator()
+                  );
+                },
               ),
-              /*Container(
-                margin: const EdgeInsets.only(bottom: 20.0),
+              FutureBuilder<List<Activity>>(
+                future: futureActivitiesProposition,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
 
-                child : Image.asset(
-                    'assets/football.jpg',
-                    height: 160,
-                    width: screenWidth,
-                    fit:BoxFit.fitWidth
-                ),
-              ),*/
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Aucune proposition actuellement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(
+                      child: CircularProgressIndicator()
+                  );
+                },
+              ),
+              FutureBuilder<List<Activity>>(
+                future: futureActivitiesUser,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
 
-              TabsElement(
-                  children:[
-                    FutureBuilder<List<Activity>>(
-                      future: futureActivities,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<Activity> data = snapshot.data!;
-                          if(data.isEmpty){
-                            return const  Center(
-                              child: Text("Vous n'avez pas créer d'événement récement"),
-                            );
-                          }
-                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
-                        } else if (snapshot.hasError) {
-                          return Text("${snapshot.error}");
-                        }
-                        return const Center(
-                            child: CircularProgressIndicator()
-                        );
-                      },
-                    ),
-                    FutureBuilder<List<Activity>>(
-                      future: futureActivitiesProposition,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<Activity> data = snapshot.data!;
-
-                          if(data.isEmpty){
-                            return const  Center(
-                              child: Text("Aucune proposition actuellement"),
-                            );
-                          }
-                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
-                        } else if (snapshot.hasError) {
-                          return Text("${snapshot.error}");
-                        }
-                        return const Center(
-                            child: CircularProgressIndicator()
-                        );
-                      },
-                    ),
-                    FutureBuilder<List<Activity>>(
-                      future: futureActivitiesUser,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<Activity> data = snapshot.data!;
-
-                          if(data.isEmpty){
-                            return const  Center(
-                              child: Text("Vous ne participez à aucun événements actuellement"),
-                            );
-                          }
-                          return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
-                        } else if (snapshot.hasError) {
-                          return Text("${snapshot.error}");
-                        }
-                        return const Center(
-                            child: CircularProgressIndicator()
-                        );
-                      },
-                    ),
-                  ],
-                  colID : colID
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Vous ne participez à aucun événements actuellement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(
+                      child: CircularProgressIndicator()
+                  );
+                },
               ),
             ],
-          )
+            colID : colID
+          ),
+        ],
       ),
     );
   }
