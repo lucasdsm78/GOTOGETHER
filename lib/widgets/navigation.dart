@@ -35,11 +35,6 @@ class NavigationState extends State<Navigation> {
   List<Map<String, dynamic>> drawerLinks = [
     // {"widget": ActivityList(), "title": "Liste des événements"},
     {
-      "widget": FriendsList(),
-      "title": "Mes amis",
-      "icon": Icon(Icons.favorite)
-    },
-    {
       "widget": AddFriendsList(),
       "title": "Ajouté des amis",
       "icon": Icon(Icons.group_add)
@@ -179,6 +174,15 @@ class NavigationState extends State<Navigation> {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Image(
+                image: AssetImage("assets/gotogether-textOnly.png"),
+                height: 20.0,
+              ),
+            ),
             //should be some user data, ex: profile picture and name
             /*DrawerHeader(
               decoration: BoxDecoration(
