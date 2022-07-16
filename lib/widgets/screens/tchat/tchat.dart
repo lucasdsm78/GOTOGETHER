@@ -127,20 +127,33 @@ class _TchatState extends State<Tchat> {
   /// and save it on DB.
   /// Then reset Text input value.
   sendMessage(String text) async {
-    //region generate crypted message for all user in conversation
-    List<Message> listMessage = [];
-    conversationList.forEach((element) {
-      Uint8List encryptData = encrypt(text, element.pubKey);
-      Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
-      String cryptedMessageSigned = addSignature(encryptData.toString(), signature.toString());
-      listMessage.add(Message(id: 0, bodyMessage: cryptedMessageSigned, idReceiver: element.userId, idSender: 0, createdAt: DateTime.now(), senderName: currentUser.username));
-    });
-    //endregion
+    if(text != null  && text != "") {
+      //region generate crypted message for all user in conversation
+      List<Message> listMessage = [];
+      log(conversationList.toString());
+      conversationList.forEach((element) {
+        log(element.toString());
+        if (element.pubKey != null && element.pubKey != "") {
+          Uint8List encryptData = encrypt(text, element.pubKey);
+          Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
+          String cryptedMessageSigned = addSignature(
+              encryptData.toString(), signature.toString());
+          listMessage.add(Message(id: 0,
+              bodyMessage: cryptedMessageSigned,
+              idReceiver: element.userId,
+              idSender: 0,
+              createdAt: DateTime.now(),
+              senderName: currentUser.username));
+        }
+      });
+      //endregion
 
-    final messageSend = await messageUseCase.add(widget.conversation.id!, listMessage);
+      final messageSend = await messageUseCase.add(
+          widget.conversation.id!, listMessage);
 
-    //reset text input content
-    messageTextController.text = "";
+      //reset text input content
+      messageTextController.text = "";
+    }
   }
 
   /// Decrypt received message and add the result in messageList to display
@@ -177,98 +190,92 @@ class _TchatState extends State<Tchat> {
       appBar: AppBar(
         title: Text(widget.conversation.name),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: GroupedListView<Message, DateTime>(
-                padding: const EdgeInsets.all(8),
-                reverse: true,
-                order: GroupedListOrder.DESC,
-                useStickyGroupSeparators: true,
-                floatingHeader: true,
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: GroupedListView<Message, DateTime>(
+          padding: const EdgeInsets.all(8),
+          reverse: true,
+          order: GroupedListOrder.DESC,
+          useStickyGroupSeparators: true,
+          floatingHeader: true,
+          shrinkWrap: true,
+          elements :  messages,
+          groupBy: (message)=>DateTime(
+            message.createdAt!.year,
+            message.createdAt!.month,
+            message.createdAt!.day,
 
-                elements :  messages,
-                groupBy: (message)=>DateTime(
-                  message.createdAt!.year,
-                  message.createdAt!.month,
-                  message.createdAt!.day,
-
-                ),
-                groupHeaderBuilder: (Message message)=> SizedBox(
-                  height: 40,
-                  child: Center(
-                    child:Card(
-                      color: CustomColors.goTogetherMain,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          DateFormat.yMMMd().format(message.createdAt!),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    )
-                  )
-                ),
-                itemBuilder: (context, Message message)=> Align(
-                  alignment: (amISender(message)
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft
+          ),
+          groupHeaderBuilder: (Message message)=> SizedBox(
+            height: 40,
+            child: Center(
+              child:Card(
+                color: CustomColors.goTogetherMain,
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    DateFormat.yMMMd().format(message.createdAt!),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  child:
-                  Column(
-                    crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
-                    children: [
-                      //username if not the current user
-                      (!amISender(message)
-                        ? Card(
-                    color: Colors.greenAccent,
-                    elevation: 8,
-                    child: Padding(
+                ),
+              )
+            )
+          ),
+          itemBuilder: (context, Message message)=> Align(
+            alignment: (amISender(message)
+                ? Alignment.centerRight
+                : Alignment.centerLeft
+              ),
+            child:
+            Column(
+              crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+              children: [
+                //username if not the current user
+                (!amISender(message)
+                  ? Card(
+                      color: Colors.greenAccent,
+                      elevation: 8,
+                      child: Padding(
                         padding: const EdgeInsets.all(4),
                         child: Text( message.senderName,
                               style: TextStyle(color: Colors.black ),
                         ),
-
-                    ),
-                  )
-                        : Container()
                       ),
+                    )
+                  : Container()
+                ),
 
-                    Card(
-                      color: (amISender(message)
-                          ? CustomColors.goTogetherMain
-                          : Colors.white
-                      ),
-                      elevation: 8,
-                      child: Padding(
-                          padding: const EdgeInsets.only(top:12 , left:12, right:12, bottom:4),
-                          child: Column(
-                              crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
-                              children: [
-                                Text(  message.bodyMessage,
-                                  style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
-                                ),
-                                Padding(
-                                padding: const EdgeInsets.only(top:4),
-                                child:Text(
-                                  message.createdAt!.getHourTime(),
-                                  style: TextStyle(color: Colors.black ),
-                                  textScaleFactor: .7,
-                                  )
-                                )
-                              ]
+              Card(
+                color: (amISender(message)
+                    ? CustomColors.goTogetherMain
+                    : Colors.white
+                ),
+                elevation: 8,
+                child: Padding(
+                    padding: const EdgeInsets.only(top:12 , left:12, right:12, bottom:4),
+                    child: Column(
+                      crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+                      children: [
+                        Text(  message.bodyMessage,
+                          style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
+                        ),
+                        Padding(
+                        padding: const EdgeInsets.only(top:4),
+                        child:Text(
+                          message.createdAt!.getHourTime(),
+                          style: TextStyle(color: Colors.black ),
+                          textScaleFactor: .7,
                           )
-                      ),
-                    ),
-                  ],)
-
-                )
+                        )
+                      ]
+                    )
+                ),
               ),
-            ),
-          ),
-        ],
+            ],
+            )
+
+          )
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
       elevation: 10.0,
