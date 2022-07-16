@@ -24,6 +24,13 @@ extension StringExtension on String {
     return this.split('.').last.camelCaseToNormalCase();
   }
 
+  String elipis({int maxLength = 20}){
+    if(this.length > maxLength) {
+      this.substring(0, maxLength-3) + "...";
+    }
+    return this;
+  }
+
   /* this can't work because isEmpty is a var existing for String, that can't
   be overwritten. we then can't try to simplify the isEmpty usage in dynamic var context
   /// Returns true if the string doesn't contain char.

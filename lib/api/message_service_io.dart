@@ -44,6 +44,18 @@ class MessageServiceApi {
     }
   }
 
+  Future<List<Conversation>> getAllConversationCurrentUser() async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'conversations'),
+        headers: api.mainHeader
+    );
+    if (response.statusCode == 200) {
+      return compute(parseConversation, response.body);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load conversations data");
+    }
+  }
+
   /// we add a copy of one encrypted message for each user in conversation
   Future<Message> add(int id, List<Message> message) async {
     List<Map<String, dynamic>> messageListAsDict = [];
@@ -58,6 +70,18 @@ class MessageServiceApi {
     );
     if (response.statusCode == 201) {
       return Message.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "can't add message in this conversation");
+    }
+  }
+
+  Future<bool> quit(int id) async {
+    final response = await api.client
+        .delete(Uri.parse(api.host + 'conversations/quit/$id'),
+      headers: api.mainHeader
+    );
+    if (response.statusCode == 200) {
+      return true;
     } else {
       throw ApiErr(codeStatus: response.statusCode, message: "can't add message in this conversation");
     }
