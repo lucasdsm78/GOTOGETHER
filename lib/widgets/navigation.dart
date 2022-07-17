@@ -36,26 +36,24 @@ class NavigationState extends State<Navigation> {
     // {"widget": ActivityList(), "title": "Liste des événements"},
     {
       "widget": AddFriendsList(),
-      "title": "Ajouté des amis",
+      "title": "Ajouter des amis",
       "icon": Icon(Icons.group_add)
+    },
+    {
+      "widget": FriendsList(),
+      "title": "Mes Amis",
+      "icon": Icon(MdiIcons.handshake)
     },
     {
       "widget": ActivityList(),
       "title": "Liste des Activités",
       "icon": Icon(Icons.list)
     },
-    {
+    /*{
       "widget": TournamentSet(),
       "title": "Créer un tournoi",
       "icon": Icon(Icons.list)
-    },
-    {
-      "widget": ConversationList(),
-      "title": "Mes conversations",
-      "icon": Icon(Icons.message)
-    },
-
-
+    },*/
   ];
   List<Map<String, dynamic>> bottomBarLinks = [
 
@@ -76,9 +74,9 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.map_outlined)
     },*/
     {
-      "widget": FriendsList(),
-      "title": "Amis",
-      "icon": Icon(MdiIcons.handshake)
+      "widget": ConversationList(),
+      "title": "Mes conversations",
+      "icon": Icon(Icons.message)
     },
   ];
   //endregion
@@ -93,7 +91,7 @@ class NavigationState extends State<Navigation> {
     //@todo : find a way to navigate through activityList screen (between all activities and my activities)
     addLinkToDrawer({
       "widget": ActivityList(idHost: user.id,),
-      "title": "Voir mes activité",
+      "title": "Voir mes activités",
       "icon": Icon(Icons.list)
     },);
     addLinkToDrawer(    {
@@ -217,3 +215,4 @@ class NavigationState extends State<Navigation> {
     );
   }
 }
+

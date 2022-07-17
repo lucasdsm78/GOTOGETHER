@@ -132,8 +132,8 @@ class _FriendsListState extends State<FriendsList> {
           children: [
             HeaderTabs(
               tabsWidget: const [
-                TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
-                TextIcon(title:"Waiting", icon: Icon(Icons.access_time))
+                TextIcon(title:"Amis", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"En attente", icon: Icon(Icons.access_time))
               ],
               onPress: _setColID
             ),

@@ -82,9 +82,17 @@ class _HomeState extends State<Home> with Observer{
       ),
       body: Column(
         children: [
+          Container(
+            child: Image(
+              image: AssetImage("assets/football.jpg"),
+              height: 110.0,
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width
+            ),
+          ),
           HeaderTabs(
               tabsWidget: const [
-                TextIcon(title:"Mes activité", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.handshake)),
                 TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
                 TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
               ],
