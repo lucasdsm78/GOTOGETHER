@@ -17,6 +17,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -198,7 +199,13 @@ class _HomeState extends State<Home> with Observer{
             color: hasJoin ? Colors.red : null,
             semanticLabel: hasJoin ? 'i have join' : 'i have not join',
           ),
-          Text("${activity.nbCurrentParticipants}/${activity.attendeesNumber}")
+          Text("${activity.nbCurrentParticipants}/${activity.attendeesNumber}"),
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () async {
+              await Share.share(activity.description + "\n" + activity.location.address);
+            },
+          )
         ],
       ),
       onTap: () {
