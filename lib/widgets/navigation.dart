@@ -24,7 +24,7 @@ class Navigation extends StatefulWidget {
 }
 
 class NavigationState extends State<Navigation> {
-  int _selectedIndex = 0;
+  int _bottomSelectedIndex = 0;
   int _drawerSelectedIndex = 0;
   Session session = Session();
   bool _isLastTappedDrawer = false;
@@ -113,14 +113,14 @@ class NavigationState extends State<Navigation> {
       return drawerLinks[_drawerSelectedIndex]["widget"];
     }
     else{
-      return bottomBarLinks[_selectedIndex]["widget"];
+      return bottomBarLinks[_bottomSelectedIndex]["widget"];
     }
   }
 
   List<Widget> getDrawerLinks(BuildContext context){
     List<Widget> links = [];
     for(int i=0; i<drawerLinks.length; i++) {
-      links.add(_buildDrawerLinks(drawerLinks[i]["title"], ()=> _onDrawerTap(i, context)));
+      links.add(_buildDrawerLinks(drawerLinks[i]["title"], ()=> _onDrawerTap(i, context), i));
     }
     return links;
   }
@@ -134,7 +134,7 @@ class NavigationState extends State<Navigation> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _bottomSelectedIndex = index;
       _isLastTappedDrawer = false;
     });
   }
@@ -147,10 +147,13 @@ class NavigationState extends State<Navigation> {
     Navigator.pop(context);
   }
 
-  _buildDrawerLinks(String title, Function onTap){
+  _buildDrawerLinks(String title, Function onTap, int index){
     return ListTile(
       title: Text(title),
       onTap: ()=>onTap(),
+      selected: (_isLastTappedDrawer && index == _drawerSelectedIndex),
+      selectedTileColor: (_isLastTappedDrawer ? CustomColors.goTogetherMain : null),
+      selectedColor: (_isLastTappedDrawer ? Colors.white : null),
     );
   }
   BottomNavigationBarItem _buildBottomBarButton(int index){
@@ -208,8 +211,9 @@ class NavigationState extends State<Navigation> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: getBottomBarLinks(),
-        currentIndex: _selectedIndex,
-        selectedItemColor: CustomColors.goTogetherMain,
+        currentIndex: _bottomSelectedIndex,
+        selectedItemColor: (_isLastTappedDrawer ? Colors.black54 : CustomColors.goTogetherMain),
+        unselectedItemColor:  Colors.black54,
         onTap: _onItemTapped,
       ),
     );
