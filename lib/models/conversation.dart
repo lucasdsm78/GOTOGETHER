@@ -6,6 +6,8 @@ class Conversation {
   final String name;
   final int userId;
   final String pubKey;
+  final String? lastMessage;
+  final DateTime? lastMessageDate;
   final DateTime? createdAt;
 
   Conversation({
@@ -14,6 +16,8 @@ class Conversation {
     required this.userId,
     required this.pubKey,
     this.createdAt,
+    this.lastMessage,
+    this.lastMessageDate,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class Conversation {
       userId: json['idUser'] as int,
       pubKey: json['pubKey'] == null ? "" : json['pubKey'] as String,
       createdAt: json['createdAt'] == null ? null : parseStringToDateTime(json['createdAt']! as String),
+      lastMessage: json['lastMessage'] == null ? null : json['lastMessage']! as String,
+      lastMessageDate: json['lastMessageDate'] == null ? null : parseStringToDateTime(json['lastMessageDate']! as String),
     );
   }
 
@@ -35,6 +41,8 @@ class Conversation {
       "idUser": userId,
       "pubKey": pubKey,
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
+      "lastMessage" : lastMessage == null ? null : lastMessage!,
+      "lastMessageDate" : lastMessageDate == null ? null : lastMessageDate!.getDbDateTime(),
     };
     return map;
   }

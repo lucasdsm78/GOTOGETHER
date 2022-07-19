@@ -17,6 +17,10 @@ class ActivityUseCase {
     return api.getById(id).then((value) => value);
   }
 
+  Future<List<Activity>> getByUserId(int userId) async {
+    return api.getByUserId(userId).then((value) => value);
+  }
+
   Future<Activity?> add(Activity activity) async {
     return api.add(activity).then((value) => value);
   }

@@ -5,13 +5,12 @@ import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/user.dart';
-import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
+import 'package:go_together/widgets/screens/tchat/conversation_list.dart';
 import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 
@@ -36,39 +35,37 @@ class NavigationState extends State<Navigation> {
   List<Map<String, dynamic>> drawerLinks = [
     // {"widget": ActivityList(), "title": "Liste des événements"},
     {
-      "widget": FriendsList(),
-      "title": "Mes amis",
-      "icon": Icon(Icons.favorite)
+      "widget": AddFriendsList(),
+      "title": "Ajouter des amis",
+      "icon": Icon(Icons.group_add)
     },
     {
-      "widget": AddFriendsList(),
-      "title": "Ajouté des amis",
-      "icon": Icon(Icons.group_add)
+      "widget": FriendsList(),
+      "title": "Mes Amis",
+      "icon": Icon(MdiIcons.handshake)
     },
     {
       "widget": ActivityList(),
       "title": "Liste des Activités",
       "icon": Icon(Icons.list)
     },
-    {
+    /*{
       "widget": TournamentSet(),
       "title": "Créer un tournoi",
       "icon": Icon(Icons.list)
-    },
-
-
+    },*/
   ];
   List<Map<String, dynamic>> bottomBarLinks = [
 
     {
       "widget": Home(),
-      "title": "Acceuil",
+      "title": "Accueil",
       "icon": Icon(Icons.home)
     },
     {
       //"widget": ActivityCreate(idActivity: 42,),
       "widget": ActivitySet(),
-      "title": "Crée une activité",
+      "title": "Créer une activité",
       "icon": Icon(Icons.play_lesson)
     },
     /*{
@@ -77,9 +74,9 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.map_outlined)
     },*/
     {
-      "widget": FriendsList(),
-      "title": "Friends",
-      "icon": Icon(MdiIcons.handshake)
+      "widget": ConversationList(),
+      "title": "Mes conversations",
+      "icon": Icon(Icons.message)
     },
   ];
   //endregion
@@ -94,7 +91,7 @@ class NavigationState extends State<Navigation> {
     //@todo : find a way to navigate through activityList screen (between all activities and my activities)
     addLinkToDrawer({
       "widget": ActivityList(idHost: user.id,),
-      "title": "Voir mes activité",
+      "title": "Voir mes activités",
       "icon": Icon(Icons.list)
     },);
     addLinkToDrawer(    {
@@ -175,6 +172,15 @@ class NavigationState extends State<Navigation> {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Image(
+                image: AssetImage("assets/gotogether-textOnly.png"),
+                height: 20.0,
+              ),
+            ),
             //should be some user data, ex: profile picture and name
             /*DrawerHeader(
               decoration: BoxDecoration(
@@ -209,3 +215,4 @@ class NavigationState extends State<Navigation> {
     );
   }
 }
+

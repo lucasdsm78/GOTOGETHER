@@ -7,7 +7,9 @@ import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
+import 'package:go_together/widgets/components/buttons/header_tabs.dart';
 import 'package:go_together/widgets/components/lists/custom_list.dart';
+import 'package:go_together/widgets/components/lists/tabs_element.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
@@ -32,12 +34,16 @@ class _HomeState extends State<Home> with Observer{
   final session = Session();
   late Future<List<Activity>> futureActivities;
   late Future<List<Activity>> futureActivitiesProposition;
+  late Future<List<Activity>> futureActivitiesUser;
   late User currentUser;
+  int colID = 0;
+
 
   void getActivities(){
     setState(() {
       futureActivities = activityUseCase.getAll(map: {"hostId":currentUser.id});
       futureActivitiesProposition = activityUseCase.getAllProposition(currentUser.id!);
+      futureActivitiesUser = activityUseCase.getByUserId(currentUser.id!);
     });
   }
 
@@ -63,85 +69,113 @@ class _HomeState extends State<Home> with Observer{
     //throw UnimplementedError();
   }
 
+  _setColID(int newId){
+    setState(() {
+      colID = newId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accueil'),
       ),
-      body:
-      Container(
-        margin: const EdgeInsets.only(left: 5, right: 5),
+      body: Column(
+        children: [
+          Container(
+            child: Image(
+              image: AssetImage("assets/football.jpg"),
+              height: 110.0,
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width
+            ),
+          ),
+          HeaderTabs(
+              tabsWidget: const [
+                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
+                TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
+              ],
+              onPress: _setColID
+          ),
+          /*Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
 
-        child: ListView(
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(bottom: 20.0),
-
-              child : Image.asset(
+            child : Image.asset(
                 'assets/football.jpg',
                 height: 160,
                 width: screenWidth,
                 fit:BoxFit.fitWidth
+            ),
+          ),*/
+
+          TabsElement(
+            children:[
+              FutureBuilder<List<Activity>>(
+                future: futureActivities,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Vous n'avez pas créer d'événement récement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(
+                      child: CircularProgressIndicator()
+                  );
+                },
               ),
-            ),
+              FutureBuilder<List<Activity>>(
+                future: futureActivitiesProposition,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
 
-            TextIcon(title: 'Mes activités organisées'),
-            FutureBuilder<List<Activity>>(
-              future: futureActivities,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Activity> data = snapshot.data!;
-                  if(data.isEmpty){
-                    return const  Center(
-                      child: Text("Vous n'avez pas créer d'événement récement"),
-                    );
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Aucune proposition actuellement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
                   }
-                  return Container(
-                    width: screenWidth*85,
-                    height: 120,
-                    child:ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted, axis: Axis.horizontal,)
+                  return const Center(
+                      child: CircularProgressIndicator()
                   );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return const Center(
-                    child: CircularProgressIndicator()
-                );
-              },
-            ),
+                },
+              ),
+              FutureBuilder<List<Activity>>(
+                future: futureActivitiesUser,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Activity> data = snapshot.data!;
 
-            const Divider(),
-            TextIcon(title: 'Evènements proposés'),
-            FutureBuilder<List<Activity>>(
-              future: futureActivitiesProposition,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Activity> data = snapshot.data!;
-
-                  if(data.isEmpty){
-                    return const  Center(
-                      child: Text("Aucune proposition actuellement"),
-                    );
+                    if(data.isEmpty){
+                      return const  Center(
+                        child: Text("Vous ne participez à aucun événements actuellement"),
+                      );
+                    }
+                    return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
                   }
-                  return Container(
-                      width: screenWidth*85,
-                      height: 120,
-                      child:ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition, axis: Axis.horizontal,)
+                  return const Center(
+                      child: CircularProgressIndicator()
                   );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return const Center(
-                    child: CircularProgressIndicator()
-                );
-              },
-            ),
-
-          ],
-        ),
-      )
+                },
+              ),
+            ],
+            colID : colID
+          ),
+        ],
+      ),
     );
   }
 

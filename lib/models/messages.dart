@@ -6,6 +6,7 @@ class Message {
   final int id;
   final String bodyMessage;
   final int idReceiver;
+  final String senderName;
   final int idSender;
   final DateTime? createdAt;
 
@@ -14,6 +15,7 @@ class Message {
     required this.bodyMessage,
     required this.idReceiver,
     required this.idSender,
+    required this.senderName,
     required this.createdAt,
   });
 
@@ -23,6 +25,7 @@ class Message {
       bodyMessage: json['message'] as String,
       idReceiver: json['idReceiver'] as int,
       idSender: json['idSender'] as int,
+      senderName: json['sender'] as String,
       createdAt: json['createdAt'] == null ? null : parseStringToDateTime(json['createdAt']! as String), // DateTime.parse(json['createdAt']! as String),
     );
   }
@@ -35,6 +38,7 @@ class Message {
       'message': bodyMessage,
       'idUserReceiver': idReceiver,
       'idSender': idSender,
+      'sender': senderName,
       "createdAt" : createdAt == null ? null : createdAt!.getDbDateTime(),
     };
   }

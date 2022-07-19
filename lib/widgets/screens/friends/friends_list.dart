@@ -4,12 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
-import 'package:go_together/widgets/components/buttons/top_button.dart';
-import 'package:go_together/widgets/components/buttons/delete_button.dart';
-import 'package:go_together/widgets/components/lists/column_list.dart';
-import 'package:go_together/widgets/components/lists/custom_list.dart';
-import 'package:go_together/widgets/components/lists/custom_row.dart';
+import 'package:go_together/widgets/components/buttons/header_tabs.dart';
 import 'package:go_together/widgets/components/lists/list_view.dart';
+import 'package:go_together/widgets/components/lists/tabs_element.dart';
 import 'package:go_together/widgets/components/text_icon.dart';
 import 'package:go_together/widgets/screens/users/user.dart';
 
@@ -26,8 +23,9 @@ class FriendsList extends StatefulWidget {
 class _FriendsListState extends State<FriendsList> {
   final FriendsUseCase friendsUseCase = FriendsUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
-  List<User>? futureFriends;
-  List<User>? futureFriendsWaiting;
+  late Future<List<User>> futureFriends2;
+  late Future<List<User>> futureFriendsWaiting2;
+
   late User currentUser = MockUser.userGwen;
   final searchbarController = TextEditingController();
   String keywords = "";
@@ -42,31 +40,20 @@ class _FriendsListState extends State<FriendsList> {
     searchbarController.addListener(_updateKeywords);
   }
 
-  getFriends(){
-    if(colID==0){
-      return futureFriends;
-    }
-    else{
-      return futureFriendsWaiting;
-    }
-  }
-
   //region set friends
   _setColID(int newId){
     setState(() {
       colID = newId;
     });
   }
-  _setFiendsList() async {
-    List<User> friends = await friendsUseCase.getById(currentUser.id!);
+  _setFiendsList() {
     setState(() {
-      futureFriends = friends;
+      futureFriends2 = friendsUseCase.getById(currentUser.id!);
     });
   }
-  _setFriendsWaitingList() async {
-    List<User> friends = await friendsUseCase.getWaitingById(currentUser.id!);
+  _setFriendsWaitingList() {
     setState(() {
-      futureFriendsWaiting = friends;
+      futureFriendsWaiting2 = friendsUseCase.getWaitingById(currentUser.id!);
     });
   }
 
@@ -134,7 +121,6 @@ class _FriendsListState extends State<FriendsList> {
 
   @override
   Widget build(BuildContext context) {
-    List<User> displayedFriends = (getFriends() != null ? _filterFriends(getFriends()!) : []);
     return Scaffold(
       appBar: TopSearchBar(
           customSearchBar: const Text('Liste des amis'),
@@ -144,31 +130,49 @@ class _FriendsListState extends State<FriendsList> {
       body: Container(
         child:Column(
           children: [
-            CustomRow(
-                children: [
-                  TopButton(
-                      child: TextIcon(title:"Friends", icon: Icon(MdiIcons.handshake)),
-                      onPress: (){_setColID(0);},
-                      hasFocus: colID==0,
-                  ),
-                  TopButton(
-                    child: TextIcon(title:"Waiting", icon: Icon(Icons.access_time)),
-                    onPress: (){_setColID(1);},
-                    hasFocus: colID==1,
-                  ),
-                ]
+            HeaderTabs(
+              tabsWidget: const [
+                TextIcon(title:"Amis", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"En attente", icon: Icon(Icons.access_time))
+              ],
+              onPress: _setColID
             ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                child: (futureFriends!= null
-                  ?  ListViewSeparated(data: displayedFriends, buildListItem: (colID == 0 ? _buildRowFriends : _buildRowFriendsWaiting))
-                  : Center(
-                      child:CircularProgressIndicator()
-                    )
-                )
-              )
-            )
+
+            TabsElement(
+              children:[
+                FutureBuilder<List<User>>(
+                  future: futureFriends2,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<User> data = snapshot.data!;
+                      List<User> res = _filterFriends(data);
+                      return ListViewSeparated(data: res, buildListItem: _buildRowFriends);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return const Center(
+                        child: CircularProgressIndicator()
+                    );
+                  },
+                ),
+                FutureBuilder<List<User>>(
+                  future: futureFriendsWaiting2,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<User> data = snapshot.data!;
+                      List<User> res = _filterFriends(data);
+                      return ListViewSeparated(data: res, buildListItem: _buildRowFriendsWaiting);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return const Center(
+                        child: CircularProgressIndicator()
+                    );
+                  },
+                ),
+              ],
+              colID : colID
+            ),
           ],
         )
       ),
@@ -194,16 +198,20 @@ class _FriendsListState extends State<FriendsList> {
         currentUser.friendsList.remove(user.id!);
       });
     }
+    _setFriends();
+    _setFiendsList();
+
   }
   _acceptFriend(User user) async {
     bool isValidate = await friendsUseCase.validateFriendship(currentUser.id!, user.id!);
     if(isValidate){
       setState(() {
         currentUser.friendsList.add(user.id!);
-        futureFriends!.add(user);
-        futureFriendsWaiting!.remove(user);
       });
     }
+    _setFriends();
+    _setFiendsList();
+    _setFriendsWaitingList();
   }
   //endregion
 

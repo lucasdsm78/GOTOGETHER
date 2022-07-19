@@ -43,6 +43,16 @@ class ActivityServiceApi {
     }
   }
 
+  Future<List<Activity>> getByUserId(int id) async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'activities/user/$id'));
+    if (response.statusCode == 200) {
+      return compute(parseActivities, response.body);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load activities");
+    }
+  }
+
   Future<Activity> add(Activity activity) async {
     final response = await api.client
         .post(Uri.parse(api.host + 'add/activity'),
