@@ -12,10 +12,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/widgets/components/custom_radio.dart';
 
-import '../../navigation.dart';
+import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/helper/storage.dart';
+import 'package:go_together/widgets/screens/login/signin_classic.dart';
 
 class SignUp extends StatefulWidget {
+  static const tag = "signup";
+
   @override
   State<SignUp> createState() => _SignUpState();
 }
@@ -65,6 +68,10 @@ class _SignUpState extends State<SignUp> {
         Navigator.of(context).popAndPushNamed(Navigation.tag);
       }
     }
+  }
+
+  goToSignin(){
+    Navigator.of(context).popAndPushNamed(SignInClassic.tag);
   }
 
   @override
@@ -170,6 +177,15 @@ class _SignUpState extends State<SignUp> {
                           ElevatedButton(
                             onPressed: (()=>validForm()),
                             child: const Text('Valider'),
+                          ),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.only(top: 30.0),
+                          child:
+                          ElevatedButton(
+                            onPressed: (()=>goToSignin()),
+                            child: const Text('Déjà un compte? connectez-vous.', textAlign: TextAlign.center,),
                           ),
                         ),
                       ],

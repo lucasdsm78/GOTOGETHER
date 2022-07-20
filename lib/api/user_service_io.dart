@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/models/user.dart';
@@ -20,6 +21,19 @@ class UserServiceApi {
   Future<User> getById(int id) async {
     final response = await api.client
         .get(Uri.parse(api.host + 'users/$id'));
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body)["success"]);
+    } else {
+      throw ApiErr(codeStatus: response.statusCode, message: "failed to load user");
+    }
+  }
+
+  Future<User> getByToken() async {
+    final response = await api.client
+        .get(Uri.parse(api.host + 'users/fromToken'),
+        headers: api.mainHeader
+    );
+    log(api.mainHeader.toString());
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)["success"]);
     } else {

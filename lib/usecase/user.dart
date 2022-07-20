@@ -11,6 +11,9 @@ class UserUseCase {
   Future<User> getById(int id) async {
     return api.getById(id).then((value) => value);
   }
+  Future<User> getByToken() async {
+    return api.getByToken().then((value) => value);
+  }
 
   Future<String> getJWTTokenByGoogleToken(String tokenGoogle) async {
     return api.getJWTTokenByGoogleToken(tokenGoogle).then((value) => value);

@@ -8,6 +8,8 @@ import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
+import 'package:go_together/widgets/screens/login/signin_classic.dart';
+import 'package:go_together/widgets/screens/login/signup.dart';
 import 'package:go_together/widgets/screens/tchat/conversation_list.dart';
 import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
@@ -33,7 +35,6 @@ class NavigationState extends State<Navigation> {
 
   //region list of links
   List<Map<String, dynamic>> drawerLinks = [
-    // {"widget": ActivityList(), "title": "Liste des événements"},
     {
       "widget": AddFriendsList(),
       "title": "Ajouter des amis",
@@ -63,16 +64,10 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.home)
     },
     {
-      //"widget": ActivityCreate(idActivity: 42,),
       "widget": ActivitySet(),
       "title": "Créer une activité",
       "icon": Icon(Icons.play_lesson)
     },
-    /*{
-      "widget": MapScreen(),
-      "title": "Map",
-      "icon": Icon(Icons.map_outlined)
-    },*/
     {
       "widget": ConversationList(),
       "title": "Mes conversations",
@@ -84,7 +79,7 @@ class NavigationState extends State<Navigation> {
   @override
   void initState() {
     super.initState();
-    user = MockUser.userGwen;
+    user = session.getData(SessionData.user);
     // when clicked and an activityList is open, we don't go to the new ActivityList page.
     // surely because this is same static tagname.
     //but reusing the same screen is probably for the best as long as they have quasi identical features

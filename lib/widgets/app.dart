@@ -1,23 +1,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/sports.dart';
 import 'package:go_together/usecase/sport.dart';
-import 'package:go_together/widgets/screens/activities/activities_list.dart';
-import 'package:go_together/widgets/screens/activities/activity_set.dart';
-import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
-import 'package:go_together/widgets/screens/users/signal.dart';
-import 'package:go_together/widgets/screens/users/user.dart';
+import 'package:go_together/widgets/screens/login/signin_classic.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:go_together/widgets/screens/login/signup.dart';
-
 import 'package:go_together/widgets/navigation.dart';
-import 'package:go_together/widgets/screens/tchat/message_details.dart';
-
 
 class GotogetherApp extends StatefulWidget {
   const GotogetherApp({Key? key}) : super(key: key);
@@ -58,10 +50,12 @@ class _GotogetherAppState extends State<GotogetherApp> {
         ),
       ),
       routes: {
-        Navigation.tag: (context) => Navigation()
+        Navigation.tag: (context) => Navigation(),
+        SignUp.tag: (context) => SignUp(),
+        SignInClassic.tag: (context) => SignInClassic(),
       },
       //home:SignUp(),
-      home: Navigation(),
+      home: SignInClassic(),
 
       // home : StreamBuilder<List<Sport>>(
       //   stream: store.getAndStoreSportsStream(),
