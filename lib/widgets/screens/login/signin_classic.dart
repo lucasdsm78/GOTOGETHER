@@ -1,10 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:go_together/helper/api.dart';
-import 'package:go_together/helper/asymetric_key.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
-import 'package:go_together/helper/session.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/user.dart';
 import 'package:go_together/helper/enum/gender.dart';
@@ -12,15 +9,17 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/widgets/components/custom_radio.dart';
 
-import '../../navigation.dart';
-import 'package:go_together/helper/storage.dart';
-
 class SignUp extends StatefulWidget {
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  int yearNow = DateTime.now().year;
+  int monthNow = DateTime.now().month;
+  int dayNow = DateTime.now().day;
+  DateTime? dob = null;
+
   TextEditingController pseudoController = TextEditingController();
   TextEditingController mailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -31,20 +30,10 @@ class _SignUpState extends State<SignUp> {
   late Gender _gender;
   bool error = false;
   int? isMale = 0;
-  DateTime? dob = null;
-  final session = Session();
-  final store = CustomStorage();
 
-  handleKeys () async {
-    log("######## sign in classic");
-    AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
-
-    String pubkey = (await asymKeys.getPubKeyFromStorage()).toString();
-    (await asymKeys.getPrivateKeyFromStorage()).toString();
-    userUseCase.setPublicKey(pubkey);
-  }
   validForm()async
   {
+    String message = "Bonjour";
     if (_formKey.currentState!.validate()){
       if(isMale == 0){
         _gender = Gender.male;
@@ -53,17 +42,7 @@ class _SignUpState extends State<SignUp> {
       }
       User user = User(username:pseudoController.text, password:passwordController.text , mail:mailController.text, role:"USER", gender:_gender, birthday: dob!);
       log(user.toMap().toString());
-      User? insertedUser = await userUseCase.add(user);
-
-      if(insertedUser != null) {
-        session.setData(SessionData.user, insertedUser);
-        store.storeUser(insertedUser);
-
-        String token = await userUseCase.getJWTTokenByLogin({"mail":insertedUser.mail, "password":passwordController.text});
-        Api().setToken(token);
-        await handleKeys();
-        Navigator.of(context).popAndPushNamed(Navigation.tag);
-      }
+      userUseCase.add(user);
     }
   }
 
@@ -150,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                                   DatePicker.showDatePicker(context,
                                       showTitleActions: true,
                                       minTime: DateTime(1800),
-                                      maxTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+                                      maxTime: DateTime(yearNow, monthNow, dayNow),
                                       onConfirm: (date) {
                                         setState(() {
                                           dob = date;
