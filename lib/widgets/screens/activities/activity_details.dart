@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -23,13 +23,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:go_together/models/location.dart';
 
+import '../../../models/tournament2.dart';
+import '../../../usecase/tournament.dart';
 import '../../components/maps/map.dart';
+import '../tournament/tournament_details.dart';
 
 /// This is the screen where you can see activity details.
 /// It's also here we can join / quit an activity
 class ActivityDetailsScreen extends StatefulWidget {
   const ActivityDetailsScreen({Key? key,  required this.activity}) : super(key: key);
   final Activity activity;
+  //final Tournament tournament;
+
   static const tag = "activity_details";
 
   @override
@@ -38,14 +43,18 @@ class ActivityDetailsScreen extends StatefulWidget {
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   final ActivityUseCase activityUseCase = ActivityUseCase();
+  final TournamentUseCase tournamentUseCase = TournamentUseCase();
   late User currentUser = MockUser.userGwen;
   late Session session = Session();
   late Activity activity;
+  late Tournament tournament;
+
 
   @override
   void initState() {
     super.initState();
     activity = widget.activity;
+    tournament = tournamentUseCase.getById(1) as Tournament;
     currentUser = session.getData(SessionData.user);
   }
 
@@ -56,6 +65,15 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     });
     Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
   }
+
+  _checkTournament(){
+    bool isActivityIsTournament = tournament.id.toString()!.contains(activity.id.toString());
+    if(isActivityIsTournament==true){
+      return TournamentDetailsScreen(activity);
+    }
+  }
+
+
 
   void _checkAttendeesCommentary(Activity activity) {
     Navigator.of(context).push(
@@ -78,6 +96,15 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   Widget build(BuildContext context) {
     //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
     bool isUserInActivityList = activity.currentAttendees!.contains(currentUser.id.toString());
+    bool isActivityIsTournament = tournament.id.toString()!.contains(activity.id.toString());
+    // _checkNbEquip() {
+    //   if (tournament.nbEquip != null) {
+    //    return TextIcon(
+    //       title: tournament.nbEquip.toString(),
+    //       icon: Icon(MdiIcons.podium, color: Colors.green,),
+    //     );
+    //   };
+    // }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails de l\'activité'),
@@ -91,7 +118,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
           children: <Widget>[
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
-              child:Text( activity.description,
+              child:Text( activity.description + ""+  activity.id.toString(),
                 style:const TextStyle(
                   fontSize: 40,
                   color: Colors.black,
@@ -121,15 +148,6 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
-              child:
-              TextIcon(
-                  title: activity.dateStart.getFrenchDateTime() + " - " + activity.dateEnd.getFrenchDateTime(),
-                  icon: Icon(Icons.date_range, color :Colors.green,),
-              ),
-            ),
-
-            Container(
-              margin: const EdgeInsets.only(top: 20.0, ),
               child:CustomRow(children: [
                 GestureDetector(
                   onTap: () {
@@ -140,6 +158,15 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                     icon: Icon(Icons.account_circle_rounded, color :Colors.green,),
                   ),
                 ),
+
+
+                // GestureDetector(
+                //     onTap: () {
+                //       _checkAttendeesCommentary(widget.activity);
+                //     },
+                //     child:_checkNbEquip()
+                // ),
+
                 TextIcon(
                   title:  activity.level.name,
                   icon: Icon(MdiIcons.podium, color :Colors.green,),

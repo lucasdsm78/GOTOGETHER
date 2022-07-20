@@ -5,6 +5,7 @@ import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
+import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/widgets/components/lists/custom_list.dart';

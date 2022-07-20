@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -26,6 +27,9 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../models/tournament.dart';
+import '../../../usecase/tournament.dart';
+
 /// This is the activity list.
 /// if we provide [idHost], it means the list should be only the activities
 /// hosted by the currend user.
@@ -40,7 +44,9 @@ class ActivityList extends StatefulWidget {
 
 class _ActivityListState extends State<ActivityList> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
+  final TournamentUseCase tournamentUseCase=TournamentUseCase();
   late Future<List<Activity>> futureActivities;
+  late Future<List<Tournament>> futureTournament;
   late User currentUser;
 
   //region data used to filter
@@ -62,10 +68,18 @@ class _ActivityListState extends State<ActivityList> with Observer{
     });
   }
 
+  // void getTournament(){
+  //   setState(() {
+  //     futureTournament = tournamentUseCase.getAll(map: criterionMap());
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
     getActivities();
+    //getTournament();
+    //log('tournament' );
     currentUser = session.getData(SessionData.user);
     searchbarController.addListener(_updateKeywords);
     Observable.instance.addObserver(this);

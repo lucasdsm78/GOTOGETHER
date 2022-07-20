@@ -11,9 +11,11 @@ import 'package:go_together/mock/sports.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/sports.dart';
+import 'package:go_together/models/tournament.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
 import 'package:go_together/usecase/sport.dart';
+import 'package:go_together/usecase/tournament.dart';
 import 'package:go_together/widgets/screens/activities/activity_details.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 import 'package:go_together/widgets/components/custom_text.dart';
@@ -37,8 +39,10 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
   final SportUseCase sportUseCase = SportUseCase();
   final LocalStorage storage = LocalStorage('go_together_app');
+  final TournamentUseCase tournamentUseCase=TournamentUseCase();
 
   late Future<List<Activity>> futureActivities;
+  late Future<List<Tournament>> futureTournament;
 
   late User currentUser;
   String keywords = "";
@@ -86,6 +90,12 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
       futureActivities = activityUseCase.getAll(map: criterionMap());
     });
   }
+
+  void getTournament(){
+    setState(() {
+      futureTournament = tournamentUseCase.getAll(map: criterionMap());
+    });
+  }
   //endregion
 
   @override
@@ -93,7 +103,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
     super.initState();
     getSports();
     getActivities();
-
+    getTournament();
     currentUser = Session().getData(SessionData.user);
     print(currentUser.id);
     searchbarController.addListener(_updateKeywords);
@@ -192,7 +202,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
   /// If the current user is the activity's host, he can access to a slidable
   /// action to update the activity.
   /// But he still can see what other user's see of his activity.
-  Widget _buildRow(Activity activity) {
+  Widget _buildRow(Activity activity, Tournament tournament) {
     final hasJoin = activity.currentAttendees!.contains(currentUser.id.toString());
     Widget tile = ListTile(
       title: CustomText(activity.description + " - " + activity.host.username),
