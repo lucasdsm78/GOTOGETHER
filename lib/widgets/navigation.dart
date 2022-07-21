@@ -8,6 +8,8 @@ import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
+import 'package:go_together/widgets/screens/login/signin_classic.dart';
+import 'package:go_together/widgets/screens/login/signup.dart';
 import 'package:go_together/widgets/screens/tchat/conversation_list.dart';
 import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
 import 'package:go_together/widgets/screens/users/signal.dart';
@@ -24,7 +26,7 @@ class Navigation extends StatefulWidget {
 }
 
 class NavigationState extends State<Navigation> {
-  int _selectedIndex = 0;
+  int _bottomSelectedIndex = 0;
   int _drawerSelectedIndex = 0;
   Session session = Session();
   bool _isLastTappedDrawer = false;
@@ -33,7 +35,6 @@ class NavigationState extends State<Navigation> {
 
   //region list of links
   List<Map<String, dynamic>> drawerLinks = [
-    // {"widget": ActivityList(), "title": "Liste des événements"},
     {
       "widget": AddFriendsList(),
       "title": "Ajouter des amis",
@@ -63,16 +64,10 @@ class NavigationState extends State<Navigation> {
       "icon": Icon(Icons.home)
     },
     {
-      //"widget": ActivityCreate(idActivity: 42,),
       "widget": ActivitySet(),
       "title": "Créer une activité",
       "icon": Icon(Icons.play_lesson)
     },
-    /*{
-      "widget": MapScreen(),
-      "title": "Map",
-      "icon": Icon(Icons.map_outlined)
-    },*/
     {
       "widget": ConversationList(),
       "title": "Mes conversations",
@@ -84,7 +79,7 @@ class NavigationState extends State<Navigation> {
   @override
   void initState() {
     super.initState();
-    user = MockUser.userGwen;
+    user = session.getData(SessionData.user);
     // when clicked and an activityList is open, we don't go to the new ActivityList page.
     // surely because this is same static tagname.
     //but reusing the same screen is probably for the best as long as they have quasi identical features
@@ -113,14 +108,14 @@ class NavigationState extends State<Navigation> {
       return drawerLinks[_drawerSelectedIndex]["widget"];
     }
     else{
-      return bottomBarLinks[_selectedIndex]["widget"];
+      return bottomBarLinks[_bottomSelectedIndex]["widget"];
     }
   }
 
   List<Widget> getDrawerLinks(BuildContext context){
     List<Widget> links = [];
     for(int i=0; i<drawerLinks.length; i++) {
-      links.add(_buildDrawerLinks(drawerLinks[i]["title"], ()=> _onDrawerTap(i, context)));
+      links.add(_buildDrawerLinks(drawerLinks[i]["title"], ()=> _onDrawerTap(i, context), i));
     }
     return links;
   }
@@ -134,7 +129,7 @@ class NavigationState extends State<Navigation> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _bottomSelectedIndex = index;
       _isLastTappedDrawer = false;
     });
   }
@@ -147,10 +142,13 @@ class NavigationState extends State<Navigation> {
     Navigator.pop(context);
   }
 
-  _buildDrawerLinks(String title, Function onTap){
+  _buildDrawerLinks(String title, Function onTap, int index){
     return ListTile(
       title: Text(title),
       onTap: ()=>onTap(),
+      selected: (_isLastTappedDrawer && index == _drawerSelectedIndex),
+      selectedTileColor: (_isLastTappedDrawer ? CustomColors.goTogetherMain : null),
+      selectedColor: (_isLastTappedDrawer ? Colors.white : null),
     );
   }
   BottomNavigationBarItem _buildBottomBarButton(int index){
@@ -208,8 +206,9 @@ class NavigationState extends State<Navigation> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: getBottomBarLinks(),
-        currentIndex: _selectedIndex,
-        selectedItemColor: CustomColors.goTogetherMain,
+        currentIndex: _bottomSelectedIndex,
+        selectedItemColor: (_isLastTappedDrawer ? Colors.black54 : CustomColors.goTogetherMain),
+        unselectedItemColor:  Colors.black54,
         onTap: _onItemTapped,
       ),
     );

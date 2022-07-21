@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:asn1lib/asn1lib.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:go_together/helper/storage.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
@@ -13,6 +14,7 @@ import 'package:pointycastle/src/platform_check/platform_check.dart';
 
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/signers/rsa_signer.dart';
+import 'package:get_storage/get_storage.dart';
 
 //region Key pairs
 //region helpers keys pair / encryption
@@ -191,7 +193,10 @@ Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
 
 
 class AsymmetricKeyGenerator{
-  final LocalStorage storage = LocalStorage('go_together_app');
+  //final LocalStorage storage = LocalStorage('go_together_app');
+  final CustomStorage cStorage = CustomStorage();
+  //final box = GetStorage(); // use if localStorage cause issue
+
   final indexPrivate = "privateKey";
   final indexPublic = "pubKey";
   var id = "1";
@@ -206,23 +211,29 @@ class AsymmetricKeyGenerator{
     id = newId;
   }
 
-  getPubKeyFromStorage(){
-    if(storage.getItem("$indexPublic$id") == null){
+  getPubKeyFromStorage() async {
+    dynamic val = await cStorage.get("$indexPublic$id");
+    //log(val.toString());
+    //box.write('quote', 'GetX is the best');
+    //log(box.read('quote'));
+    if(val == null){
       generateKey();
     }
-    return storage.getItem("$indexPublic$id");
+    return await cStorage.get("$indexPublic$id");
   }
-  setPubKeyFromStorage(String pubKey){
-    storage.setItem("$indexPublic$id", pubKey);
+  setPubKeyFromStorage(String pubKey) async{
+    await cStorage.set("$indexPublic$id", pubKey);
   }
   getPrivateKeyFromStorage(){
-    if(storage.getItem("$indexPrivate$id") == null){
+    Function t = ()async {await cStorage.get("$indexPrivate$id");};
+    dynamic val = t();
+    if(val == null){
       generateKey();
     }
-    return storage.getItem("$indexPrivate$id");
+    return cStorage.get("$indexPrivate$id");
   }
-  setPrivateKeyFromStorage(String privateKey){
-    storage.setItem("$indexPrivate$id", privateKey);
+  setPrivateKeyFromStorage(String privateKey) async {
+    await cStorage.set("$indexPrivate$id", privateKey);
   }
 
   generateKey({bool isTestMode = false}){
@@ -250,8 +261,12 @@ class AsymmetricKeyGenerator{
       final pubKey = parsePublicKeyFromPem(pemPublicKey);
       //final privKey = parsePrivateKeyFromPem(pemPrivateKey);
 
-      setPubKeyFromStorage(pemPublicKey);
-      setPrivateKeyFromStorage(pemPrivateKey);
+      Function setKeys = ()async {
+        await setPubKeyFromStorage(pemPublicKey);
+        await setPrivateKeyFromStorage(pemPrivateKey);
+      };
+      setKeys();
+
     }
   }
 }

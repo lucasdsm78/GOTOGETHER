@@ -38,13 +38,21 @@ class _ConversationListState extends State<ConversationList> {
     searchbarController.addListener(_updateKeywords);
 
     //region get key  pair for 3 user
-    AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
+    /*AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
     //keyGenerator.generateKey();
     pubKey1 = keyGenerator.getPubKeyFromStorage();
     privateKey1 = keyGenerator.getPrivateKeyFromStorage();
+    */
     //endregion
+    handleKeys ();
   }
 
+  handleKeys () async {
+    AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
+
+    pubKey1 = (await asymKeys.getPubKeyFromStorage()).toString();
+    privateKey1 = (await asymKeys.getPrivateKeyFromStorage()).toString();
+  }
   //region set friends
 
   _setConversationList() {
@@ -115,6 +123,11 @@ class _ConversationListState extends State<ConversationList> {
               if (snapshot.hasData) {
                 List<Conversation> data = snapshot.data!;
                 List<Conversation> res = _filterConversations(data);
+                if(res.isEmpty){
+                  return Center(
+                    child:Text("Vous n'avez pas de conversation pour le moment"),
+                  );
+                }
                 return ListViewSeparated(data: res, buildListItem: _buildRowConversation);
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");

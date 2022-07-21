@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -187,6 +188,10 @@ class _ActivityListState extends State<ActivityList> with Observer{
       trailing:
       CustomColumn(
         children: [
+          ( activity.host.id! == currentUser.id!
+              ? Icon(MdiIcons.crown, color: Colors.amberAccent,)
+              : Container()
+          ),
           Icon(
             hasJoin ? Icons.favorite : Icons.favorite_border,
             color: hasJoin ? Colors.red : null,

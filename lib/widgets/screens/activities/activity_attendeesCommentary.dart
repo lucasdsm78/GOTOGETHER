@@ -52,7 +52,7 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopSearchBar(
-        customSearchBar: const Text('Les participants "end"'),
+        customSearchBar: const Text('Les participants'),
         searchbarController: searchbarController,
       ),
       body: FutureBuilder<List<User>>(
@@ -77,45 +77,48 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
     Widget tile = ListTile(
       title: CustomText(user.username),
       leading: Icon(Icons.account_circle_rounded),
-        trailing: Container(
-          width: 200.0,
-          child:
-          Form(
+      trailing: Container(
+        width: 150.0,
+        child: Form(
           key: Key("${user.id!}"),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 4,
-                  child:
-                  TextField(
-                    decoration:
-                    const InputDecoration.collapsed(hintText: 'Commentaire'),
-                    onChanged: (value){
-                      _onUpdate(user.id!,comment:value);
-                    },
-                  ),
-                ),
-                RatingBar.builder(itemBuilder: (context,_)=>
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child:
+                      TextField(
+                        decoration:
+                        const InputDecoration.collapsed(hintText: 'Commentaire'),
+                        onChanged: (value){
+                          _onUpdate(user.id!,comment:value);
+                        },
+                      ),
+                    ),
+                    RatingBar.builder(itemBuilder: (context,_)=>
                     const Icon(Icons.star,color:Colors.amber),
-                    itemSize: 20,
-                    onRatingUpdate: (rating){
-                      setState(() {
-                        _onUpdate(user.id!,rating:rating.round());
-                      });
-                    }),
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    color: Colors.black,
-                    onPressed: () {
-                      _addCommentary(user.id!);
-                    },
-                  ),
-                ),
-              ],
-            ),
+                        itemSize: 20,
+                        onRatingUpdate: (rating){
+                          setState(() {
+                            _onUpdate(user.id!,rating:rating.round());
+                          });
+                        }),
+                  ],
+                )
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                color: Colors.black,
+                onPressed: () {
+                  _addCommentary(user.id!);
+                },
+              ),
+            ],
           ),
-        )
+        ),
+      )
     );
 
       return tile;

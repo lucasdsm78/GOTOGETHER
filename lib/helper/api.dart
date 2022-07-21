@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_together/helper/commonFunctions.dart';
@@ -17,7 +19,6 @@ extension MethodExtension on Method {
 
 /// used to make API call in each api services.
 /// [host] is our online server.
-//@todo : save and use the token to execute request requiring user id
 class Api{
   final http.Client client = http.Client();
   final host = "http://51.255.51.106:5000/";
@@ -25,7 +26,7 @@ class Api{
     'Content-Type': 'application/json; charset=UTF-8',
     'secret_key' :'?somekey_thatWillReject_1orMore_unwantedRequest',
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
-    'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTY1NzgzOTQ4MX0.LoVc9wxm7dtBW0Q-qvYQglkRtfOhrlU4IMPsdWquS2U'
+    'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTY1ODMyMzk5N30.9N2BMYLy-0vqwLSx-fQk_7uUF5Sw7Z_iBET5cuCvkO8'
   };
 
   static final Api _instance = Api._internal();
@@ -38,7 +39,8 @@ class Api{
     // update mainHeader
     mainHeader[keyPara]=val ;
   }
-  setToken(val){
+  setToken(String val){
+    log("x-access-tokens setted" + val);
     setMainHeader("x-access-tokens", val);
   }
 
@@ -67,7 +69,22 @@ class Api{
 class ApiErr implements Exception {
   int codeStatus;
   String message;
+  String? reason;
   String errMsg() => 'an error occured with status code - $codeStatus - , $message';
 
-  ApiErr({required this.codeStatus, required this.message});
+  ApiErr({required this.codeStatus, required this.message, this.reason});
+}
+
+extension ApiCodeStatusExtension on ApiErr{
+  void defaultMessageFromCodeStatus() {
+    if(this.codeStatus >= 500){
+      this.message = "Une erreur est survenue sur le serveur";
+    }
+    else if(this.codeStatus == 403){
+      this.message = "Vous n'avez pas les droits pour cela";
+    }
+    else if(this.codeStatus == 401){
+      this.message = "Une erreur est survenue lors de votre identification";
+    }
+  }
 }
