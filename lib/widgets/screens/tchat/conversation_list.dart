@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/asymetric_key.dart';
 import 'package:go_together/helper/extensions/string_extension.dart';
@@ -166,10 +168,15 @@ class _ConversationListState extends State<ConversationList> {
     String decryptedMsg = "";
     String dateMsg = "";
     if(conversation.lastMessage != null){
-      Map<String,String> map = splitSignedAndCryptedMessage(conversation.lastMessage!);
-      String messageBody = map["encryptedMsg"]!;
-      decryptedMsg = decryptFromString(messageBody, privateKey1);
-      dateMsg = conversation.lastMessageDate!.getHourTime();
+      try {
+        Map<String, String> map = splitSignedAndCryptedMessage(
+            conversation.lastMessage!);
+        String messageBody = map["encryptedMsg"]!;
+        decryptedMsg = decryptFromString(messageBody, privateKey1);
+        dateMsg = conversation.lastMessageDate!.getHourTime();
+      } on EncryptionErr catch(err){
+        log(err.message);
+      }
     }
 
     return ListTile(
