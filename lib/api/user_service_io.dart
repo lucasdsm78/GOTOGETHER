@@ -55,11 +55,7 @@ class UserServiceApi {
   }
 
   Future<String> getJWTTokenByLogin(Map<String, String> login) async {
-    final response = await api.client
-        .post(Uri.parse(api.host + 'authentication'),
-        headers: api.mainHeader,
-        body: jsonEncode(login),
-    );
+    final response = await api.httpPost(api.host + 'authentication', jsonEncode(login));
     if (response.statusCode == 200) {
       return jsonDecode(response.body)["success"]["token"];
     } else {
