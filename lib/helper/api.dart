@@ -49,7 +49,7 @@ class Api{
   };
 
   //region http request
-  _httpRequest(Method method, String route, {String? json}) async  {
+  Future<Response> _httpRequest(Method method, String route, {String? json}) async  {
     try {
       Response response ;
       Function action = method.getHttpRequestFunction(this.client);
@@ -70,21 +70,21 @@ class Api{
       throw ApiErr(codeStatus: 0, message: "Aucune connexion internet");
     }
   }
-  httpGet(String route) async {
-    return _httpRequest(Method.get, route);
+  Future<Response> httpGet(String route) async {
+    return await _httpRequest(Method.get, route);
   }
-  httpPost(String route, String json) async {
-    return _httpRequest(Method.post, route, json: json);
+  Future<Response> httpPost(String route, String? json) async {
+    return await _httpRequest(Method.post, route, json: json);
   }
-  httpPatch(String route, String json) async {
-    return _httpRequest(Method.patch, route, json: json);
+  Future<Response> httpPatch(String route, String? json) async {
+    return await _httpRequest(Method.patch, route, json: json);
   }
-  httpPut(String route, String json) async {
-    return _httpRequest(Method.put, route, json: json);
+  Future<Response> httpPut(String route, String? json) async {
+    return await _httpRequest(Method.put, route, json: json);
 
   }
-  httpDelete(String route, String json) async {
-    return _httpRequest(Method.delete, route, json: json);
+  Future<Response> httpDelete(String route, {String? json}) async {
+    return await _httpRequest(Method.delete, route, json: json);
   }
 
   //endregion
