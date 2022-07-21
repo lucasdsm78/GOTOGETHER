@@ -211,26 +211,37 @@ class AsymmetricKeyGenerator{
     id = newId;
   }
 
-  getPubKeyFromStorage() async {
-    dynamic val = await cStorage.get("$indexPublic$id");
-    //log(val.toString());
+  Future<String> getPubKeyFromStorage() async {
+    dynamic currentPubkey = await cStorage.get("$indexPublic$id");
+    log("pubkey = " + currentPubkey.toString());
     //box.write('quote', 'GetX is the best');
     //log(box.read('quote'));
-    if(val == null){
+    if(currentPubkey == null){
       generateKey();
     }
-    return await cStorage.get("$indexPublic$id");
+    else{
+      return currentPubkey.toString();
+    }
+    dynamic newPubkey = await cStorage.get("$indexPublic$id");
+    log("pubkey generated = " + newPubkey.toString());
+    return newPubkey.toString();
   }
   setPubKeyFromStorage(String pubKey) async{
     await cStorage.set("$indexPublic$id", pubKey);
   }
-  getPrivateKeyFromStorage(){
-    Function t = ()async {await cStorage.get("$indexPrivate$id");};
-    dynamic val = t();
-    if(val == null){
+  Future<String> getPrivateKeyFromStorage() async {
+    dynamic currentPrivKey = await cStorage.get("$indexPrivate$id");
+    log("priv key = " + currentPrivKey.toString());
+
+    if(currentPrivKey == null){
       generateKey();
     }
-    return cStorage.get("$indexPrivate$id");
+    else{
+      return currentPrivKey.toString();
+    }
+    dynamic newPrivKey = await cStorage.get("$indexPrivate$id");
+    log("pubkey generated = " + newPrivKey.toString());
+    return newPrivKey.toString();
   }
   setPrivateKeyFromStorage(String privateKey) async {
     await cStorage.set("$indexPrivate$id", privateKey);

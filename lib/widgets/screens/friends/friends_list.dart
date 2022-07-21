@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
@@ -30,10 +31,13 @@ class _FriendsListState extends State<FriendsList> {
   final searchbarController = TextEditingController();
   String keywords = "";
   int colID = 0;
+  final session = Session();
 
   @override
   void initState() {
     super.initState();
+    currentUser = session.getData(SessionData.user);
+
     _setFriends();
     _setFiendsList();
     _setFriendsWaitingList();

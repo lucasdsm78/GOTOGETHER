@@ -50,7 +50,7 @@ class _HomeState extends State<Home> with Observer{
   @override
   void initState() {
     super.initState();
-    currentUser = session.getData(SessionData.user,defaultVal: MockUser.userGwen);
+    currentUser = session.getData(SessionData.user);
     getActivities();
     Observable.instance.addObserver(this);
   }

@@ -190,7 +190,10 @@ class _ActivityListState extends State<ActivityList> with Observer{
         children: [
           ( activity.host.id! == currentUser.id!
               ? Icon(MdiIcons.crown, color: Colors.amberAccent,)
-              : Container()
+              : Container(
+            width: 0,
+            height: 0,
+          )
           ),
           Icon(
             hasJoin ? Icons.favorite : Icons.favorite_border,

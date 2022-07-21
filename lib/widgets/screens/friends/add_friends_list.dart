@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/friends.dart';
@@ -23,14 +24,17 @@ class _AddFriendsListState extends State<AddFriendsList> {
   final UserUseCase userUseCase = UserUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   late Future<List<User>> futureUsers;
-  late User currentUser = MockUser.userGwen;
+  late User currentUser;
   final searchbarController = TextEditingController();
   String keywords = "";
+  final session = Session();
 
   @override
   void initState(){
     super.initState();
     _setFriends();
+    currentUser = session.getData(SessionData.user);
+
     futureUsers = userUseCase.getAll();
     searchbarController.addListener(_updateKeywords);
   }

@@ -43,20 +43,20 @@ class _TchatState extends State<Tchat> {
   @override
   void initState() {
     super.initState();
-    currentUser = session.getData(SessionData.user,defaultVal: MockUser.userGwen);
+    currentUser = session.getData(SessionData.user);
     messageTextController.addListener(_updateKeywords);
 
-    //region get key  pair for 3 user
-    AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
-    //keyGenerator.generateKey();
-    pubKey1 = keyGenerator.getPubKeyFromStorage();
-    privateKey1 = keyGenerator.getPrivateKeyFromStorage();
-    //endregion
-
+    handleKeys();
     getConversationList();
     getMessagesList();
 
     connectToSocket();
+  }
+  handleKeys () async {
+    AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
+
+    pubKey1 = (await asymKeys.getPubKeyFromStorage()).toString();
+    privateKey1 = (await asymKeys.getPrivateKeyFromStorage()).toString();
   }
 
   @override

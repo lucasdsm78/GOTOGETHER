@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/asymetric_key.dart';
 import 'package:go_together/helper/extensions/string_extension.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/conversation.dart';
 import 'package:go_together/models/user.dart';
@@ -22,8 +23,9 @@ class _ConversationListState extends State<ConversationList> {
   final MessageUseCase messageUseCase = MessageUseCase();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   late Future<List<Conversation>> futureConversation;
+  final Session session = Session();
 
-  late User currentUser = MockUser.userGwen;
+  late User currentUser;
   final searchbarController = TextEditingController();
   String keywords = "";
   List<int> removedConversation = [];
@@ -36,14 +38,8 @@ class _ConversationListState extends State<ConversationList> {
     super.initState();
     _setConversationList();
     searchbarController.addListener(_updateKeywords);
+    currentUser = session.getData(SessionData.user);
 
-    //region get key  pair for 3 user
-    /*AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
-    //keyGenerator.generateKey();
-    pubKey1 = keyGenerator.getPubKeyFromStorage();
-    privateKey1 = keyGenerator.getPrivateKeyFromStorage();
-    */
-    //endregion
     handleKeys ();
   }
 

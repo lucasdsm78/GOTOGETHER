@@ -37,16 +37,16 @@ void main() {
     //region get key  pair for 3 user
     AsymmetricKeyGenerator keyGenerator = AsymmetricKeyGenerator();
     //keyGenerator.generateKey();
-    pubKey1 = keyGenerator.getPubKeyFromStorage();
-    privateKey1 = keyGenerator.getPrivateKeyFromStorage();
+    pubKey1 = await keyGenerator.getPubKeyFromStorage();
+    privateKey1 = await keyGenerator.getPrivateKeyFromStorage();
 
     keyGenerator.setId("2");
-    pubKey2 = keyGenerator.getPubKeyFromStorage();
-    privateKey2 = keyGenerator.getPrivateKeyFromStorage();
+    pubKey2 = await keyGenerator.getPubKeyFromStorage();
+    privateKey2 =await  keyGenerator.getPrivateKeyFromStorage();
 
     keyGenerator.setId("ext");
-    pubKeyExt = keyGenerator.getPubKeyFromStorage();
-    privateKeyExt = keyGenerator.getPubKeyFromStorage();
+    pubKeyExt = await keyGenerator.getPubKeyFromStorage();
+    privateKeyExt = await keyGenerator.getPubKeyFromStorage();
     //endregion
 
     //region then set pubkey

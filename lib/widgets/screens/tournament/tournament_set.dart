@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/levels.dart';
 import 'package:go_together/models/level.dart';
 import 'package:go_together/models/location.dart';
@@ -41,7 +42,7 @@ class _TournamentSetState extends State<TournamentSet> {
   final LocalStorage storage = LocalStorage('go_together_app');
 
   late Sport? sport = null;
-  late User currentUser = MockUser.userGwen;
+  late User currentUser;
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController eventDescriptionInput = TextEditingController();
@@ -61,10 +62,13 @@ class _TournamentSetState extends State<TournamentSet> {
   DateTime dateTimeEvent = DateTime.now();
   Location? location ;
   bool isUpdating = false;
+  final session = Session();
 
   @override
   void initState() {
     super.initState();
+    currentUser = session.getData(SessionData.user);
+
     isUpdating = widget.tournament !=null;
     if(isUpdating){
       Tournament currentTournament = widget.tournament!;

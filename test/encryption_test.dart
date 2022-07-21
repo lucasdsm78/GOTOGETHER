@@ -16,14 +16,14 @@ void main() {
 
   group("Encryption - key pair", (){
     test("Generate key pair - public key can't be greater than private key", () async{
-      String pubKey = keyGenerator.getPubKeyFromStorage();
-      String privateKey = keyGenerator.getPrivateKeyFromStorage();
+      String pubKey = await keyGenerator.getPubKeyFromStorage();
+      String privateKey = await keyGenerator.getPrivateKeyFromStorage();
       expect(privateKey.length, greaterThan(pubKey.length));
     });
 
     test("Crypt and decrypt message with key pair", () async{
-      Uint8List encryptData = encrypt(MESSAGE, keyGenerator.getPubKeyFromStorage());
-      String decryptedMsg = decrypt(encryptData, keyGenerator.getPrivateKeyFromStorage());
+      Uint8List encryptData = encrypt(MESSAGE, await keyGenerator.getPubKeyFromStorage());
+      String decryptedMsg = decrypt(encryptData, await keyGenerator.getPrivateKeyFromStorage());
       expect(MESSAGE, isNot(equals(encryptData)));
       expect(MESSAGE, decryptedMsg);
     });

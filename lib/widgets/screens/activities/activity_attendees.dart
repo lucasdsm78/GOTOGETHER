@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
@@ -34,12 +35,13 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
   String keywords = "";
 
   final searchbarController = TextEditingController();
+  final session = Session();
 
   @override
   void initState() {
     super.initState();
     getActivitiesAttendees();
-    currentUser = MockUser.userGwen;// User.fromJson(jsonDecode(storage.getItem("user")));
+    currentUser = session.getData(SessionData.user);
     searchbarController.addListener(_updateKeywords);
     canDoAction = currentUser.id == widget.activity.host.id;
   }

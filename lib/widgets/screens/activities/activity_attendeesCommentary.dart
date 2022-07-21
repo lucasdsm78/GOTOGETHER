@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/commentary.dart';
@@ -32,13 +33,14 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
   late User currentUser;
   String keywords = "";
   final searchbarController = TextEditingController();
+  final session = Session();
 
   @override
   void initState() {
     super.initState();
     getActivitiesAttendees();
     _values = [];
-    currentUser = MockUser.userGwen;
+    currentUser = session.getData(SessionData.user);
     searchbarController.addListener(_updateKeywords);
   }
 
