@@ -69,7 +69,22 @@ class Api{
 class ApiErr implements Exception {
   int codeStatus;
   String message;
+  String? reason;
   String errMsg() => 'an error occured with status code - $codeStatus - , $message';
 
-  ApiErr({required this.codeStatus, required this.message});
+  ApiErr({required this.codeStatus, required this.message, this.reason});
+}
+
+extension ApiCodeStatusExtension on ApiErr{
+  void defaultMessageFromCodeStatus() {
+    if(this.codeStatus >= 500){
+      this.message = "Une erreur est survenue sur le serveur";
+    }
+    else if(this.codeStatus == 403){
+      this.message = "Vous n'avez pas les droits pour cela";
+    }
+    else if(this.codeStatus == 401){
+      this.message = "Une erreur est survenue lors de votre identification";
+    }
+  }
 }

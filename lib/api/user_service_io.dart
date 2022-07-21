@@ -63,7 +63,8 @@ class UserServiceApi {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)["success"]["token"];
     } else {
-      throw ApiErr(codeStatus: response.statusCode, message: "failed to load token");
+      Map<String,dynamic> resMap = jsonDecode(response.body)["error"];
+      throw ApiErr(codeStatus: response.statusCode, message: resMap["message"]);
     }
   }
 
@@ -91,7 +92,8 @@ class UserServiceApi {
     if (response.statusCode == 201) {
       return User.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
-      throw ApiErr(codeStatus: response.statusCode, message: "failed to create user");
+      Map<String,dynamic> resMap = jsonDecode(response.body)["error"];
+      throw ApiErr(codeStatus: response.statusCode, message: resMap["message"], reason: resMap["reason"]);
     }
   }
 

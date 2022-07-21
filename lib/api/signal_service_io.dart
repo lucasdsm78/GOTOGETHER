@@ -26,7 +26,7 @@ class SignalServiceApi {
     if (response.statusCode == 201) {
       return Signal.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
-      throw Exception('Failed to create user.');
+      throw Exception('Failed to create report for user.');
     }
   }
 

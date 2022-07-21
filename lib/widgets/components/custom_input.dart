@@ -5,9 +5,8 @@ class CustomInput extends StatefulWidget {
     required this.notValidError, required this.controller,
     this.type = TextInputType.text,
     this.textColor = Colors.blueAccent,
-  this.isPassword = false,
-  this.border,
-  this.margin,
+    this.isPassword = false, this.border, this.margin,
+    this.validator, this.textStyle
   }) : super(key: key);
   final String title;
   final String notValidError;
@@ -17,6 +16,8 @@ class CustomInput extends StatefulWidget {
   final bool isPassword;
   final InputBorder? border;
   final EdgeInsetsGeometry? margin;
+  final Function? validator;
+  final TextStyle? textStyle;
 
   @override
   _CustomInputState createState() => _CustomInputState();
@@ -34,6 +35,16 @@ class _CustomInputState extends State<CustomInput> {
     super.dispose();
   }
 
+  String? defaultValidator(String? value) {
+    if(widget.validator != null){
+      return widget.validator!(value);
+    }
+    if (value == null || value.isEmpty) {
+      return widget.notValidError;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return
@@ -45,9 +56,12 @@ class _CustomInputState extends State<CustomInput> {
       child: TextFormField(
         obscureText: widget.isPassword,
         cursorColor: widget.textColor,
-        style: TextStyle(
-          color: widget.textColor,
-          decorationColor: widget.textColor
+        style: (widget.textStyle == null
+            ? TextStyle(
+              color: widget.textColor,
+              decorationColor: widget.textColor
+            )
+            : widget.textStyle
         ),
         decoration: InputDecoration(
           fillColor: widget.textColor,
@@ -61,12 +75,7 @@ class _CustomInputState extends State<CustomInput> {
           labelText: widget.title,
         ),
         keyboardType: widget.type,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return widget.notValidError;
-          }
-          return null;
-        },
+        validator: defaultValidator,
         controller: widget.controller,
       ),
     );

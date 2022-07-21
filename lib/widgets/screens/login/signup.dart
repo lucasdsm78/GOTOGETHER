@@ -15,6 +15,7 @@ import 'package:go_together/widgets/components/custom_radio.dart';
 import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/widgets/screens/login/signin_classic.dart';
+import 'package:toast/toast.dart';
 
 class SignUp extends StatefulWidget {
   static const tag = "signup";
@@ -38,6 +39,53 @@ class _SignUpState extends State<SignUp> {
   final session = Session();
   final store = CustomStorage();
 
+
+  @override
+  void initState() {
+    super.initState();
+    mailController.addListener(_mailOnKeyPressed);
+  }
+  @override
+  void dispose() {
+    mailController.dispose();
+    super.dispose();
+  }
+
+
+  validForm() async {
+    if (_formKey.currentState!.validate()){
+      if(isMale == 0){
+        _gender = Gender.male;
+      }else{
+        _gender= Gender.female;
+      }
+
+      try {
+        User user = User(username: pseudoController.text,
+            password: passwordController.text,
+            mail: mailController.text,
+            role: "USER",
+            gender: _gender,
+            birthday: dob!);
+        log(user.toMap().toString());
+        User? insertedUser = await userUseCase.add(user);
+
+        if (insertedUser != null) {
+          session.setData(SessionData.user, insertedUser);
+          store.storeUser(insertedUser);
+
+          String token = await userUseCase.getJWTTokenByLogin(
+              {"mail": insertedUser.mail, "password": passwordController.text});
+          Api().setToken(token);
+          await handleKeys();
+          Navigator.of(context).popAndPushNamed(Navigation.tag);
+        }
+      } on ApiErr catch(err){
+        Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+      }
+    }
+  }
+
   handleKeys () async {
     log("######## sign in classic");
     AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
@@ -46,36 +94,41 @@ class _SignUpState extends State<SignUp> {
     (await asymKeys.getPrivateKeyFromStorage()).toString();
     userUseCase.setPublicKey(pubkey);
   }
-  validForm()async
-  {
-    if (_formKey.currentState!.validate()){
-      if(isMale == 0){
-        _gender = Gender.male;
-      }else{
-        _gender= Gender.female;
-      }
-      User user = User(username:pseudoController.text, password:passwordController.text , mail:mailController.text, role:"USER", gender:_gender, birthday: dob!);
-      log(user.toMap().toString());
-      User? insertedUser = await userUseCase.add(user);
-
-      if(insertedUser != null) {
-        session.setData(SessionData.user, insertedUser);
-        store.storeUser(insertedUser);
-
-        String token = await userUseCase.getJWTTokenByLogin({"mail":insertedUser.mail, "password":passwordController.text});
-        Api().setToken(token);
-        await handleKeys();
-        Navigator.of(context).popAndPushNamed(Navigation.tag);
-      }
-    }
-  }
 
   goToSignin(){
     Navigator.of(context).popAndPushNamed(SignInClassic.tag);
   }
 
+  void _mailOnKeyPressed() {
+    validateEmail(mailController.text);
+  }
+
+  //region validators
+  String? validateEmail(String? value) {
+    String pattern =
+        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regex = RegExp(pattern);
+    if (value == null || value.isEmpty || !regex.hasMatch(value))
+      return 'Veuillez saisir un mail valide';
+    else
+      return null;
+  }
+  String? validatePasswordCheck(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Veuillez confirmer le mot de passe';
+    } else if(confirmPdwController.text != passwordController.text){
+      return 'Les mots de passes ne sont pas identiques';
+    }
+    return null;
+  }
+  //endregion
+
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -110,14 +163,22 @@ class _SignUpState extends State<SignUp> {
                         ),
 
                         Container(height: 40),
-                        CustomInput(title: "pseudo", notValidError: 'Veuillez saisir un pseudo', controller: pseudoController,
+                        CustomInput(title: "Pseudo", notValidError: 'Veuillez saisir un pseudo', controller: pseudoController,
                           border: UnderlineInputBorder(), margin: const EdgeInsets.only(),
                         ),
-                        CustomInput(title: "mail", notValidError: 'Veuillez saisir un mail', controller: mailController,
-                            border: UnderlineInputBorder(), margin: const EdgeInsets.only(),),
-                        CustomInput(title: "password", notValidError: 'Veuillez saisir un mot de passe', controller: passwordController,
+                        CustomInput(title: "Mail", notValidError: 'Veuillez saisir un mail', controller: mailController,
+                            border: UnderlineInputBorder(), margin: const EdgeInsets.only(),
+                            validator: validateEmail
+                        ),
+                        CustomInput(title: "Mot de passe", notValidError: 'Veuillez saisir un mot de passe', controller: passwordController,
                            isPassword: true, border: UnderlineInputBorder(), margin: const EdgeInsets.only(),),
-                        Container(
+
+                        CustomInput(title: "Confirmer mot de passe", notValidError: 'Veuillez saisir un mot de passe', controller: confirmPdwController,
+                           isPassword: true, border: UnderlineInputBorder(), margin: const EdgeInsets.only(),
+                            validator: validatePasswordCheck
+                        ),
+
+                        /*Container(
                           child: TextFormField(
                             obscureText: true,
                             controller: confirmPdwController,
@@ -134,7 +195,7 @@ class _SignUpState extends State<SignUp> {
                               return null;
                             }
                           ),
-                        ),
+                        ),*/
 
                         Container(height: 20),
                         CustomRadio(

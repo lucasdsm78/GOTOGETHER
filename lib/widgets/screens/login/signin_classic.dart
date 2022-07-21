@@ -10,6 +10,7 @@ import 'package:go_together/helper/storage.dart';
 
 import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/widgets/screens/login/signup.dart';
+import 'package:toast/toast.dart';
 
 class SignInClassic extends StatefulWidget {
   static const tag = "signin_classic";
@@ -31,16 +32,20 @@ class _SignInClassicState extends State<SignInClassic> {
   validForm () async
   {
     if (_formKey.currentState!.validate()){
-      String token = await userUseCase.getJWTTokenByLogin({"mail":mailController.text, "password":passwordController.text});
-      log(token);
+      try{
+        String token = await userUseCase.getJWTTokenByLogin({"mail":mailController.text, "password":passwordController.text});
+        log(token);
 
-      if(token != null) {
-        Api().setToken(token);
-        User currentUser = await userUseCase.getByToken();
-        session.setData(SessionData.user, currentUser);
-        store.storeUser(currentUser);
+        if(token != null) {
+          Api().setToken(token);
+          User currentUser = await userUseCase.getByToken();
+          session.setData(SessionData.user, currentUser);
+          store.storeUser(currentUser);
 
-        Navigator.of(context).popAndPushNamed(Navigation.tag);
+          Navigator.of(context).popAndPushNamed(Navigation.tag);
+        }
+      } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
       }
     }
   }
@@ -50,6 +55,8 @@ class _SignInClassicState extends State<SignInClassic> {
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
         body: Form(
           key: _formKey,
