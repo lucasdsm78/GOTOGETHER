@@ -45,7 +45,7 @@ class _SignInClassicState extends State<SignInClassic> {
           Navigator.of(context).popAndPushNamed(Navigation.tag);
         }
       } on ApiErr catch(err){
-      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+        Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
       }
     }
   }
@@ -91,7 +91,7 @@ class _SignInClassicState extends State<SignInClassic> {
                           ),
 
                           Container(height: 40),
-                          CustomInput(title: "mail", notValidError: 'Veuillez saisir un mail', controller: mailController,
+                          CustomInput(title: "pseudo/mail", notValidError: 'Veuillez saisir un mail ou un pseudo', controller: mailController,
                             border: UnderlineInputBorder(), margin: const EdgeInsets.only(),
                           ),
                           CustomInput(title: "password", notValidError: 'Veuillez saisir un mot de passe', controller: passwordController,

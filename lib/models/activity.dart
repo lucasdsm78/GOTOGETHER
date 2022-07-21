@@ -110,7 +110,7 @@ class Activity {
     return map;
   }
 
-  toJson() {
+  String toJson() {
     return jsonEncode(toMap());
   }
 }
