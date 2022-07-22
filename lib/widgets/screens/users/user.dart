@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/user.dart';

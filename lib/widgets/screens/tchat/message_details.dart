@@ -2,6 +2,7 @@ import 'dart:developer';
 
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:go_together/usecase/message.dart';

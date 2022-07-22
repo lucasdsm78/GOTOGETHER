@@ -4,9 +4,11 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -37,6 +39,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 }
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late User currentUser = MockUser.userGwen;
   late Session session = Session();
@@ -90,6 +93,23 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
           width: 600,
           child: ListView(
           children: <Widget>[
+            Container(
+              child:
+              IconButton(
+                icon: const Icon(Icons.calendar_view_month),
+                color: Colors.green,
+                onPressed: () {
+                  final Event event = Event(
+                    title: activity.description,
+                    description: activity.description,
+                    location: activity.location.address + ", " + activity.location.city + ", " + activity.location.country,
+                    startDate: activity.dateStart,
+                    endDate: activity.dateEnd,
+                  );
+                  Add2Calendar.addEvent2Cal(event);
+                },
+              ),
+            ),
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
               child:Text( activity.description,
