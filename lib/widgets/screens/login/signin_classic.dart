@@ -2,9 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
+import 'package:go_together/helper/google_authentication.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/user.dart';
+import 'package:go_together/widgets/components/buttons/google_sign_in_button.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/helper/storage.dart';
 
@@ -106,6 +109,22 @@ class _SignInClassicState extends State<SignInClassic> {
                               onPressed: (()=>validForm()),
                               child: const Text('Valider'),
                             ),
+                          ),
+
+                          FutureBuilder(
+                            future: GoogleAuthentication.initializeFirebase(context: context),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Error initializing Firebase');
+                              } else if (snapshot.connectionState == ConnectionState.done) {
+                                return GoogleSignInButton();
+                              }
+                              return CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  CustomColors.firebaseOrange,
+                                ),
+                              );
+                            },
                           ),
 
 

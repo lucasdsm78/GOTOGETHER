@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/google_authentication.dart';
+import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/widgets/screens/login/user_info_google.dart';
 
 class GoogleSignInButton extends StatefulWidget {
@@ -44,9 +45,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           if (user != null) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => UserInfoScreen(
-                  user: user,
-                ),
+                builder: (context) => Navigation(),
               ),
             );
           }
