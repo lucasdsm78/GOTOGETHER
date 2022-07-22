@@ -25,13 +25,13 @@ extension MethodExtension on Method {
       return client.post;
     }
     else if(this == Method.patch){
-      return client.post;
+      return client.patch;
     }
     else if(this == Method.put){
-      return client.post;
+      return client.put;
     }
     else{
-      return client.post;
+      return client.delete;
     }
   }
 }

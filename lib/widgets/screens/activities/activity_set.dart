@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
@@ -27,6 +28,7 @@ import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/widgets/screens/activities/activity_attendees.dart';
 
 import 'package:go_together/widgets/components/datetime_fields.dart';
+import 'package:toast/toast.dart';
 
 
 /// This screen is the one to create an activity.
@@ -122,6 +124,7 @@ class _ActivitySetState extends State<ActivitySet> {
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -311,10 +314,14 @@ class _ActivitySetState extends State<ActivitySet> {
     Activity? activity = _generateActivity();
     if(activity != null) {
       log(activity.toJson());
-      Activity? activityAdded = (isUpdating ? await activityUseCase.update(
-          activity) : await activityUseCase.add(activity));
-      if (activityAdded != null) {
-        Navigator.of(context).popAndPushNamed(Navigation.tag);
+      try {
+        Activity? activityAdded = (isUpdating ? await activityUseCase.update(
+            activity) : await activityUseCase.add(activity));
+        if (activityAdded != null) {
+          Navigator.of(context).popAndPushNamed(Navigation.tag);
+        }
+      } on ApiErr catch(err){
+        Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
       }
     }
   }

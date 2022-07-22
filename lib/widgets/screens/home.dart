@@ -65,7 +65,10 @@ class _HomeState extends State<Home> with Observer{
 
   @override
   update(Observable observable, String? notifyName, Map? map) {
-    if(notifyName == NotificationCenter.userJoinActivity.name || notifyName == NotificationCenter.userCancelActivity.name){
+    if(notifyName == NotificationCenter.userJoinActivity.name
+        || notifyName == NotificationCenter.userCancelActivity.name
+        || notifyName == NotificationCenter.setActivityHost.name
+    ){
       getActivities();
     }
     //throw UnimplementedError();

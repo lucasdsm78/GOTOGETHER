@@ -101,9 +101,11 @@ class ActivityServiceApi {
       "idActivity": activity.id!,
       "isJoining": hasJoin ? 0 : 1
     }));
+    log(response.statusCode.toString());
     if (response.statusCode == 200) {
       return Activity.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
+      log(jsonDecode(response.body)["error"].toString());
       throw ApiErr(codeStatus: response.statusCode, message: "failed to join an activity");
     }
   }
@@ -133,7 +135,7 @@ class ActivityServiceApi {
         return true;
       } else {
         log("on error occured");
-        throw ApiErr(codeStatus: response.statusCode, message: "failed to update activity");
+        throw ApiErr(codeStatus: response.statusCode, message: "une erreur est survenue, impossible de changer d'hote");
       }
     }
   }

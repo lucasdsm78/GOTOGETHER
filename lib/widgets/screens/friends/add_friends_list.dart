@@ -82,16 +82,20 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
 
   _setFriends() async{
-    List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
-    List<int> listId = [];
-    friendsList.forEach((element) {
-      if(element.id != null) {
-        listId.add(element.id!);
-      }
-    });
-    setState(() {
-      currentUser.friendsList = listId;
-    });
+    try{
+      List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
+      List<int> listId = [];
+      friendsList.forEach((element) {
+        if(element.id != null) {
+          listId.add(element.id!);
+        }
+      });
+      setState(() {
+        currentUser.friendsList = listId;
+      });
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
   //endregion
@@ -158,10 +162,14 @@ class _AddFriendsListState extends State<AddFriendsList> {
   }
 
   _addFriend(User user){
-    friendsUseCase.add(currentUser.id!, user.id!);
-    setState(() {
-      currentUser.friendsList.add(user.id!);
-    });
+    try{
+      friendsUseCase.add(currentUser.id!, user.id!);
+      setState(() {
+        currentUser.friendsList.add(user.id!);
+      });
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
 }

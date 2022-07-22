@@ -134,7 +134,7 @@ class _SignInClassicState extends State<SignInClassic> {
                                 allowSaveSession = !allowSaveSession;
                               });
                             },
-                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                            controlAffinity: ListTileControlAffinity.leading,
                           ),
 
                           Container(height: 20),

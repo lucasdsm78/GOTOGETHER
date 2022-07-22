@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
@@ -13,6 +14,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
+import 'package:toast/toast.dart';
 
 /// this class will display all attendees of an activity.
 /// Shouldn't be available before the activity is finished.
@@ -53,6 +55,7 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     return Scaffold(
       appBar: TopSearchBar(
         customSearchBar: const Text('Les participants'),
@@ -144,7 +147,11 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
       Commentary commentaryWithComment = _values.lastWhere((i) => i.commentary != null && i.userIdReceiver == userId);
       commentary.commentary = commentaryWithComment.commentary;
     }
-    await commentaryUseCase.add(commentary);
+    try{
+      await commentaryUseCase.add(commentary);
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
 

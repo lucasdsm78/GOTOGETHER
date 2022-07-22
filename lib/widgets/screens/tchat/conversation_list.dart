@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/asymetric_key.dart';
 import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/string_extension.dart';
@@ -14,6 +15,7 @@ import 'package:go_together/widgets/screens/tchat/tchat.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
+import 'package:toast/toast.dart';
 
 class ConversationList extends StatefulWidget {
   const ConversationList({Key? key}) : super(key: key);
@@ -109,6 +111,8 @@ class _ConversationListState extends State<ConversationList> {
   //@todo  : add a floatting  button to add a new conversation
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
       appBar: TopSearchBar(
         customSearchBar: const Text('Liste des conversations'),
@@ -154,12 +158,15 @@ class _ConversationListState extends State<ConversationList> {
   _quitConversation(Conversation conversation) async {
     // @todo : maybe a 'quitConv' function, to not delete it but just user not in it anymore
     // @todo : could have a list of conversation where we are invited. then can accept or ignore it
-
-    bool isDelete = await messageUseCase.quitConversation(conversation.id!);
-    if(isDelete){
-      setState(() {
-        removedConversation.add(conversation.id!);
-      });
+    try {
+      bool isDelete = await messageUseCase.quitConversation(conversation.id!);
+      if (isDelete) {
+        setState(() {
+          removedConversation.add(conversation.id!);
+        });
+      }
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
     }
   }
   //endregion
