@@ -162,7 +162,7 @@ class _ActivitiesAttendeesCommentaryState extends State<ActivitiesAttendeesComme
   }
 
   /// Filter activities depending on [keywords], [selectedDate]
-  _filterActivities(List<User> list){
+  List<User> _filterActivities(List<User> list){
     List<User> res = [];
     list.forEach((user) {
       if(_fieldContains(user)){

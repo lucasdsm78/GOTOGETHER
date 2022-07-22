@@ -47,18 +47,24 @@ class _FriendsListState extends State<FriendsList> {
     searchbarController.addListener(_updateKeywords);
   }
 
+  @override
+  void dispose() {
+    searchbarController.dispose();
+    super.dispose();
+  }
+
   //region set friends
-  _setColID(int newId){
+  void _setColID(int newId){
     setState(() {
       colID = newId;
     });
   }
-  _setFiendsList() {
+  void _setFiendsList() {
     setState(() {
       futureFriends2 = friendsUseCase.getById(currentUser.id!);
     });
   }
-  _setFriendsWaitingList() {
+  void _setFriendsWaitingList() {
     setState(() {
       futureFriendsWaiting2 = friendsUseCase.getWaitingById(currentUser.id!);
     });
@@ -66,7 +72,7 @@ class _FriendsListState extends State<FriendsList> {
 
   //set friends for Mock reason (don't have the actual friend from bdd with mock)
   //Note that the user.friendList contain both confirmed and waiting friends.
-  _setFriends() async{
+  void _setFriends() async{
     try{
       List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
       List<int> listId = [];
@@ -84,12 +90,6 @@ class _FriendsListState extends State<FriendsList> {
   }
   //endregion
 
-  @override
-  void dispose() {
-    searchbarController.dispose();
-    super.dispose();
-  }
-
   //region searchbar && filter
   /// Update [keywords], used in searchbar controller
   void _updateKeywords() {
@@ -100,7 +100,7 @@ class _FriendsListState extends State<FriendsList> {
   }
 
   /// Filter user depending on [keywords]
-  _filterFriends(List<User> list){
+  List<User> _filterFriends(List<User> list){
     List<User> res = [];
     list.forEach((user) {
       if(_fieldContains(user) && currentUser.friendsList.contains(user.id) ){
@@ -129,6 +129,90 @@ class _FriendsListState extends State<FriendsList> {
   //endregion
 
 
+  //region actions
+  void _seeMore(User user) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          //@todo : display a user profile readonly (can't change user data)
+          return  UserProfile(user: user);
+        },
+      ),
+    );
+  }
+
+  void _deleteFriend(User user) async {
+    try{
+      bool isDelete = await friendsUseCase.delete(currentUser.id!, user.id!);
+      if(isDelete){
+        setState(() {
+          currentUser.friendsList.remove(user.id!);
+        });
+      }
+      _setFriends();
+      _setFiendsList();
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
+  }
+  void _acceptFriend(User user) async {
+    try{
+      bool isValidate = await friendsUseCase.validateFriendship(currentUser.id!, user.id!);
+      if(isValidate){
+        setState(() {
+          currentUser.friendsList.add(user.id!);
+        });
+      }
+      _setFriends();
+      _setFiendsList();
+      _setFriendsWaitingList();
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
+  }
+  //endregion
+
+
+  //region build rows
+  Widget _buildRowFriends(User user) {
+    return ListTile(
+      title: Text(
+        user.username,
+        style: _biggerFont,
+      ),
+      leading: Icon(Icons.account_circle_rounded),
+      trailing: ElevatedButton(
+        onPressed:() {
+          _deleteFriend(user);
+        },
+        child: Icon(Icons.delete_forever, color: Colors.red,),
+        style: ElevatedButton.styleFrom(primary: Colors.white),
+      ),
+      onTap: () {
+        _seeMore(user);
+      },
+    );
+  }
+  Widget _buildRowFriendsWaiting(User user) {
+    return ListTile(
+      title: Text(
+        user.username,
+        style: _biggerFont,
+      ),
+      leading: Icon(Icons.account_circle_rounded),
+      trailing: ElevatedButton(
+        onPressed:() {
+          _acceptFriend(user);
+        },
+        child: Icon(Icons.download_done_sharp, color: Colors.green,),
+        style: ElevatedButton.styleFrom(primary: Colors.white),
+      ),
+      onTap: () {
+        _seeMore(user);
+      },
+    );
+  }
+  //endregion
 
   @override
   Widget build(BuildContext context) {
@@ -192,86 +276,4 @@ class _FriendsListState extends State<FriendsList> {
     );
   }
 
-  //region actions
-  void _seeMore(User user) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          //@todo : display a user profile readonly (can't change user data)
-          return  UserProfile(user: user);
-        },
-      ),
-    );
-  }
-
-  _deleteFriend(User user) async {
-    try{
-      bool isDelete = await friendsUseCase.delete(currentUser.id!, user.id!);
-      if(isDelete){
-        setState(() {
-          currentUser.friendsList.remove(user.id!);
-        });
-      }
-      _setFriends();
-      _setFiendsList();
-    } on ApiErr catch(err){
-      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
-    }
-  }
-  _acceptFriend(User user) async {
-    try{
-      bool isValidate = await friendsUseCase.validateFriendship(currentUser.id!, user.id!);
-      if(isValidate){
-        setState(() {
-          currentUser.friendsList.add(user.id!);
-        });
-      }
-      _setFriends();
-      _setFiendsList();
-      _setFriendsWaitingList();
-    } on ApiErr catch(err){
-      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
-    }
-  }
-  //endregion
-
-
-  Widget _buildRowFriends(User user) {
-    return ListTile(
-      title: Text(
-        user.username,
-        style: _biggerFont,
-      ),
-      leading: Icon(Icons.account_circle_rounded),
-      trailing: ElevatedButton(
-        onPressed:() {
-          _deleteFriend(user);
-        },
-        child: Icon(Icons.delete_forever, color: Colors.red,),
-        style: ElevatedButton.styleFrom(primary: Colors.white),
-      ),
-      onTap: () {
-        _seeMore(user);
-      },
-    );
-  }
-  Widget _buildRowFriendsWaiting(User user) {
-    return ListTile(
-      title: Text(
-        user.username,
-        style: _biggerFont,
-      ),
-      leading: Icon(Icons.account_circle_rounded),
-      trailing: ElevatedButton(
-        onPressed:() {
-          _acceptFriend(user);
-        },
-        child: Icon(Icons.download_done_sharp, color: Colors.green,),
-        style: ElevatedButton.styleFrom(primary: Colors.white),
-      ),
-      onTap: () {
-        _seeMore(user);
-      },
-    );
-  }
 }

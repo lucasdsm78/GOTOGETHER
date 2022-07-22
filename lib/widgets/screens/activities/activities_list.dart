@@ -105,37 +105,6 @@ class ActivityListState extends State<ActivityList> with Observer{
     //throw UnimplementedError();
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: TopSearchBar(
-          customSearchBar: const Text('Liste des Activités',
-            style: TextStyle(color: Colors.white),
-          ),
-          searchbarController: searchbarController,
-          leading:IconButton(onPressed: (){
-            _dispDialog();
-          }, icon: Icon(Icons.more_horiz, color:Colors.white))
-      ),
-      body: FutureBuilder<List<Activity>>(
-        future: futureActivities,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<Activity> data = snapshot.data!;
-            List<Activity> res = _filterActivities(data);
-            return ListViewSeparated(data: res, buildListItem: _buildRow);
-          } else if (snapshot.hasError) {
-            return getSnapshotErrWidget(snapshot);
-          }
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        },
-      ),
-    );
-  }
-
   /// This function will push (redirect) to Activity details page
   void _seeMore(Activity activity) {
     Navigator.of(context).push(
@@ -150,7 +119,7 @@ class ActivityListState extends State<ActivityList> with Observer{
   /// This function build a Slidable item used to update the activity.
   /// Slide to the right of a list item to see it appear.
   /// Only available for the activity's host
-  slidableActionUpdateActivity(BuildContext context, Activity activity) {
+  Widget slidableActionUpdateActivity(BuildContext context, Activity activity) {
     return SlidableAction(
       onPressed: (BuildContext) {
         Navigator.of(context).push(
@@ -262,25 +231,25 @@ class ActivityListState extends State<ActivityList> with Observer{
   }
 
   //region setters data used to filter
-  _updateSelectedDate(DateTime date){
+  void _updateSelectedDate(DateTime date){
     setState(() {
       selectedDate = date;
     });
   }
 
-  _updateSelectedSport(Sport newSport){
+  void _updateSelectedSport(Sport newSport){
     setState(() {
       sport = newSport;
     });
   }
 
-  _updateSelectedGender(String newGender){
+  void _updateSelectedGender(String newGender){
     setState(() {
       gender = newGender;
     });
   }
 
-  _updateSelectedLevel(Level newLevel){
+  void _updateSelectedLevel(Level newLevel){
     setState(() {
       level = newLevel;
     });
@@ -300,7 +269,7 @@ class ActivityListState extends State<ActivityList> with Observer{
   /// [sport], [gender], [level], and activity privacy (public).
   ///
   /// if the privacy is private, only the host and its friends can see it.
-  _filterActivities(List<Activity> list){
+  List<Activity> _filterActivities(List<Activity> list){
     List<Activity> res = [];
     list.forEach((activity) {
       if(_fieldContains(activity)
@@ -349,5 +318,37 @@ class ActivityListState extends State<ActivityList> with Observer{
     return containsKeyword.where((item) => item == false).isEmpty;
   }
   //endregion
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: TopSearchBar(
+          customSearchBar: const Text('Liste des Activités',
+            style: TextStyle(color: Colors.white),
+          ),
+          searchbarController: searchbarController,
+          leading:IconButton(onPressed: (){
+            _dispDialog();
+          }, icon: Icon(Icons.more_horiz, color:Colors.white))
+      ),
+      body: FutureBuilder<List<Activity>>(
+        future: futureActivities,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<Activity> data = snapshot.data!;
+            List<Activity> res = _filterActivities(data);
+            return ListViewSeparated(data: res, buildListItem: _buildRow);
+          } else if (snapshot.hasError) {
+            return getSnapshotErrWidget(snapshot);
+          }
+          return const Center(
+              child: CircularProgressIndicator()
+          );
+        },
+      ),
+    );
+  }
 
 }

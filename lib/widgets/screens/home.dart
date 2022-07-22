@@ -65,7 +65,7 @@ class _HomeState extends State<Home> with Observer{
   }
 
   @override
-  update(Observable observable, String? notifyName, Map? map) {
+  void update(Observable observable, String? notifyName, Map? map) {
     if(notifyName == NotificationCenter.userJoinActivity.name
         || notifyName == NotificationCenter.userCancelActivity.name
         || notifyName == NotificationCenter.setActivityHost.name
@@ -75,7 +75,7 @@ class _HomeState extends State<Home> with Observer{
     //throw UnimplementedError();
   }
 
-  _setColID(int newId){
+  void _setColID(int newId){
     setState(() {
       colID = newId;
     });

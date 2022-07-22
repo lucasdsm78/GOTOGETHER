@@ -58,7 +58,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
   }
 
   /// Filter user depending on [keywords]
-  _filterFriends(List<User> list){
+  List<User> _filterFriends(List<User> list){
     List<User> res = [];
     list.forEach((user) {
       if(_fieldContains(user) && !currentUser.friendsList.contains(user.id) ){
@@ -81,7 +81,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
   }
 
 
-  _setFriends() async{
+  void _setFriends() async{
     try{
       List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
       List<int> listId = [];
@@ -100,34 +100,6 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
   //endregion
 
-  @override
-  Widget build(BuildContext context) {
-    ToastContext().init(context);
-
-    return Scaffold(
-      appBar: TopSearchBar(
-        customSearchBar: const Text('Ajouter des amis'),
-        searchbarController: searchbarController,
-        placeholder: "username",
-      ),
-      body: FutureBuilder<List<User>>(
-        future: futureUsers,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<User> data = snapshot.data!;
-            List<User> res = _filterFriends(data);
-
-            return ListViewSeparated(data: res, buildListItem: _buildRow);
-          } else if (snapshot.hasError) {
-            return getSnapshotErrWidget(snapshot);
-          }
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        },
-      ),
-    );
-  }
 
   /// build a listView item widget, taking an [User] in parameters
   /// in order to display some valuable data like the host name, or the
@@ -161,7 +133,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
     );
   }
 
-  _addFriend(User user){
+  void _addFriend(User user){
     try{
       friendsUseCase.add(currentUser.id!, user.id!);
       setState(() {
@@ -170,6 +142,37 @@ class _AddFriendsListState extends State<AddFriendsList> {
     } on ApiErr catch(err){
       Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
     }
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    ToastContext().init(context);
+
+    return Scaffold(
+      appBar: TopSearchBar(
+        customSearchBar: const Text('Ajouter des amis'),
+        searchbarController: searchbarController,
+        placeholder: "username",
+      ),
+      body: FutureBuilder<List<User>>(
+        future: futureUsers,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<User> data = snapshot.data!;
+            List<User> res = _filterFriends(data);
+
+            return ListViewSeparated(data: res, buildListItem: _buildRow);
+          } else if (snapshot.hasError) {
+            return getSnapshotErrWidget(snapshot);
+          }
+          return const Center(
+              child: CircularProgressIndicator()
+          );
+        },
+      ),
+    );
   }
 
 }

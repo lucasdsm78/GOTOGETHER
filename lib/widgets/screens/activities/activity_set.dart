@@ -95,32 +95,99 @@ class _ActivitySetState extends State<ActivitySet> {
   }
 
   //region setter
-  _setEventDate(date){
+  void _setEventDate(date){
       setState(() {
         dateTimeEvent = date as DateTime;
       });
   }
-  _setEventSport(newSport) {
+  void _setEventSport(newSport) {
     setState(() {
       sport = newSport as Sport;
     });
   }
-  _setEventLevel(newLevel) {
+  void _setEventLevel(newLevel) {
     setState(() {
       eventLevel = newLevel as Level;
     });
   }
-  _setEventGender(String? newValue){
+  void _setEventGender(String? newValue){
     setState(() {
       criterGender = newValue;
     });
   }
-  _setEventPrivacy(newValue){
+  void _setEventPrivacy(newValue){
     setState(() {
       public = newValue!;
     });
   }
   //endregion
+
+  /// Create a map dialog that is displayed on screen.
+  /// then, we should select a position and confirm the location.
+  /// location data should be displayed after we close the dialog.
+  void mapDialogue() async{
+    dynamic res = await showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return MapDialog(location: location,);
+        }
+    );
+    if(res != null){
+      setState(() {
+        location = res as Location;
+      });
+      log("----- CLOSE MAP DIALOG");
+      log(res.toString());
+    }
+  }
+
+  /// redirect to a page with all the attendees of this event displayed
+  /// to select the next host.
+  void _changeOrganiser(Activity activity) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return  ActivitiesAttendees(activity: activity);
+        },
+      ),
+    );
+  }
+
+  Activity? _generateActivity(){
+    if(sport != null) { // check the data in Form
+      //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
+      return Activity(location: location!,
+          host: currentUser,
+          sport: sport!,
+          dateEnd: dateTimeEvent.add(_duration),
+          dateStart: dateTimeEvent,
+          isCanceled: 0,
+          description: eventDescription,
+          level: eventLevel,
+          attendeesNumber: nbTotalParticipants,
+          public: public,
+          criterionGender: (criterGender == null ? null : getGenderByString(
+              criterGender!)),
+          limitByLevel: false,
+          id: (widget.activity == null ? null : widget.activity!.id!));
+    }
+  }
+
+  void _addEvent() async {
+    Activity? activity = _generateActivity();
+    if(activity != null) {
+      log(activity.toJson());
+      try {
+        Activity? activityAdded = (isUpdating ? await activityUseCase.update(
+            activity) : await activityUseCase.add(activity));
+        if (activityAdded != null) {
+          Navigator.of(context).popAndPushNamed(Navigation.tag);
+        }
+      } on ApiErr catch(err){
+        Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,70 +326,4 @@ class _ActivitySetState extends State<ActivitySet> {
     );
   }
 
-  /// Create a map dialog that is displayed on screen.
-  /// then, we should select a position and confirm the location.
-  /// location data should be displayed after we close the dialog.
-  mapDialogue() async{
-    dynamic res = await showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return MapDialog(location: location,);
-        }
-    );
-    if(res != null){
-      setState(() {
-        location = res as Location;
-      });
-      log("----- CLOSE MAP DIALOG");
-      log(res.toString());
-    }
-  }
-
-  /// redirect to a page with all the attendees of this event displayed
-  /// to select the next host.
-  void _changeOrganiser(Activity activity) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          return  ActivitiesAttendees(activity: activity);
-        },
-      ),
-    );
-  }
-
-  Activity? _generateActivity(){
-    if(sport != null) { // check the data in Form
-      //Location location = Location(address: "place de la boule", city: "Nanterre", country: "France", lat:10.1, lon: 12.115);
-      return Activity(location: location!,
-          host: currentUser,
-          sport: sport!,
-          dateEnd: dateTimeEvent.add(_duration),
-          dateStart: dateTimeEvent,
-          isCanceled: 0,
-          description: eventDescription,
-          level: eventLevel,
-          attendeesNumber: nbTotalParticipants,
-          public: public,
-          criterionGender: (criterGender == null ? null : getGenderByString(
-              criterGender!)),
-          limitByLevel: false,
-          id: (widget.activity == null ? null : widget.activity!.id!));
-    }
-  }
-
-  _addEvent() async {
-    Activity? activity = _generateActivity();
-    if(activity != null) {
-      log(activity.toJson());
-      try {
-        Activity? activityAdded = (isUpdating ? await activityUseCase.update(
-            activity) : await activityUseCase.add(activity));
-        if (activityAdded != null) {
-          Navigator.of(context).popAndPushNamed(Navigation.tag);
-        }
-      } on ApiErr catch(err){
-        Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
-      }
-    }
-  }
 }

@@ -55,7 +55,7 @@ class _SignUpState extends State<SignUp> {
   }
 
 
-  validForm() async {
+  void validForm() async {
     if (_formKey.currentState!.validate()){
       if(isMale == 0){
         _gender = Gender.male;
@@ -89,16 +89,17 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  handleKeys () async {
+  Future<bool> handleKeys () async {
     log("######## sign in classic");
     AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
 
     String pubkey = (await asymKeys.getPubKeyFromStorage()).toString();
     (await asymKeys.getPrivateKeyFromStorage()).toString();
     userUseCase.setPublicKey(pubkey);
+    return true;
   }
 
-  goToSignin(){
+  void goToSignin(){
     Navigator.of(context).popAndPushNamed(SignInClassic.tag);
   }
 

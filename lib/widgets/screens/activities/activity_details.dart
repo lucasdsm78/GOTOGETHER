@@ -54,7 +54,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     currentUser = session.getData(SessionData.user);
   }
 
-  _joinActivity () async {
+  void _joinActivity () async {
     try{
       Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentAttendees!.contains(currentUser.id.toString()));
       setState(() {
@@ -76,7 +76,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     );
   }
 
-  _deleteActivity() {
+  void _deleteActivity() {
     try{
       activityUseCase.delete(activity.id.toString() );
       Observable.instance.notifyObservers(NotificationCenter.userCancelActivity.stateImpacted,

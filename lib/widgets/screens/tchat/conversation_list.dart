@@ -48,7 +48,7 @@ class _ConversationListState extends State<ConversationList> {
     handleKeys ();
   }
 
-  handleKeys () async {
+  void handleKeys () async {
     AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
 
     pubKey1 = (await asymKeys.getPubKeyFromStorage()).toString();
@@ -56,7 +56,7 @@ class _ConversationListState extends State<ConversationList> {
   }
   //region set friends
 
-  _setConversationList() {
+  void _setConversationList() {
     setState(() {
       futureConversation = messageUseCase.getAllConversationCurrentUser();
     });
@@ -78,7 +78,7 @@ class _ConversationListState extends State<ConversationList> {
   }
 
   /// Filter conversation depending on [keywords]
-  _filterConversations(List<Conversation> list){
+  List<Conversation> _filterConversations(List<Conversation> list){
     List<Conversation> res = [];
     list.forEach((conversation) {
       if(_fieldContains(conversation)){
@@ -155,7 +155,7 @@ class _ConversationListState extends State<ConversationList> {
     );
   }
 
-  _quitConversation(Conversation conversation) async {
+  void _quitConversation(Conversation conversation) async {
     // @todo : maybe a 'quitConv' function, to not delete it but just user not in it anymore
     // @todo : could have a list of conversation where we are invited. then can accept or ignore it
     try {
