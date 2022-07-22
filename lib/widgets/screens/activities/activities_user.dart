@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/parse_helper.dart';
 import 'package:go_together/helper/session.dart';
@@ -142,7 +143,7 @@ class _ActivitiesUserState extends State<ActivitiesUser> with Observer{
             List<Activity> res = _filterActivities(data);
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return getSnapshotErrWidget(snapshot);
           }
           return const Center(
               child: CircularProgressIndicator()

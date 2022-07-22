@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
@@ -152,7 +153,7 @@ class _FriendsListState extends State<FriendsList> {
                       List<User> res = _filterFriends(data);
                       return ListViewSeparated(data: res, buildListItem: _buildRowFriends);
                     } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
+                      return getSnapshotErrWidget(snapshot);
                     }
                     return const Center(
                         child: CircularProgressIndicator()
@@ -167,7 +168,7 @@ class _FriendsListState extends State<FriendsList> {
                       List<User> res = _filterFriends(data);
                       return ListViewSeparated(data: res, buildListItem: _buildRowFriendsWaiting);
                     } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
+                      return getSnapshotErrWidget(snapshot);
                     }
                     return const Center(
                         child: CircularProgressIndicator()

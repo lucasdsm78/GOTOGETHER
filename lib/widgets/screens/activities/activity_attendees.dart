@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
@@ -67,7 +68,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
             List<User> res = _filterUsers(data);
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return getSnapshotErrWidget(snapshot);
           }
           return const Center(
               child: CircularProgressIndicator()

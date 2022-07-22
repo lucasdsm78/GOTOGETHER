@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/asymetric_key.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/session.dart';
@@ -15,6 +16,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:toast/toast.dart';
 
 
 class Tchat extends StatefulWidget {
@@ -39,6 +41,7 @@ class _TchatState extends State<Tchat> {
   late String pubKey1;
   late String privateKey1;
   late IO.Socket socket;
+  bool hasErrorApiMessages = false;
 
   @override
   void initState() {
@@ -104,17 +107,27 @@ class _TchatState extends State<Tchat> {
   }
 
   getConversationList() async {
-    List<Conversation> convList = await messageUseCase.getConversationById(widget.conversation.id!);
-    setState(() {
-      conversationList = convList;
-    });
+    try {
+      List<Conversation> convList = await messageUseCase.getConversationById(widget.conversation.id!);
+      setState(() {
+        conversationList = convList;
+      });
+    } on ApiErr catch(err){
+    }
   }
 
   getMessagesList() async {
-    List<Message> convList = await messageUseCase.getById(widget.conversation.id!);
-    convList.forEach((element) {
-      receiveMessage(element);
-    });
+    try {
+      List<Message> convList = await messageUseCase.getById(
+          widget.conversation.id!);
+      convList.forEach((element) {
+        receiveMessage(element);
+      });
+    } on ApiErr catch(err){
+      setState(() {
+        hasErrorApiMessages = true;
+      });
+    }
   }
 
   void _updateKeywords() {
@@ -131,31 +144,37 @@ class _TchatState extends State<Tchat> {
   /// Then reset Text input value.
   sendMessage(String text) async {
     if(text != null  && text != "") {
-      //region generate crypted message for all user in conversation
-      List<Message> listMessage = [];
-      log(conversationList.toString());
-      conversationList.forEach((element) {
-        log(element.toString());
-        if (element.pubKey != null && element.pubKey != "") {
-          Uint8List encryptData = encrypt(text, element.pubKey);
-          Uint8List signature = rsaSignFromKeyString(privateKey1, encryptData);
-          String cryptedMessageSigned = addSignature(
-              encryptData.toString(), signature.toString());
-          listMessage.add(Message(id: 0,
-              bodyMessage: cryptedMessageSigned,
-              idReceiver: element.userId,
-              idSender: 0,
-              createdAt: DateTime.now(),
-              senderName: currentUser.username));
-        }
-      });
-      //endregion
+      if(conversationList.isEmpty){
+        Toast.show("Impossible d'envoyer le message", gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+      }
+      else {
+        //region generate crypted message for all user in conversation
+        List<Message> listMessage = [];
+        log(conversationList.toString());
+        conversationList.forEach((element) {
+          log(element.toString());
+          if (element.pubKey != null && element.pubKey != "") {
+            Uint8List encryptData = encrypt(text, element.pubKey);
+            Uint8List signature = rsaSignFromKeyString(
+                privateKey1, encryptData);
+            String cryptedMessageSigned = addSignature(
+                encryptData.toString(), signature.toString());
+            listMessage.add(Message(id: 0,
+                bodyMessage: cryptedMessageSigned,
+                idReceiver: element.userId,
+                idSender: 0,
+                createdAt: DateTime.now(),
+                senderName: currentUser.username));
+          }
+        });
+        //endregion
 
-      final messageSend = await messageUseCase.add(
-          widget.conversation.id!, listMessage);
+        final messageSend = await messageUseCase.add(
+            widget.conversation.id!, listMessage);
 
-      //reset text input content
-      messageTextController.text = "";
+        //reset text input content
+        messageTextController.text = "";
+      }
     }
   }
 
@@ -193,6 +212,7 @@ class _TchatState extends State<Tchat> {
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.conversation.name),
@@ -202,90 +222,93 @@ class _TchatState extends State<Tchat> {
         child:
         Column(
           children: [
-            Expanded(child:
-              GroupedListView<Message, DateTime>(
-                padding: const EdgeInsets.all(8),
-                reverse: true,
-                order: GroupedListOrder.DESC,
-                useStickyGroupSeparators: true,
-                floatingHeader: true,
-                shrinkWrap: true,
-                elements :  messages,
-                groupBy: (message)=>DateTime(
-                  message.createdAt!.year,
-                  message.createdAt!.month,
-                  message.createdAt!.day,
+            Expanded(
+              child: (hasErrorApiMessages
+                ? Center(child: Text("Impossible de charger les messages"),)
+                : GroupedListView<Message, DateTime>(
+                  padding: const EdgeInsets.all(8),
+                  reverse: true,
+                  order: GroupedListOrder.DESC,
+                  useStickyGroupSeparators: true,
+                  floatingHeader: true,
+                  shrinkWrap: true,
+                  elements :  messages,
+                  groupBy: (message)=>DateTime(
+                    message.createdAt!.year,
+                    message.createdAt!.month,
+                    message.createdAt!.day,
 
-                ),
-                groupHeaderBuilder: (Message message)=> SizedBox(
-                    height: 40,
-                    child: Center(
-                        child:Card(
-                          color: CustomColors.goTogetherMain,
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              DateFormat.yMMMd().format(message.createdAt!),
-                              style: const TextStyle(color: Colors.white),
+                  ),
+                  groupHeaderBuilder: (Message message)=> SizedBox(
+                      height: 40,
+                      child: Center(
+                          child:Card(
+                            color: CustomColors.goTogetherMain,
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text(
+                                DateFormat.yMMMd().format(message.createdAt!),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          )
+                      )
+                  ),
+                  itemBuilder: (context, Message message)=> Align(
+                      alignment: (amISender(message)
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft
+                      ),
+                      child:
+                      Column(
+                        crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+                        children: [
+                          //username if not the current user
+                          (!amISender(message)
+                              ? Card(
+                            color: Colors.greenAccent,
+                            elevation: 8,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text( message.senderName,
+                                style: TextStyle(color: Colors.black ),
+                              ),
+                            ),
+                          )
+                              : Container()
+                          ),
+
+                          Card(
+                            color: (amISender(message)
+                                ? CustomColors.goTogetherMain
+                                : Colors.white
+                            ),
+                            elevation: 8,
+                            child: Padding(
+                                padding: const EdgeInsets.only(top:12 , left:12, right:12, bottom:4),
+                                child: Column(
+                                    crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
+                                    children: [
+                                      Text(  message.bodyMessage,
+                                        style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
+                                      ),
+                                      Padding(
+                                          padding: const EdgeInsets.only(top:4),
+                                          child:Text(
+                                            message.createdAt!.getHourTime(),
+                                            style: TextStyle(color: Colors.black ),
+                                            textScaleFactor: .7,
+                                          )
+                                      )
+                                    ]
+                                )
                             ),
                           ),
-                        )
-                    )
-                ),
-                itemBuilder: (context, Message message)=> Align(
-                    alignment: (amISender(message)
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft
-                    ),
-                    child:
-                    Column(
-                      crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
-                      children: [
-                        //username if not the current user
-                        (!amISender(message)
-                            ? Card(
-                          color: Colors.greenAccent,
-                          elevation: 8,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Text( message.senderName,
-                              style: TextStyle(color: Colors.black ),
-                            ),
-                          ),
-                        )
-                            : Container()
-                        ),
+                        ],
+                      )
 
-                        Card(
-                          color: (amISender(message)
-                              ? CustomColors.goTogetherMain
-                              : Colors.white
-                          ),
-                          elevation: 8,
-                          child: Padding(
-                              padding: const EdgeInsets.only(top:12 , left:12, right:12, bottom:4),
-                              child: Column(
-                                  crossAxisAlignment: (amISender(message) ? CrossAxisAlignment.end : CrossAxisAlignment.start  ),
-                                  children: [
-                                    Text(  message.bodyMessage,
-                                      style: TextStyle(color: (amISender(message)  ? Colors.white : Colors.black)),
-                                    ),
-                                    Padding(
-                                        padding: const EdgeInsets.only(top:4),
-                                        child:Text(
-                                          message.createdAt!.getHourTime(),
-                                          style: TextStyle(color: Colors.black ),
-                                          textScaleFactor: .7,
-                                        )
-                                    )
-                                  ]
-                              )
-                          ),
-                        ),
-                      ],
-                    )
-
-                )
+                  )
+              )
               )
             ),
             Container(

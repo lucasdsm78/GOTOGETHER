@@ -67,7 +67,7 @@ class Api{
 
       return response;
     } on SocketException catch(err){
-      throw ApiErr(codeStatus: 0, message: "Aucune connexion internet");
+      throw ApiErr(codeStatus: -1, message: "Aucune connexion internet");
     }
   }
   Future<Response> httpGet(String route) async {

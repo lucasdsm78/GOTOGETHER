@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
@@ -124,7 +125,7 @@ class _HomeState extends State<Home> with Observer{
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()
@@ -144,7 +145,7 @@ class _HomeState extends State<Home> with Observer{
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()
@@ -164,7 +165,7 @@ class _HomeState extends State<Home> with Observer{
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/asymetric_key.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
@@ -128,7 +129,7 @@ class _ConversationListState extends State<ConversationList> {
                 }
                 return ListViewSeparated(data: res, buildListItem: _buildRowConversation);
               } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
+                return getSnapshotErrWidget(snapshot);
               }
               return const Center(
                   child: CircularProgressIndicator()

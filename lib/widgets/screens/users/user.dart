@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/signal.dart';
@@ -66,7 +67,7 @@ class _UserProfileState extends State<UserProfile> {
 
 
               } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
+                return getSnapshotErrWidget(snapshot);
               }
 
               // By default, show a loading spinner.
@@ -79,9 +80,8 @@ class _UserProfileState extends State<UserProfile> {
             if (snapshot.hasData) {
               return Text(snapshot.data!.username);
             } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
+              return getSnapshotErrWidget(snapshot);
             }
-
             // By default, show a loading spinner.
             return const CircularProgressIndicator();
           },
