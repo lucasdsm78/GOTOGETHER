@@ -11,8 +11,10 @@ class Notification{
 }
 
 class NotificationCenter{
-  static Notification userJoinActivity = Notification(name: "UserJoinActivity", stateImpacted: ["_ActivityListState"]);
-  static Notification userCancelActivity = Notification(name: "UserCancelActivity", stateImpacted: ["_ActivityListState"]);
-  static Notification createActivity = Notification(name: "CreateActivity", stateImpacted: ["_ActivityListState"]);
-  static Notification updateActivity = Notification(name: "UpdateActivity", stateImpacted: ["_ActivityListState"]);
+  static Notification userJoinActivity = Notification(name: "UserJoinActivity", stateImpacted: ["ActivityListState", "_HomeState"]);
+  static Notification userCancelActivity = Notification(name: "UserCancelActivity", stateImpacted: ["ActivityListState", "_HomeState"]);
+  static Notification createActivity = Notification(name: "CreateActivity", stateImpacted: ["ActivityListState", "_HomeState"]);
+  static Notification updateActivity = Notification(name: "UpdateActivity", stateImpacted: ["ActivityListState", "_HomeState"]);
+
+  static Notification setActivityHost = Notification(name: "SetActivityHost", stateImpacted: ["ActivityListState", "_HomeState"]);
 }

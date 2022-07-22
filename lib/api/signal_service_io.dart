@@ -8,8 +8,7 @@ class SignalServiceApi {
   final api = Api();
 
   Future<List<Signal>> getAll({Map<String, dynamic> map = const {}, required int id}) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'reporting/reporter/$id'));
+    final response = await api.httpGet(api.host + 'reporting/reporter/$id');
     if (response.statusCode == 200) {
       return compute(parseSignal, response.body);
     } else {
@@ -18,11 +17,7 @@ class SignalServiceApi {
   }
 
   Future<Signal> add(Signal signal) async {
-    final response = await api.client
-        .post(Uri.parse(api.host + 'reporting'),
-      headers: api.mainHeader,
-      body: signal.toJson(),
-    );
+    final response = await api.httpPost(api.host + 'reporting', signal.toJson());
     if (response.statusCode == 201) {
       return Signal.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {

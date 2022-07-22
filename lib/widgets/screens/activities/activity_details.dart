@@ -4,9 +4,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:go_together/models/activity.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/activity.dart';
@@ -22,6 +25,7 @@ import 'package:go_together/widgets/screens/activities/activity_attendeesComment
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:go_together/models/location.dart';
+import 'package:toast/toast.dart';
 
 import '../../components/maps/map.dart';
 
@@ -37,6 +41,7 @@ class ActivityDetailsScreen extends StatefulWidget {
 }
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late User currentUser = MockUser.userGwen;
   late Session session = Session();
@@ -50,11 +55,15 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   }
 
   _joinActivity () async {
-    Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentAttendees!.contains(currentUser.id.toString()));
-    setState(() {
-      activity = updatedActivity;
-    });
-    Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
+    try{
+      Activity updatedActivity = await activityUseCase.joinActivityUser(activity, currentUser.id!, activity.currentAttendees!.contains(currentUser.id.toString()));
+      setState(() {
+        activity = updatedActivity;
+      });
+      Observable.instance.notifyObservers(NotificationCenter.userJoinActivity.stateImpacted, notifyName: NotificationCenter.userJoinActivity.name, map: {});
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
   void _checkAttendeesCommentary(Activity activity) {
@@ -68,19 +77,25 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   }
 
   _deleteActivity() {
-    activityUseCase.delete(activity.id.toString() );
-    Observable.instance.notifyObservers(NotificationCenter.userCancelActivity.stateImpacted,
-        notifyName : NotificationCenter.userCancelActivity.name,map: {});
-    Navigator.of(context).popAndPushNamed(Navigation.tag);
+    try{
+      activityUseCase.delete(activity.id.toString() );
+      Observable.instance.notifyObservers(NotificationCenter.userCancelActivity.stateImpacted,
+          notifyName : NotificationCenter.userCancelActivity.name,map: {});
+      Navigator.of(context).popAndPushNamed(Navigation.tag);
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     //log( activity.location.lat.toString() + " ---- " + activity.location.lon.toString());
     bool isUserInActivityList = activity.currentAttendees!.contains(currentUser.id.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails de l\'activité'),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Center(
         child:
@@ -89,6 +104,23 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
           width: 600,
           child: ListView(
           children: <Widget>[
+            Container(
+              child:
+              IconButton(
+                icon: const Icon(Icons.calendar_view_month),
+                color: Colors.green,
+                onPressed: () {
+                  final Event event = Event(
+                    title: activity.description,
+                    description: activity.description,
+                    location: activity.location.address + ", " + activity.location.city + ", " + activity.location.country,
+                    startDate: activity.dateStart,
+                    endDate: activity.dateEnd,
+                  );
+                  Add2Calendar.addEvent2Cal(event);
+                },
+              ),
+            ),
             Container(
               margin: const EdgeInsets.only(top: 20.0, ),
               child:Text( activity.description,

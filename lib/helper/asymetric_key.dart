@@ -312,10 +312,11 @@ decrypt(Uint8List encryptData, String privateKey){
     final decryptData = rsaDecrypt(privKeyBites, encryptData); // error happen here when bad key
     return Utf8Decoder().convert(decryptData);
   } on Exception catch(e){
-    throw EncryptionErr(codeStatus: 1, message: "can't decrypt" + e.toString());
+    throw EncryptionErr(codeStatus: 1, message: "can't decrypt" + e.toString() + e.runtimeType.toString());
   }
 }
 decryptFromString(String encryptData, String privateKey){
+  log("##### decode encrypt data" + jsonDecode(encryptData).cast<int>().toString());
   return decryptFromListInt(jsonDecode(encryptData).cast<int>(), privateKey);
 }
 decryptFromListInt(List<int> list, String privateKey){

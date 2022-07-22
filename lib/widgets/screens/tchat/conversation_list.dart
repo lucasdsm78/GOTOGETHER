@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/api.dart';
 import 'package:go_together/helper/asymetric_key.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
@@ -11,6 +15,7 @@ import 'package:go_together/widgets/screens/tchat/tchat.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
+import 'package:toast/toast.dart';
 
 class ConversationList extends StatefulWidget {
   const ConversationList({Key? key}) : super(key: key);
@@ -106,6 +111,8 @@ class _ConversationListState extends State<ConversationList> {
   //@todo  : add a floatting  button to add a new conversation
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
       appBar: TopSearchBar(
         customSearchBar: const Text('Liste des conversations'),
@@ -126,7 +133,7 @@ class _ConversationListState extends State<ConversationList> {
                 }
                 return ListViewSeparated(data: res, buildListItem: _buildRowConversation);
               } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
+                return getSnapshotErrWidget(snapshot);
               }
               return const Center(
                   child: CircularProgressIndicator()
@@ -151,12 +158,15 @@ class _ConversationListState extends State<ConversationList> {
   _quitConversation(Conversation conversation) async {
     // @todo : maybe a 'quitConv' function, to not delete it but just user not in it anymore
     // @todo : could have a list of conversation where we are invited. then can accept or ignore it
-
-    bool isDelete = await messageUseCase.quitConversation(conversation.id!);
-    if(isDelete){
-      setState(() {
-        removedConversation.add(conversation.id!);
-      });
+    try {
+      bool isDelete = await messageUseCase.quitConversation(conversation.id!);
+      if (isDelete) {
+        setState(() {
+          removedConversation.add(conversation.id!);
+        });
+      }
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
     }
   }
   //endregion
@@ -166,10 +176,15 @@ class _ConversationListState extends State<ConversationList> {
     String decryptedMsg = "";
     String dateMsg = "";
     if(conversation.lastMessage != null){
-      Map<String,String> map = splitSignedAndCryptedMessage(conversation.lastMessage!);
-      String messageBody = map["encryptedMsg"]!;
-      decryptedMsg = decryptFromString(messageBody, privateKey1);
-      dateMsg = conversation.lastMessageDate!.getHourTime();
+      try {
+        Map<String, String> map = splitSignedAndCryptedMessage(
+            conversation.lastMessage!);
+        String messageBody = map["encryptedMsg"]!;
+        decryptedMsg = decryptFromString(messageBody, privateKey1);
+        dateMsg = conversation.lastMessageDate!.getHourTime();
+      } on EncryptionErr catch(err){
+        log(err.message);
+      }
     }
 
     return ListTile(

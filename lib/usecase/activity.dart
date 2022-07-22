@@ -44,8 +44,7 @@ class ActivityUseCase {
   Future<Activity> joinActivityUser(Activity activity, int userId, bool hasJoin) async {
     return api
         .joinActivityUser(activity, userId, hasJoin)
-        .then((value) => value)
-        .catchError((onError) => onError);
+        .then((value) => value);
   }
 
   Future<Activity?> delete(id) async {
@@ -59,7 +58,6 @@ class ActivityUseCase {
   Future<bool> changeHost(Map<String, dynamic> map) async {
     return api
         .changeHost(map)
-        .then((value) => value)
-        .catchError((onError) => onError);
+        .then((value) => value);
   }
 }

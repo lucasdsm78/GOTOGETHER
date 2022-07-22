@@ -165,7 +165,7 @@ class _SignUpState extends State<SignUp> {
                           height: 30.0,
                         ),
 
-                        Container(height: 40),
+                        Container(height: 30),
                         CustomInput(title: "Pseudo", notValidError: 'Veuillez saisir un pseudo', controller: pseudoController,
                           border: UnderlineInputBorder(), margin: const EdgeInsets.only(),
                         ),
@@ -181,26 +181,7 @@ class _SignUpState extends State<SignUp> {
                             validator: validatePasswordCheck
                         ),
 
-                        /*Container(
-                          child: TextFormField(
-                            obscureText: true,
-                            controller: confirmPdwController,
-                            decoration: InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Confirmation de mot de passe',
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez confirmer le mot de passe';
-                              } else if(confirmPdwController.text != passwordController.text){
-                                return 'les mots de passes ne sont pas identiques';
-                              }
-                              return null;
-                            }
-                          ),
-                        ),*/
-
-                        Container(height: 20),
+                        Container(height: 10),
                         CustomRadio(
                             onChange: (int? value) {
                               setState(() {
@@ -210,7 +191,7 @@ class _SignUpState extends State<SignUp> {
                             },
                             groupValue: isMale, choices: ["homme", "femme"], title: "Sexe :"
                         ),
-                        Container(height: 20),
+                        Container(height: 10),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,7 +226,7 @@ class _SignUpState extends State<SignUp> {
                         ),
 
                         Container(
-                          margin: EdgeInsets.only(top: 30.0),
+                          margin: EdgeInsets.only(top: 20.0),
                           child:
                           ElevatedButton(
                             onPressed: (()=>goToSignin()),

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/models/signal.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/signal.dart';
@@ -37,6 +38,7 @@ class _SignalProfileState extends State<SignalProfile> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Signalement'),
+          backgroundColor: CustomColors.goTogetherMain,
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

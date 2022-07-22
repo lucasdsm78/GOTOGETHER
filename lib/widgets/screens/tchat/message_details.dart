@@ -2,6 +2,8 @@ import 'dart:developer';
 
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/models/messages.dart';
 import 'package:go_together/usecase/message.dart';
 
@@ -35,6 +37,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails du message'),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Center(
         child: FutureBuilder<List<Message>>(
@@ -55,7 +58,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
                 ],
               );
             } else if (snapshot.hasError) {
-              return Text('${snapshot.error}  ');
+              return getSnapshotErrWidget(snapshot);
             }
             return const Center(
                 child: CircularProgressIndicator()

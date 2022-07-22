@@ -9,10 +9,7 @@ class MessageServiceApi {
   final api = Api();
 
   Future<List<Message>> getAll({Map<String, dynamic> map = const {}}) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'messages'),
-        headers: api.mainHeader
-    );
+    final response = await api.httpGet(api.host + 'messages');
     if (response.statusCode == 200) {
       return compute(parseMessages, response.body);
     } else {
@@ -21,10 +18,7 @@ class MessageServiceApi {
   }
 
   Future<List<Message>> getById(int id) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'messages/$id'),
-        headers: api.mainHeader
-    );
+    final response = await api.httpGet(api.host + 'messages/$id');
     if (response.statusCode == 200) {
       return compute(parseMessages, response.body);
     } else {
@@ -33,10 +27,7 @@ class MessageServiceApi {
   }
 
   Future<List<Conversation>> getConversationById(int id) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'conversations/$id'),
-        headers: api.mainHeader
-    );
+    final response = await api.httpGet(api.host + 'conversations/$id');
     if (response.statusCode == 200) {
       return compute(parseConversation, response.body);
     } else {
@@ -45,10 +36,7 @@ class MessageServiceApi {
   }
 
   Future<List<Conversation>> getAllConversationCurrentUser() async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'conversations'),
-        headers: api.mainHeader
-    );
+    final response = await api.httpGet(api.host + 'conversations');
     if (response.statusCode == 200) {
       return compute(parseConversation, response.body);
     } else {
@@ -63,11 +51,7 @@ class MessageServiceApi {
       messageListAsDict.add(element.toMap());
     });
     String body = jsonEncode(messageListAsDict);
-    final response = await api.client
-        .post(Uri.parse(api.host + 'messages/$id'),
-      headers: api.mainHeader,
-      body: body,
-    );
+    final response = await api.httpPost(api.host + 'messages/$id', body);
     if (response.statusCode == 201) {
       return Message.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
@@ -76,10 +60,7 @@ class MessageServiceApi {
   }
 
   Future<bool> quit(int id) async {
-    final response = await api.client
-        .delete(Uri.parse(api.host + 'conversations/quit/$id'),
-      headers: api.mainHeader
-    );
+    final response = await api.httpDelete(api.host + 'conversations/quit/$id');
     if (response.statusCode == 200) {
       return true;
     } else {

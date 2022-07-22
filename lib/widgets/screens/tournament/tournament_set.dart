@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/levels.dart';
@@ -129,6 +130,7 @@ class _TournamentSetState extends State<TournamentSet> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Créer un tournoi"),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Form(
         key: _formKey,

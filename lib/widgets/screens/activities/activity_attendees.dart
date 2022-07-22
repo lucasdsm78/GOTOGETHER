@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/activity.dart';
@@ -14,6 +18,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
+import 'package:toast/toast.dart';
 
 /// This screen is used to see all attendes related to the provided activity
 class ActivitiesAttendees extends StatefulWidget {
@@ -67,7 +72,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
             List<User> res = _filterUsers(data);
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return getSnapshotErrWidget(snapshot);
           }
           return const Center(
               child: CircularProgressIndicator()
@@ -107,9 +112,18 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
       );
   }
 
-  _changeHostUser(User user){
-    return activityUseCase.changeHost(
-        {"hostId": user.id, "activityId": widget.activity.id});
+  _changeHostUser(User user) async {
+    try {
+      bool isChanged = await activityUseCase.changeHost(
+          {"hostId": user.id, "activityId": widget.activity.id});
+      Observable.instance.notifyObservers(NotificationCenter.setActivityHost.stateImpacted, notifyName: NotificationCenter.setActivityHost.name, map: {});
+      int count = 0;
+      Navigator.of(context).popUntil((_) => count++ >= 2);
+      return isChanged;
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+      return false;
+    }
   }
 
   /// Display a dialog to delete the [user].
@@ -120,7 +134,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
           return YesNoDialog(
             title: "Désigner comme nouvel organisateur?",
             children: [
-              Text("${user.username} deviendras l'organisateur de l'événement. Vous ne pourrez plus modifier cette activité."),
+              Text("${user.username} deviendra l'organisateur de l'événement. Vous ne pourrez plus modifier cette activité."),
               Text("Etes-vous sûr de vouloir changer l'organisateur?"),
             ],
             trueFunction: ()=>_changeHostUser(user),

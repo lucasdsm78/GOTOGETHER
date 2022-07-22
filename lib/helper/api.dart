@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:go_together/helper/extensions/string_extension.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_together/helper/commonFunctions.dart';
+import 'package:http/http.dart';
 
 enum Method {
   get,
@@ -14,6 +16,23 @@ enum Method {
 extension MethodExtension on Method {
   String toShortString() {
     return this.toString().enumValueToNormalCase();
+  }
+  Function getHttpRequestFunction(http.Client client){
+    if(this == Method.get){
+      return client.get;
+    }
+    else if(this == Method.post){
+      return client.post;
+    }
+    else if(this == Method.patch){
+      return client.patch;
+    }
+    else if(this == Method.put){
+      return client.put;
+    }
+    else{
+      return client.delete;
+    }
   }
 }
 
@@ -28,6 +47,47 @@ class Api{
     //      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
     'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTY1ODMyMzk5N30.9N2BMYLy-0vqwLSx-fQk_7uUF5Sw7Z_iBET5cuCvkO8'
   };
+
+  //region http request
+  Future<Response> _httpRequest(Method method, String route, {String? json}) async  {
+    try {
+      Response response ;
+      Function action = method.getHttpRequestFunction(this.client);
+      if(method == Method.get){
+        response = await action(Uri.parse(route),
+          headers: this.mainHeader,
+        );
+      }
+      else{
+        response = await action(Uri.parse(route),
+          headers: this.mainHeader,
+          body: json,
+        );
+      }
+
+      return response;
+    } on SocketException catch(err){
+      throw ApiErr(codeStatus: -1, message: "Aucune connexion internet");
+    }
+  }
+  Future<Response> httpGet(String route) async {
+    return await _httpRequest(Method.get, route);
+  }
+  Future<Response> httpPost(String route, String? json) async {
+    return await _httpRequest(Method.post, route, json: json);
+  }
+  Future<Response> httpPatch(String route, String? json) async {
+    return await _httpRequest(Method.patch, route, json: json);
+  }
+  Future<Response> httpPut(String route, String? json) async {
+    return await _httpRequest(Method.put, route, json: json);
+
+  }
+  Future<Response> httpDelete(String route, {String? json}) async {
+    return await _httpRequest(Method.delete, route, json: json);
+  }
+
+  //endregion
 
   static final Api _instance = Api._internal();
   factory Api() {

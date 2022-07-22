@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/helper/session.dart';
@@ -36,10 +37,20 @@ class ActivityList extends StatefulWidget {
   final int? idHost;
 
   @override
-  _ActivityListState createState() => _ActivityListState();
+  ActivityListState createState() => ActivityListState();
 }
 
-class _ActivityListState extends State<ActivityList> with Observer{
+/// copy of ActivityList
+class HostActivities extends StatefulWidget{
+  const HostActivities({Key? key,  this.idHost}) : super(key: key);
+  static const tag = "host_activities";
+  final int? idHost;
+
+  @override
+  ActivityListState createState() => ActivityListState();
+}
+
+class ActivityListState extends State<ActivityList> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late Future<List<Activity>> futureActivities;
   late User currentUser;
@@ -115,7 +126,7 @@ class _ActivityListState extends State<ActivityList> with Observer{
             List<Activity> res = _filterActivities(data);
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return getSnapshotErrWidget(snapshot);
           }
           return const Center(
               child: CircularProgressIndicator()

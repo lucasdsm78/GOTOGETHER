@@ -9,8 +9,7 @@ class FriendsServiceApi {
   final api = Api();
 
   Future<List<User>> getAll({Map<String, dynamic> map = const {}}) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'friends'));
+    final response = await api.httpGet(api.host + 'friends');
     if (response.statusCode == 200) {
       return compute(parseUsers, response.body);
     } else {
@@ -19,8 +18,7 @@ class FriendsServiceApi {
   }
 
   Future<List<User>> getById(int userId) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'friends/$userId'));
+    final response = await api.httpGet(api.host + 'friends/$userId');
     if (response.statusCode == 200) {
       return compute(parseUsers, response.body);
     } else {
@@ -29,8 +27,7 @@ class FriendsServiceApi {
   }
 
   Future<List<User>> getWaitingById(int userId) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'friends/waiting/$userId'));
+    final response = await api.httpGet(api.host + 'friends/waiting/$userId');
     if (response.statusCode == 200) {
       return compute(parseUsers, response.body);
     } else {
@@ -39,8 +36,7 @@ class FriendsServiceApi {
   }
 
   Future<List<User>> getWaitingAndValidateById(int userId) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'friends/all/$userId'));
+    final response = await api.httpGet(api.host + 'friends/all/$userId');
     if (response.statusCode == 200) {
       return compute(parseUsers, response.body);
     } else {
@@ -57,11 +53,7 @@ class FriendsServiceApi {
     if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to create a friendship.');
     }
-    final response = await api.client
-        .post(Uri.parse(api.host + 'friends'),
-      headers: api.mainHeader,
-      body: jsonEncode(map),
-    );
+    final response = await api.httpPost(api.host + 'friends', jsonEncode(map));
     if (response.statusCode == 201) {
       return User.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {
@@ -77,11 +69,7 @@ class FriendsServiceApi {
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');
     }
     else {
-      final response = await api.client
-          .patch(Uri.parse(api.host + 'friends'),
-        headers: api.mainHeader,
-        body: jsonEncode(map),
-      );
+      final response = await api.httpPatch(api.host + 'friends', jsonEncode(map));
       if (jsonDecode(response.body)['success'] != null && response.statusCode ==200) {
         return true;
       } else {
@@ -96,13 +84,7 @@ class FriendsServiceApi {
     if(!map.containsKey("userIdSender") || !map.containsKey("userIdReceiver")){
       throw Exception('need an userIdSender and userIdReceiver to update a friendship.');
     }
-
-    final response = await api.client
-        .delete(Uri.parse(api.host + 'friends'),
-      headers: api.mainHeader,
-      body: jsonEncode(map),
-    );
-
+    final response = await api.httpDelete(api.host + 'friends', json:jsonEncode(map));
     if (response.statusCode == 204) {
       return true;
     } else {

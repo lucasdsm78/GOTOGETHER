@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
@@ -13,6 +15,7 @@ import 'package:go_together/widgets/screens/users/user.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:toast/toast.dart';
 
 class FriendsList extends StatefulWidget {
   const FriendsList({Key? key}) : super(key: key);
@@ -64,16 +67,20 @@ class _FriendsListState extends State<FriendsList> {
   //set friends for Mock reason (don't have the actual friend from bdd with mock)
   //Note that the user.friendList contain both confirmed and waiting friends.
   _setFriends() async{
-    List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
-    List<int> listId = [];
-    friendsList.forEach((element) {
-      if(element.id != null) {
-        listId.add(element.id!);
-      }
-    });
-    setState(() {
-      currentUser.friendsList = listId;
-    });
+    try{
+      List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
+      List<int> listId = [];
+      friendsList.forEach((element) {
+        if(element.id != null) {
+          listId.add(element.id!);
+        }
+      });
+      setState(() {
+        currentUser.friendsList = listId;
+      });
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
   //endregion
 
@@ -125,6 +132,8 @@ class _FriendsListState extends State<FriendsList> {
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
       appBar: TopSearchBar(
           customSearchBar: const Text('Liste des amis'),
@@ -152,7 +161,7 @@ class _FriendsListState extends State<FriendsList> {
                       List<User> res = _filterFriends(data);
                       return ListViewSeparated(data: res, buildListItem: _buildRowFriends);
                     } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
+                      return getSnapshotErrWidget(snapshot);
                     }
                     return const Center(
                         child: CircularProgressIndicator()
@@ -167,7 +176,7 @@ class _FriendsListState extends State<FriendsList> {
                       List<User> res = _filterFriends(data);
                       return ListViewSeparated(data: res, buildListItem: _buildRowFriendsWaiting);
                     } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
+                      return getSnapshotErrWidget(snapshot);
                     }
                     return const Center(
                         child: CircularProgressIndicator()
@@ -196,26 +205,33 @@ class _FriendsListState extends State<FriendsList> {
   }
 
   _deleteFriend(User user) async {
-    bool isDelete = await friendsUseCase.delete(currentUser.id!, user.id!);
-    if(isDelete){
-      setState(() {
-        currentUser.friendsList.remove(user.id!);
-      });
+    try{
+      bool isDelete = await friendsUseCase.delete(currentUser.id!, user.id!);
+      if(isDelete){
+        setState(() {
+          currentUser.friendsList.remove(user.id!);
+        });
+      }
+      _setFriends();
+      _setFiendsList();
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
     }
-    _setFriends();
-    _setFiendsList();
-
   }
   _acceptFriend(User user) async {
-    bool isValidate = await friendsUseCase.validateFriendship(currentUser.id!, user.id!);
-    if(isValidate){
-      setState(() {
-        currentUser.friendsList.add(user.id!);
-      });
+    try{
+      bool isValidate = await friendsUseCase.validateFriendship(currentUser.id!, user.id!);
+      if(isValidate){
+        setState(() {
+          currentUser.friendsList.add(user.id!);
+        });
+      }
+      _setFriends();
+      _setFiendsList();
+      _setFriendsWaitingList();
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
     }
-    _setFriends();
-    _setFiendsList();
-    _setFriendsWaitingList();
   }
   //endregion
 

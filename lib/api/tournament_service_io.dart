@@ -10,8 +10,7 @@ class TournamentServiceApi {
 
   Future<List<Tournament>> getAll({Map<String, dynamic> map = const {}}) async {
     log("tournament service api : " + api.handleUrlParams(true, map));
-    final response = await api.client
-        .get(Uri.parse(api.host + 'get/activities' + api.handleUrlParams(true, map)));
+    final response = await api.httpGet(api.host + 'get/activities' + api.handleUrlParams(true, map));
     if (response.statusCode == 200) {
       return compute(parseTournament, response.body);
     } else {
@@ -20,8 +19,7 @@ class TournamentServiceApi {
   }
 
   Future<Tournament> getById(int id) async {
-    final response = await api.client
-        .get(Uri.parse(api.host + 'get/tournament/$id'));
+    final response = await api.httpGet(api.host + 'get/tournament/$id');
     if (response.statusCode == 200) {
       return Tournament.fromJson(jsonDecode(response.body)["success"]);
     } else {
@@ -30,11 +28,7 @@ class TournamentServiceApi {
   }
 
   Future<Tournament> add(Tournament tournament) async {
-    final response = await api.client
-        .post(Uri.parse(api.host + 'add/tournament'),
-      headers:api.mainHeader,
-      body: tournament.toJson(),
-    );
+    final response = await api.httpPost(api.host + 'add/tournament', tournament.toJson());
     if (response.statusCode == 201) {
       return Tournament.fromJson(jsonDecode(response.body)["success"]);
     } else {
@@ -43,11 +37,7 @@ class TournamentServiceApi {
   }
 
   Future<Tournament> updatePost(Tournament tournament) async {
-    final response = await api.client
-        .put(Uri.parse(api.host + '/update/tournament/${tournament.id}'),
-      headers: api.mainHeader,
-      body: tournament.toJson(),
-    );
+    final response = await api.httpPost(api.host + '/update/tournament/${tournament.id}', tournament.toJson());
     print(jsonDecode(response.body));
     if (jsonDecode(response.body)['success'] != null) {
       return Tournament.fromJson(jsonDecode(response.body)['success']);
@@ -61,11 +51,7 @@ class TournamentServiceApi {
       throw Exception('need an id to update an tournament.');
     }
     else {
-      final response = await api.client
-          .patch(Uri.parse(api.host + 'tournament/${map["id"]}'),
-        headers: api.mainHeader,
-        body: jsonEncode(map),
-      );
+      final response = await api.httpPatch(api.host + 'tournament/${map["id"]}', jsonEncode(map));
       print(jsonDecode(response.body));
       if (jsonDecode(response.body)['success'] != null) {
         return Tournament.fromJson(jsonDecode(response.body));
@@ -76,11 +62,7 @@ class TournamentServiceApi {
   }
 
   Future<Tournament> delete(String id) async {
-    final response = await api.client
-        .delete(Uri.parse(api.host + 'delete/tournament/$id'),
-      headers: api.mainHeader,
-    );
-
+    final response = await api.httpDelete(api.host + 'delete/tournament/$id');
     if (response.statusCode == 204) {
       return Tournament.fromJson(jsonDecode(response.body));
     } else {
@@ -89,16 +71,11 @@ class TournamentServiceApi {
   }
 
   Future<Tournament> joinActivityUser(Tournament tournament, int userId, bool hasJoin) async {
-    final response = await api.client
-        .post(Uri.parse(api.host+ 'joining/tournament'),
-      headers:api.mainHeader,
-      body:  jsonEncode(<String, int>{
-        "idUser": userId,
-        "idTournament": tournament.id!,
-        "isJoining": hasJoin ? 0 : 1
-      }),
-    );
-
+    final response = await api.httpPost(api.host + 'joining/tournament', jsonEncode(<String, int>{
+      "idUser": userId,
+      "idTournament": tournament.id!,
+      "isJoining": hasJoin ? 0 : 1
+    }));
     if (response.statusCode == 200) {
       return Tournament.fromJson(jsonDecode(response.body)["success"]["last_insert"]);
     } else {

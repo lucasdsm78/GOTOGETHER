@@ -54,7 +54,7 @@ class _MapDialogState extends State<MapDialog> {
     double height = MediaQuery.of(context).size.height * 0.6;
 
     return SimpleDialog(
-      title: CustomText("Select Location", textAlign: TextAlign.center,),
+      title: CustomText("Sélectionner un lieu", textAlign: TextAlign.center,),
       contentPadding: EdgeInsets.all(5.0),
       children: [
         Container(
@@ -66,7 +66,7 @@ class _MapDialogState extends State<MapDialog> {
           onPressed: (){
             Navigator.pop(context, location); // quit dialog and return a value
           },
-          child: Text("confirm location"))
+          child: Text("Confirmer"))
       ],
     );
   }

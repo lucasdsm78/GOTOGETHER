@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_together/helper/api.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
@@ -10,6 +12,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 import 'package:go_together/widgets/screens/users/user.dart';
 
 import 'package:go_together/widgets/components/search_bar.dart';
+import 'package:toast/toast.dart';
 
 class AddFriendsList extends StatefulWidget {
   const AddFriendsList({Key? key}) : super(key: key);
@@ -32,10 +35,10 @@ class _AddFriendsListState extends State<AddFriendsList> {
   @override
   void initState(){
     super.initState();
-    _setFriends();
     currentUser = session.getData(SessionData.user);
-
+    _setFriends();
     futureUsers = userUseCase.getAll();
+
     searchbarController.addListener(_updateKeywords);
   }
 
@@ -79,22 +82,28 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
 
   _setFriends() async{
-    List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
-    List<int> listId = [];
-    friendsList.forEach((element) {
-      if(element.id != null) {
-        listId.add(element.id!);
-      }
-    });
-    setState(() {
-      currentUser.friendsList = listId;
-    });
+    try{
+      List<User> friendsList = await friendsUseCase.getWaitingAndValidateById(currentUser.id!);
+      List<int> listId = [];
+      friendsList.forEach((element) {
+        if(element.id != null) {
+          listId.add(element.id!);
+        }
+      });
+      setState(() {
+        currentUser.friendsList = listId;
+      });
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
   //endregion
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
+
     return Scaffold(
       appBar: TopSearchBar(
         customSearchBar: const Text('Ajouter des amis'),
@@ -110,7 +119,7 @@ class _AddFriendsListState extends State<AddFriendsList> {
 
             return ListViewSeparated(data: res, buildListItem: _buildRow);
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return getSnapshotErrWidget(snapshot);
           }
           return const Center(
               child: CircularProgressIndicator()
@@ -153,10 +162,14 @@ class _AddFriendsListState extends State<AddFriendsList> {
   }
 
   _addFriend(User user){
-    friendsUseCase.add(currentUser.id!, user.id!);
-    setState(() {
-      currentUser.friendsList.add(user.id!);
-    });
+    try{
+      friendsUseCase.add(currentUser.id!, user.id!);
+      setState(() {
+        currentUser.friendsList.add(user.id!);
+      });
+    } on ApiErr catch(err){
+      Toast.show(err.message, gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
+    }
   }
 
 }

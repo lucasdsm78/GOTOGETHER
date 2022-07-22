@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
+import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/user.dart';
@@ -18,6 +20,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:go_together/widgets/screens/users/profile.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -63,7 +66,10 @@ class _HomeState extends State<Home> with Observer{
 
   @override
   update(Observable observable, String? notifyName, Map? map) {
-    if(notifyName == NotificationCenter.userJoinActivity.name || notifyName == NotificationCenter.userCancelActivity.name){
+    if(notifyName == NotificationCenter.userJoinActivity.name
+        || notifyName == NotificationCenter.userCancelActivity.name
+        || notifyName == NotificationCenter.setActivityHost.name
+    ){
       getActivities();
     }
     //throw UnimplementedError();
@@ -80,6 +86,19 @@ class _HomeState extends State<Home> with Observer{
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accueil'),
+        backgroundColor: CustomColors.goTogetherMain,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.account_circle_rounded),
+            tooltip: 'Profile Icon',
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => Profile(),
+                ),
+              );            },
+          ), //IconButton
+        ],
       ),
       body: Column(
         children: [
@@ -93,7 +112,7 @@ class _HomeState extends State<Home> with Observer{
           ),
           HeaderTabs(
               tabsWidget: const [
-                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.crown)),
                 TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
                 TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
               ],
@@ -119,12 +138,12 @@ class _HomeState extends State<Home> with Observer{
                     List<Activity> data = snapshot.data!;
                     if(data.isEmpty){
                       return const  Center(
-                        child: Text("Vous n'avez pas créer d'événement récement"),
+                        child: Text("Vous n'avez pas créé d'événement récemment"),
                       );
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()
@@ -144,7 +163,7 @@ class _HomeState extends State<Home> with Observer{
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()
@@ -159,12 +178,12 @@ class _HomeState extends State<Home> with Observer{
 
                     if(data.isEmpty){
                       return const  Center(
-                        child: Text("Vous ne participez à aucun événements actuellement"),
+                        child: Text("Vous ne participez à aucun événement actuellement"),
                       );
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);
                   } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
+                    return getSnapshotErrWidget(snapshot);
                   }
                   return const Center(
                       child: CircularProgressIndicator()
