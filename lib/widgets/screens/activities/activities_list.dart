@@ -37,10 +37,20 @@ class ActivityList extends StatefulWidget {
   final int? idHost;
 
   @override
-  _ActivityListState createState() => _ActivityListState();
+  ActivityListState createState() => ActivityListState();
 }
 
-class _ActivityListState extends State<ActivityList> with Observer{
+/// copy of ActivityList
+class HostActivities extends StatefulWidget{
+  const HostActivities({Key? key,  this.idHost}) : super(key: key);
+  static const tag = "host_activities";
+  final int? idHost;
+
+  @override
+  ActivityListState createState() => ActivityListState();
+}
+
+class ActivityListState extends State<ActivityList> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late Future<List<Activity>> futureActivities;
   late User currentUser;

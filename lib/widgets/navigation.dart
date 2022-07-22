@@ -4,15 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
-import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
-import 'package:go_together/widgets/screens/login/signin_classic.dart';
-import 'package:go_together/widgets/screens/login/signup.dart';
 import 'package:go_together/widgets/screens/tchat/conversation_list.dart';
-import 'package:go_together/widgets/screens/tournament/tournament_set.dart';
-import 'package:go_together/widgets/screens/users/signal.dart';
 import 'package:go_together/widgets/screens/activities/activities_list.dart';
 import 'package:go_together/widgets/screens/activities/activity_set.dart';
 
@@ -85,14 +80,9 @@ class NavigationState extends State<Navigation> {
     //but reusing the same screen is probably for the best as long as they have quasi identical features
     //@todo : find a way to navigate through activityList screen (between all activities and my activities)
     addLinkToDrawer({
-      "widget": ActivityList(idHost: user.id,),
+      "widget": HostActivities(idHost: user.id,),
       "title": "Voir mes activités",
       "icon": Icon(Icons.list)
-    },);
-    addLinkToDrawer(    {
-      "widget": SignalProfile(userId: user.id!),
-      "title": "Signaler",
-      "icon": Icon(Icons.warning)
     },);
   }
   getUser() async {
