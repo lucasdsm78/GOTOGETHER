@@ -64,7 +64,8 @@ class _TchatState extends State<Tchat> {
     super.dispose();
   }
 
-  handleKeys () async {
+  /// get the private & public key stored on device
+  void handleKeys () async {
     AsymmetricKeyGenerator asymKeys= AsymmetricKeyGenerator();
 
     pubKey1 = (await asymKeys.getPubKeyFromStorage()).toString();
@@ -106,7 +107,7 @@ class _TchatState extends State<Tchat> {
     }
   }
 
-  getConversationList() async {
+  void getConversationList() async {
     try {
       List<Conversation> convList = await messageUseCase.getConversationById(widget.conversation.id!);
       setState(() {
@@ -116,7 +117,7 @@ class _TchatState extends State<Tchat> {
     }
   }
 
-  getMessagesList() async {
+  void getMessagesList() async {
     try {
       List<Message> convList = await messageUseCase.getById(
           widget.conversation.id!);
@@ -142,7 +143,7 @@ class _TchatState extends State<Tchat> {
   /// Encrypt message for all user in conversation, to send it to API
   /// and save it on DB.
   /// Then reset Text input value.
-  sendMessage(String text) async {
+  void sendMessage(String text) async {
     if(text != null  && text != "") {
       if(conversationList.isEmpty){
         Toast.show("Impossible d'envoyer le message", gravity: Toast.bottom, duration: 3, backgroundColor: Colors.redAccent);
@@ -179,7 +180,7 @@ class _TchatState extends State<Tchat> {
   }
 
   /// Decrypt received message and add the result in messageList to display
-  receiveMessage(Message message){
+  void receiveMessage(Message message){
     try {
       Map<String,String> map = splitSignedAndCryptedMessage(message.bodyMessage);
       String messageBody = map["encryptedMsg"]!;
@@ -197,7 +198,7 @@ class _TchatState extends State<Tchat> {
   }
 
   /// Used by socket
-  handleMessage(dynamic data){
+  void handleMessage(dynamic data){
     Map<String, dynamic> res = data;
 
     if(res["room"] == widget.conversation.id! && res["receiver"] == currentUser.id){
@@ -206,7 +207,7 @@ class _TchatState extends State<Tchat> {
   }
   //endregion
 
-  amISender(Message message){
+  bool amISender(Message message){
     return currentUser.id != null && message.idSender == currentUser.id;
   }
 

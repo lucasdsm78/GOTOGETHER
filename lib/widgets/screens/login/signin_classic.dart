@@ -33,7 +33,7 @@ class _SignInClassicState extends State<SignInClassic> {
   final store = CustomStorage();
   final syncStore = SyncStorage();
 
-  validForm () async
+  void validForm () async
   {
     if (_formKey.currentState!.validate()){
       try{
@@ -56,7 +56,8 @@ class _SignInClassicState extends State<SignInClassic> {
       }
     }
   }
-  goToSignup(){
+
+  void goToSignup(){
     Navigator.of(context).popAndPushNamed(SignUp.tag);
   }
 

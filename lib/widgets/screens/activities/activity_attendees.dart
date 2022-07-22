@@ -57,31 +57,6 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: TopSearchBar(
-          customSearchBar: const Text('Les participants'),
-          searchbarController: searchbarController,
-      ),
-      body: FutureBuilder<List<User>>(
-        future: futureUsers,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<User> data = snapshot.data!;
-            List<User> res = _filterUsers(data);
-            return ListViewSeparated(data: res, buildListItem: _buildRow);
-          } else if (snapshot.hasError) {
-            return getSnapshotErrWidget(snapshot);
-          }
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildRow(User user) {
     Widget tile = ListTile(
       title: CustomText(user.username),
@@ -112,7 +87,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
       );
   }
 
-  _changeHostUser(User user) async {
+  Future<bool> _changeHostUser(User user) async {
     try {
       bool isChanged = await activityUseCase.changeHost(
           {"hostId": user.id, "activityId": widget.activity.id});
@@ -143,7 +118,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     );
   }
 
-  slidableActionRemoveUserFromAttendees(BuildContext context, User user) {
+  Widget slidableActionRemoveUserFromAttendees(BuildContext context, User user) {
     return SlidableAction(
       onPressed: (BuildContext) {
         activityUseCase.joinActivityUser(widget.activity, user.id!, true);
@@ -163,7 +138,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
   }
 
   /// Filter users depending on [keywords], [selectedDate]
-  _filterUsers(List<User> list){
+  List<User> _filterUsers(List<User> list){
     List<User> res = [];
     list.forEach((user) {
       if(_fieldContains(user) && user.id! != currentUser.id){
@@ -197,5 +172,29 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
     //getActivities(); //could filter on the total list, or make a call to api each time keywords change (not optimized)
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: TopSearchBar(
+        customSearchBar: const Text('Les participants'),
+        searchbarController: searchbarController,
+      ),
+      body: FutureBuilder<List<User>>(
+        future: futureUsers,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<User> data = snapshot.data!;
+            List<User> res = _filterUsers(data);
+            return ListViewSeparated(data: res, buildListItem: _buildRow);
+          } else if (snapshot.hasError) {
+            return getSnapshotErrWidget(snapshot);
+          }
+          return const Center(
+              child: CircularProgressIndicator()
+          );
+        },
+      ),
+    );
+  }
 
 }
