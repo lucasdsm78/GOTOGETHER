@@ -70,7 +70,7 @@ class _UserProfileState extends State<UserProfile> {
                         }
                       }
                       return  ElevatedButton(
-                        child: Text('TextButton'),
+                        child: Text('Signaler'),
                         onPressed: isReported ? null : (){
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
