@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/session.dart';
+import 'package:go_together/helper/enum/gender.dart';
 import 'package:go_together/mock/user.dart';
 import 'package:go_together/models/user.dart';
 
@@ -38,7 +39,7 @@ class ProfileState extends State<Profile> {
               height: 250,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.red, Colors.deepOrange.shade300],
+                  colors: [Colors.green, Colors.lightGreen.shade300],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   stops: [0.5, 0.9],
@@ -59,13 +60,6 @@ class ProfileState extends State<Profile> {
                       color: Colors.white,
                     ),
                   ),
-                  Text(
-                    'Flutter Developer',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -74,10 +68,10 @@ class ProfileState extends State<Profile> {
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                      color: Colors.deepOrange.shade300,
+                      color: Colors.lightGreen.shade300,
                       child: ListTile(
                         title: Text(
-                          '5000',
+                          currentUser.friendsList.length.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -86,31 +80,7 @@ class ProfileState extends State<Profile> {
                           ),
                         ),
                         subtitle: Text(
-                          'Followers',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Colors.red,
-                      child: ListTile(
-                        title: Text(
-                          '5000',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                            color: Colors.white,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Following',
+                          'Amis',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
@@ -130,13 +100,13 @@ class ProfileState extends State<Profile> {
                     title: Text(
                       'Email',
                       style: TextStyle(
-                        color: Colors.deepOrange,
+                        color: Colors.lightGreen,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     subtitle: Text(
-                      'palmeiro.leonardo@gmail.com',
+                      currentUser.mail,
                       style: TextStyle(
                         fontSize: 18,
                       ),
@@ -145,37 +115,21 @@ class ProfileState extends State<Profile> {
                   Divider(),
                   ListTile(
                     title: Text(
-                      'GitHub',
+                      'Gendre',
                       style: TextStyle(
-                        color: Colors.deepOrange,
+                        color: Colors.lightGreen,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     subtitle: Text(
-                      'https://github.com/leopalmeiro',
+                        currentUser.gender!.translate(),
                       style: TextStyle(
                         fontSize: 18,
                       ),
                     ),
                   ),
                   Divider(),
-                  ListTile(
-                    title: Text(
-                      'Linkedin',
-                      style: TextStyle(
-                        color: Colors.deepOrange,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'www.linkedin.com/in/leonardo-palmeiro-834a1755',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             )

@@ -89,8 +89,11 @@ class _HomeState extends State<Home> with Observer{
             icon: const Icon(Icons.account_circle_rounded),
             tooltip: 'Profile Icon',
             onPressed: () {
-              Navigator.of(context).popAndPushNamed(Profile.tag);
-            },
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => Profile(),
+                ),
+              );            },
           ), //IconButton
         ],
       ),
