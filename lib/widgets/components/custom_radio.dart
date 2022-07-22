@@ -27,7 +27,6 @@ class _CustomRadioState extends State<CustomRadio> {
   _buildRadio(String label, Object value, dynamic groupValue){
     return Row(
       children: [
-        Text(label),
         Radio(
           value: value,
           groupValue: groupValue,
@@ -35,6 +34,7 @@ class _CustomRadioState extends State<CustomRadio> {
             widget.onChange(value);
           },
         ),
+        Text(label),
       ],
     );
   }
@@ -42,7 +42,6 @@ class _CustomRadioState extends State<CustomRadio> {
   @override
   Widget build(BuildContext context) {
     List<Widget> list = [
-      Text(widget.title),
     ];
     for (int i=0; i< widget.choices.length; i++){
       list.add(_buildRadio(widget.choices[i], (i), widget.groupValue));
@@ -51,7 +50,14 @@ class _CustomRadioState extends State<CustomRadio> {
     return
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: list
+        children: [
+          Text(widget.title),
+          Expanded(child:
+            Column(
+              children: list,
+            )
+          )
+        ]
       );
   }
 }
