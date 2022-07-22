@@ -7,6 +7,7 @@ import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/user.dart';
 import 'package:go_together/widgets/components/custom_input.dart';
 import 'package:go_together/helper/storage.dart';
+import 'package:go_together/widgets/components/lists/custom_row.dart';
 
 import 'package:go_together/widgets/navigation.dart';
 import 'package:go_together/widgets/screens/login/signup.dart';
@@ -26,13 +27,19 @@ class _SignInClassicState extends State<SignInClassic> {
   UserUseCase userUseCase = UserUseCase();
   final _formKey = GlobalKey<FormState>();
   bool error = false;
+  bool allowSaveSession = false;
+
   final session = Session();
   final store = CustomStorage();
+  final syncStore = SyncStorage();
 
   validForm () async
   {
     if (_formKey.currentState!.validate()){
       try{
+        syncStore.set("saveSession", allowSaveSession);
+        syncStore.set("username", (allowSaveSession ? mailController.text : ""));
+        syncStore.set("password", (allowSaveSession ? passwordController.text : ""));
         String token = await userUseCase.getJWTTokenByLogin({"mail":mailController.text, "password":passwordController.text});
         log(token);
 
@@ -51,6 +58,27 @@ class _SignInClassicState extends State<SignInClassic> {
   }
   goToSignup(){
     Navigator.of(context).popAndPushNamed(SignUp.tag);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bool? saveSession = syncStore.get("saveSession");
+
+    if(saveSession != null && saveSession){
+      mailController.text = syncStore.get("username");
+      passwordController.text = syncStore.get("password");
+      allowSaveSession = saveSession;
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    mailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,6 +124,18 @@ class _SignInClassicState extends State<SignInClassic> {
                           ),
                           CustomInput(title: "password", notValidError: 'Veuillez saisir un mot de passe', controller: passwordController,
                             isPassword: true, border: UnderlineInputBorder(), margin: const EdgeInsets.only(),),
+
+                          Container(height: 10),
+                          CheckboxListTile(
+                            title: Text("Conserver ma session"),
+                            value: allowSaveSession,
+                            onChanged: (bool){
+                              setState(() {
+                                allowSaveSession = !allowSaveSession;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                          ),
 
                           Container(height: 20),
 

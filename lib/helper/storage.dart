@@ -5,6 +5,7 @@ import 'package:go_together/models/sports.dart';
 import 'package:go_together/models/user.dart';
 import 'package:go_together/usecase/sport.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:get_storage/get_storage.dart';
 
 /// @deprecated.<br>
 /// It's more like a prototype, but should be replaced one day.<br>
@@ -77,5 +78,22 @@ class CustomStorage{
   Future<String> get(String key) async {
     return await db.getItem(key);
   }
+}
 
+class SyncStorage{
+  final box = GetStorage(); // use if localStorage cause issue
+
+  static final SyncStorage _instance = SyncStorage._internal();
+  factory SyncStorage() {
+    return _instance;
+  }
+  SyncStorage._internal();
+
+  set(String key, dynamic value){
+    box.write(key, value);
+  }
+
+  get(String key){
+    return box.read(key);
+  }
 }
