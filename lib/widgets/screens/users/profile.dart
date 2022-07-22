@@ -24,9 +24,8 @@ class ProfileState extends State<Profile> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mon profil',
-      home: Scaffold(
+    return
+      Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.green,
           title: Center(
@@ -135,7 +134,7 @@ class ProfileState extends State<Profile> {
             )
           ],
         ),
-      ),
-    );
+      )
+    ;
   }
 }
