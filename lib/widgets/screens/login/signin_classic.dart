@@ -111,6 +111,14 @@ class _SignInClassicState extends State<SignInClassic> {
                             ),
                           ),
 
+                          Flexible(
+                            flex: 1,
+                            child: Image.asset(
+                              'assets/firebase_logo.png',
+                              height: 160,
+                            ),
+                          ),
+
                           FutureBuilder(
                             future: GoogleAuthentication.initializeFirebase(context: context),
                             builder: (context, snapshot) {
