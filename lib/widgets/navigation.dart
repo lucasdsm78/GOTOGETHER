@@ -5,6 +5,7 @@ import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/helper/storage.dart';
 import 'package:go_together/models/user.dart';
+import 'package:go_together/widgets/screens/activities/host_activities.dart';
 import 'package:go_together/widgets/screens/friends/friends_list.dart';
 import 'package:go_together/widgets/screens/home.dart';
 import 'package:go_together/widgets/screens/tchat/conversation_list.dart';

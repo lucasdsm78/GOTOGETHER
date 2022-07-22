@@ -28,19 +28,17 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-/// This is the activity list.
-/// if we provide [idHost], it means the list should be only the activities
-/// hosted by the currend user.
-class ActivityList extends StatefulWidget {
-  const ActivityList({Key? key,  this.idHost}) : super(key: key);
-  static const tag = "activity_list";
+/// copy of ActivityList
+class HostActivities extends StatefulWidget{
+  const HostActivities({Key? key,  this.idHost}) : super(key: key);
+  static const tag = "host_activities";
   final int? idHost;
 
   @override
-  _ActivityListState createState() => _ActivityListState();
+  _HostActivitiesState createState() => _HostActivitiesState();
 }
 
-class _ActivityListState extends State<ActivityList> with Observer{
+class _HostActivitiesState extends State<HostActivities> with Observer{
   final ActivityUseCase activityUseCase = ActivityUseCase();
   late Future<List<Activity>> futureActivities;
   late User currentUser;
@@ -174,7 +172,7 @@ class _ActivityListState extends State<ActivityList> with Observer{
         ],
       ),
       onTap: () {
-          _seeMore(activity);
+        _seeMore(activity);
       },
     );
 
@@ -183,15 +181,15 @@ class _ActivityListState extends State<ActivityList> with Observer{
     }
     return
       Slidable(
-        key: Key(activity.id.toString()),
-        endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children:[
-            slidableActionUpdateActivity(context, activity)
-          ]
-        ),
-        child: tile
-    );
+          key: Key(activity.id.toString()),
+          endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children:[
+                slidableActionUpdateActivity(context, activity)
+              ]
+          ),
+          child: tile
+      );
   }
 
   /// Display a dialog containing some filters to apply on the list.
@@ -200,10 +198,10 @@ class _ActivityListState extends State<ActivityList> with Observer{
         context: context,
         builder: (BuildContext context){
           return FilterDialog(
-            selectedDate: selectedDate, onSelectDate: _updateSelectedDate,
-            sport: sport, onChangeSport: _updateSelectedSport,
-            gender: gender, onChangeGender: _updateSelectedGender,
-            level: level, onChangeLevel: _updateSelectedLevel);
+              selectedDate: selectedDate, onSelectDate: _updateSelectedDate,
+              sport: sport, onChangeSport: _updateSelectedSport,
+              gender: gender, onChangeGender: _updateSelectedGender,
+              level: level, onChangeLevel: _updateSelectedLevel);
         }
     );
   }
@@ -294,7 +292,7 @@ class _ActivityListState extends State<ActivityList> with Observer{
       element = element.trim();
       RegExp regExp = RegExp(element, caseSensitive: false, multiLine: false);
       if(
-          (regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)
+      (regExp.hasMatch(activity.description) || regExp.hasMatch(activity.sport.name)
           || regExp.hasMatch(activity.location.city) || regExp.hasMatch(activity.location.country)
           || regExp.hasMatch(activity.host.mail) || regExp.hasMatch(activity.host.username)) ){
         containsKeyword.add(true);
