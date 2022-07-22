@@ -20,6 +20,7 @@ import 'package:go_together/widgets/components/lists/list_view.dart';
 
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:go_together/widgets/screens/users/profile.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -83,6 +84,15 @@ class _HomeState extends State<Home> with Observer{
       appBar: AppBar(
         title: const Text('Accueil'),
         backgroundColor: CustomColors.goTogetherMain,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.account_circle_rounded),
+            tooltip: 'Profile Icon',
+            onPressed: () {
+              Navigator.of(context).popAndPushNamed(Profile.tag);
+            },
+          ), //IconButton
+        ],
       ),
       body: Column(
         children: [
