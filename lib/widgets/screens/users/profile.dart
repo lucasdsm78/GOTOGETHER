@@ -115,7 +115,7 @@ class ProfileState extends State<Profile> {
                   Divider(),
                   ListTile(
                     title: Text(
-                      'Gendre',
+                      'Genre',
                       style: TextStyle(
                         color: Colors.lightGreen,
                         fontSize: 20,
