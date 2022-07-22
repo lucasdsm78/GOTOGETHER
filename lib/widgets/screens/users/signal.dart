@@ -37,6 +37,7 @@ class _SignalProfileState extends State<SignalProfile> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Signalement'),
+          backgroundColor: CustomColors.goTogetherMain,
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

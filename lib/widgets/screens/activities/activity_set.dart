@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
 import 'package:go_together/mock/levels.dart';
@@ -125,6 +126,7 @@ class _ActivitySetState extends State<ActivitySet> {
     return Scaffold(
       appBar: AppBar(
         title:  isUpdating ? Text("Mis à jour de l'événement") : Text("Créer un évènement"),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Form(
         key: _formKey,

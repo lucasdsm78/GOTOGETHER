@@ -129,6 +129,7 @@ class _TournamentSetState extends State<TournamentSet> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Créer un tournoi"),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Form(
         key: _formKey,

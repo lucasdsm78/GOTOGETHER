@@ -36,6 +36,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails du message'),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Center(
         child: FutureBuilder<List<Message>>(

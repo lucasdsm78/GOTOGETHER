@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_together/helper/NotificationCenter.dart';
+import 'package:go_together/helper/enum/custom_colors.dart';
 import 'package:go_together/helper/error_helper.dart';
 import 'package:go_together/helper/extensions/date_extension.dart';
 import 'package:go_together/helper/session.dart';
@@ -81,6 +82,7 @@ class _HomeState extends State<Home> with Observer{
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accueil'),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Column(
         children: [
@@ -120,7 +122,7 @@ class _HomeState extends State<Home> with Observer{
                     List<Activity> data = snapshot.data!;
                     if(data.isEmpty){
                       return const  Center(
-                        child: Text("Vous n'avez pas créer d'événement récement"),
+                        child: Text("Vous n'avez pas créé d'événement récemment"),
                       );
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityUserHosted);
@@ -160,7 +162,7 @@ class _HomeState extends State<Home> with Observer{
 
                     if(data.isEmpty){
                       return const  Center(
-                        child: Text("Vous ne participez à aucun événements actuellement"),
+                        child: Text("Vous ne participez à aucun événement actuellement"),
                       );
                     }
                     return ListViewSeparated(data: data, buildListItem: _buildItemActivityProposition);

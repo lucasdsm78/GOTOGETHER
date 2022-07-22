@@ -81,6 +81,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails de l\'activité'),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Center(
         child:

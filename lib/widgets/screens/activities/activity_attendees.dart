@@ -121,7 +121,7 @@ class _ActivitiesAttendeesState extends State<ActivitiesAttendees>{
           return YesNoDialog(
             title: "Désigner comme nouvel organisateur?",
             children: [
-              Text("${user.username} deviendras l'organisateur de l'événement. Vous ne pourrez plus modifier cette activité."),
+              Text("${user.username} deviendra l'organisateur de l'événement. Vous ne pourrez plus modifier cette activité."),
               Text("Etes-vous sûr de vouloir changer l'organisateur?"),
             ],
             trueFunction: ()=>_changeHostUser(user),

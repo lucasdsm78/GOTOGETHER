@@ -39,6 +39,7 @@ class _UserProfileState extends State<UserProfile> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Profile'),
+          backgroundColor: CustomColors.goTogetherMain,
         ),
         body: Center(
           child: Column(

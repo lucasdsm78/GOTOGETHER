@@ -216,6 +216,7 @@ class _TchatState extends State<Tchat> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.conversation.name),
+        backgroundColor: CustomColors.goTogetherMain,
       ),
       body: Container(
         alignment: Alignment.topCenter,
