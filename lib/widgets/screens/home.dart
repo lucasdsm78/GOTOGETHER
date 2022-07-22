@@ -99,7 +99,7 @@ class _HomeState extends State<Home> with Observer{
           ),
           HeaderTabs(
               tabsWidget: const [
-                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.handshake)),
+                TextIcon(title:"Mes activités", icon: Icon(MdiIcons.crown)),
                 TextIcon(title:"Propositions", icon: Icon(MdiIcons.calendarMultipleCheck)),
                 TextIcon(title:"Participations", icon: Icon(MdiIcons.handBackRightOutline))
               ],
